@@ -1,19 +1,22 @@
-import { Client, Account, Databases, Storage } from "appwrite"
+import { Client, Account, Databases, Storage, Avatars } from "appwrite";
 
+// Load from environment variables
 const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1")
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "68de92920035332b5b7b")
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "")
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "");
 
-export const account = new Account(client)
-export const databases = new Databases(client)
-export const storage = new Storage(client)
+// Initialize Appwrite services
+export const account = new Account(client);
+export const databases = new Databases(client);
+export const storage = new Storage(client);
+export const avatars = new Avatars(client);
 
-export const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "68de937d00293894fef2"
+// Database and Collection IDs from .env.local
+export const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 export const COLLECTIONS = {
-  USERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_USERS || "users",
-  GROUPS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUPS || "groups",
-  GROUP_MEMBERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUP_MEMBERS || "group_members",
-  MESSAGES: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_MESSAGES || "messages",
-}
-
-export { client }
+  GROUP_MEMBERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUP_MEMBERS ?? "",
+  GROUPS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUPS ?? "",
+  USERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_USERS ?? "",
+  MESSAGES: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_MESSAGES ?? "",
+  // Add more collections as needed
+};
