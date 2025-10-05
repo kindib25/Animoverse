@@ -1,8 +1,6 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -10,23 +8,23 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { clientSignup } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { studentSignupSchema, type StudentSignupInput } from "@/lib/schemas/student"
 
 export function SignupForm() {
   const router = useRouter()
   const { toast } = useToast()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<StudentSignupInput>({
+    resolver: zodResolver(studentSignupSchema),
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-
-
-
-    const result = await clientSignup(email, password, name)
+  const onSubmit = async (data: StudentSignupInput) => {
+    const result = await clientSignup(data.email, data.password, data.name)
 
     if (result.success) {
       toast({
@@ -40,12 +38,10 @@ export function SignupForm() {
         description: result.error || "Please try again.",
         variant: "destructive",
       })
-      setIsLoading(false)
     }
   }
 
   const handleGoogleSignup = () => {
-    // Implement Google OAuth
     toast({
       title: "Coming soon",
       description: "Google signup will be available soon.",
@@ -53,7 +49,7 @@ export function SignupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
@@ -61,11 +57,10 @@ export function SignupForm() {
             id="name"
             type="text"
             placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register("name")}
             className="shad-input"
-            required
           />
+          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -74,11 +69,10 @@ export function SignupForm() {
             id="email"
             type="email"
             placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email")}
             className="shad-input"
-            required
           />
+          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -87,16 +81,20 @@ export function SignupForm() {
             id="password"
             type="password"
             placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password")}
             className="shad-input"
-            required
           />
+          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
       </div>
 
-      <Button type="submit" className="w-full shad-button_primary" size="lg" disabled={isLoading}>
-        {isLoading ? "Creating account..." : "Continue"}
+      <Button
+        type="submit"
+        className="w-full shad-button_primary"
+        size="lg"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Creating account..." : "Continue"}
       </Button>
 
       <div className="relative">
@@ -108,7 +106,13 @@ export function SignupForm() {
         </div>
       </div>
 
-      <Button type="button" variant="outline" className="w-full bg-transparent" size="lg" onClick={handleGoogleSignup}>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full bg-transparent"
+        size="lg"
+        onClick={handleGoogleSignup}
+      >
         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
           <path
             fill="currentColor"

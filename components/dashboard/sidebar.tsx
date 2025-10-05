@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/context/auth-context"
+import { useRouter } from "next/navigation"
 
 const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
@@ -20,13 +21,25 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { profile, logout } = useAuth()
+  const router = useRouter()
+
+   const handleLogout = async () => {
+    try {
+      await logout()
+      router.push("/login")
+    } catch (error) {
+      console.error("Logout failed:", error)
+    }
+  }
 
   return (
     <aside className="flex w-80 flex-col bg-sidebar text-sidebar-foreground">
+      {/* Logo */}
       <div className="flex h-30 items-center gap-2 px-7 py-4">
-      <img src="/logoname.svg" alt="logo" className="w-50 h-auto" />
+        <img src="/logoname.svg" alt="logo" className="w-50 h-auto" />
       </div>
 
+      {/* Navigation links */}
       <nav className="flex-1 space-y-1 p-6">
         {navigation.map((item) => {
           const isActive = pathname === item.href
@@ -38,7 +51,7 @@ export function Sidebar() {
                 "flex items-center gap-10 rounded-lg px-3 py-5 text-md font-medium transition-colors",
                 isActive
                   ? "bg-green text-background"
-                  : "text-foreground hover:bg-accent hover:text-accent-foreground",
+                  : "text-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -48,19 +61,29 @@ export function Sidebar() {
         })}
       </nav>
 
+      {/* User profile + logout */}
       <div className="p-4 flex flex-col gap-3">
-        <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors">
+        <Link
+          href="/dashboard/profile"
+          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors"
+        >
           <Avatar className="text-background">
-            <AvatarImage src="/placeholder.svg?height=40&width=40" />
-            <AvatarFallback className="bg-gray-300">NU</AvatarFallback>
+            <AvatarImage src={profile?.avatarUrl || "/placeholder.svg?height=40&width=40"} />
+            <AvatarFallback className="bg-gray-300">
+              {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
+            </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">New User</span>
-            <span className="text-xs text-muted-foreground">@newuser</span>
+            <span className="text-sm font-medium">
+              {profile?.name || "New User"}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              @{profile?.username || "newuser"}
+            </span>
           </div>
         </Link>
 
-        <Button variant="outline" className="w-full bg-transparent" onClick={logout}>
+        <Button variant="outline" className="w-full bg-transparent" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
@@ -68,4 +91,3 @@ export function Sidebar() {
     </aside>
   )
 }
-
