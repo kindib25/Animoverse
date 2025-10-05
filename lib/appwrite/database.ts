@@ -58,7 +58,6 @@ export async function createGroup(data: {
       ...data,
       memberCount: 1,
       maxMembers: 15,
-      createdAt: new Date().toISOString(),
     })
 
     // Add creator as first member
@@ -171,7 +170,6 @@ export async function sendMessage(groupId: string, userId: string, content: stri
       groupId,
       userId,
       content,
-      createdAt: new Date().toISOString(),
     })
     return { success: true, message }
   } catch (error: any) {

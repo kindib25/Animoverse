@@ -8,10 +8,11 @@ export interface User {
   studyPreferences?: string[]
   bio?: string
   avatarUrl?: string
-  createdAt?: string
+  $createdAt?: string
   followers?: number
   following?: number
   creates?: number
+  $updatedAt?: string
 }
 
 export interface Group {
@@ -26,7 +27,8 @@ export interface Group {
   imageUrl?: string
   memberCount: number
   maxMembers: number
-  createdAt: string
+  $createdAt: string
+  $updatedAt: string
 }
 
 export interface GroupMember {
@@ -36,6 +38,8 @@ export interface GroupMember {
   status: "pending" | "approved" | "rejected"
   role: "creator" | "admin" | "member"
   joinedAt: string
+  $updatedAt: string
+  $createdAt: string
 }
 
 export interface Message {
@@ -45,6 +49,8 @@ export interface Message {
   content: string
   createdAt: string
   user?: User
+  $createdAt: string
+  $updatedAt: string
 }
 
 export interface GroupWithMembership extends Group {

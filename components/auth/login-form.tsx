@@ -60,13 +60,13 @@ export function LoginForm() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="Enter your email" {...register("email")} />
+          <Input id="email" type="email" placeholder="Enter your email" {...register("email")} className="shad-input" />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
+          <Input id="password" type="password" placeholder="Enter your password" {...register("password")} className="shad-input" />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
       </div>
