@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/context/auth-context"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, UsersRound, Calendar, FileText, LogOut, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -18,6 +19,17 @@ const navigation = [
 export function AdminSidebar() {
   const pathname = usePathname()
   const { profile, logout } = useAuth()
+  const router = useRouter()
+
+     const handleLogout = async () => {
+    try {
+      await logout()
+      router.push("/admin/login")
+    } catch (error) {
+      console.error("Logout failed:", error)
+    }
+  }
+
 
   return (
     <aside className="flex w-80 flex-col bg-sidebar text-sidebar-foreground">
@@ -59,7 +71,7 @@ export function AdminSidebar() {
           </div>
         </Link>
 
-        <Button variant="outline" className="w-full bg-transparent" onClick={logout}>
+        <Button variant="outline" className="w-full bg-transparent" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>

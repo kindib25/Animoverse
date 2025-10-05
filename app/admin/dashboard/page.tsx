@@ -1,16 +1,40 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useAuth } from "@/lib/context/auth-context"
+import { useRouter } from "next/navigation"
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useAdminStats } from "@/lib/hooks/use-admin"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, UsersRound, Clock, CircleAlert } from "lucide-react"
+import { Users, UsersRound, CircleAlert } from "lucide-react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default function AdminDashboardPage() {
-  const { profile } = useAuth()
+  const router = useRouter()
   const { data: stats, isLoading } = useAdminStats()
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [user, setUser] = useState<any>(null)
 
+  useEffect(() => {
+    async function checkAuth() {
+      const result = await clientGetCurrentUser()
+      if (!result.success || !result.user) {
+        router.push("/admin/login")
+        return
+      }
+      setUser(result.user)
+      setIsCheckingAuth(false)
+    }
+    checkAuth()
+  }, [router])
+
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-white text-lg">Checking authentication...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
@@ -19,7 +43,7 @@ export default function AdminDashboardPage() {
       <main className="flex-1 px-20 pt-10">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-green">Welcome back, {profile?.name || "Admin"}</p>
+          <p className="text-green">Welcome back, {user?.name || "Admin"}</p>
         </div>
 
         {isLoading ? (
@@ -49,16 +73,16 @@ export default function AdminDashboardPage() {
             </Card>
 
             <Link href="/admin/groups">
-            <Card className="bg-transparent border-white border-2 text-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-lg font-medium">Active Groups</CardTitle>
-                <UsersRound className="h-8 w-8 text-white" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-5xl font-bold text-green">{stats?.activeGroups || 0}</div>
-                <p className="text-sm text-white">Currently active</p>
-              </CardContent>
-            </Card>
+              <Card className="bg-transparent border-white border-2 text-white">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg font-medium">Active Groups</CardTitle>
+                  <UsersRound className="h-8 w-8 text-white" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-5xl font-bold text-green">{stats?.activeGroups || 0}</div>
+                  <p className="text-sm text-white">Currently active</p>
+                </CardContent>
+              </Card>
             </Link>
 
             <Card className="bg-green border-none">
