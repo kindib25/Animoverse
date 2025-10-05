@@ -2,22 +2,20 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Compass, Bookmark, Calendar, Users, PlusCircle, LogOut } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/context/auth-context"
+import { cn } from "@/lib/utils"
+import { LayoutDashboard, UsersRound, Calendar, FileText, LogOut, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const navigation = [
-  { name: "Home", href: "/dashboard", icon: Home },
-  { name: "Explore", href: "/dashboard/explore", icon: Compass },
-  { name: "Saved", href: "/dashboard/saved", icon: Bookmark },
-  { name: "Upcoming", href: "/dashboard/upcoming", icon: Calendar },
-  { name: "My Groups", href: "/dashboard/my-groups", icon: Users },
-  { name: "Create Group", href: "/dashboard/create-group", icon: PlusCircle },
+  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Groups", href: "/admin/groups", icon: UsersRound },
+  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Upcoming", href: "/admin/upcoming", icon: Calendar },
+  { name: "Reports", href: "/admin/reports", icon: FileText },
 ]
 
-export function Sidebar() {
+export function AdminSidebar() {
   const pathname = usePathname()
   const { profile, logout } = useAuth()
 
@@ -29,7 +27,9 @@ export function Sidebar() {
 
       <nav className="flex-1 space-y-1 p-6">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
+          const Icon = item.icon
+          const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
+
           return (
             <Link
               key={item.name}
@@ -41,7 +41,7 @@ export function Sidebar() {
                   : "text-foreground hover:bg-accent hover:text-accent-foreground",
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <Icon className="h-5 w-5" />
               {item.name}
             </Link>
           )
@@ -50,13 +50,12 @@ export function Sidebar() {
 
       <div className="p-4 flex flex-col gap-3">
         <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors">
-          <Avatar className="text-background">
-            <AvatarImage src="/placeholder.svg?height=40&width=40" />
-            <AvatarFallback className="bg-gray-300">NU</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">New User</span>
-            <span className="text-xs text-muted-foreground">@newuser</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-primary-foreground">
+            {profile?.name?.[0] || "A"}
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <p className="truncate text-sm font-medium">{profile?.name || "Admin"}</p>
+            <p className="truncate text-xs text-muted-foreground">{profile?.email || "@admin.lsu.edu"}</p>
           </div>
         </Link>
 
@@ -68,4 +67,3 @@ export function Sidebar() {
     </aside>
   )
 }
-

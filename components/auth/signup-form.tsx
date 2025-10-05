@@ -28,30 +28,9 @@ export function SignupForm() {
     if (result.success) {
       toast({
         title: "Account created!",
-        description: "Let's set up your study profile.",
+        description: "Welcome to Animoverse!",
       })
-      // Store user data in sessionStorage for onboarding
-      //modified
-      if (result.user) {
-        sessionStorage.setItem(
-          "onboarding_user",
-          JSON.stringify({
-            id: result.user.$id,
-            name,
-            email,
-          }),
-        )
-
-
-        router.push("/onboarding/welcome")
-      } else {
-        toast({
-          title: "Signup failed",
-          description: "User data not returned. Please try again.",
-          variant: "destructive",
-        })
-        setIsLoading(false)
-      }
+      router.push("/dashboard")
     } else {
       toast({
         title: "Signup failed",
@@ -113,7 +92,7 @@ export function SignupForm() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+      <Button type="submit" className="w-full shad-button_primary" size="lg" disabled={isLoading}>
         {isLoading ? "Creating account..." : "Continue"}
       </Button>
 

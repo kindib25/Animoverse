@@ -10,19 +10,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { clientLogin } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { studentLoginSchema, type StudentLoginInput } from "@/lib/schemas/student"
 
 export function LoginForm() {
   const router = useRouter()
   const { toast } = useToast()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<StudentLoginInput>({
+    resolver: zodResolver(studentLoginSchema),
+  })
+
+  const onSubmit = async (data: StudentLoginInput) => {
     setIsLoading(true)
 
-    const result = await clientLogin(email, password)
+    const result = await clientLogin(data.email, data.password)
 
     if (result.success) {
       toast({
@@ -48,36 +56,22 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="shad-input"
-            required
-          />
+          <Input id="email" type="email" placeholder="Enter your email" {...register("email")} />
+          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="shad-input"
-            required
-          />
+          <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
+          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
       </div>
 
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+      <Button type="submit" className="w-full shad-button_primary" size="lg" disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log in"}
       </Button>
 
@@ -114,7 +108,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         {"Don't have an account? "}
-        <Link href="/signup" className="font-medium text-green hover:text-green-700">
+        <Link href="/signup" className="font-medium text-primary hover:underline">
           Sign up
         </Link>
       </p>

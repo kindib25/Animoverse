@@ -5,6 +5,10 @@ import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react"
 import "./globals.css"
 
+import { QueryProvider } from "@/lib/providers/query-provider"
+import { AuthProvider } from "@/lib/context/auth-context"
+import { Toaster } from "@/components/ui/toaster"
+
 // Load Space Mono font once
 const spaceMono = Space_Mono({
   subsets: ["latin"],
@@ -25,7 +29,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${spaceMono.className}`}>
-        <Suspense fallback={null}>{children}</Suspense>
+        {/* ✅ Wrap children inside QueryProvider */}
+        <QueryProvider>
+          <AuthProvider>
+            <Suspense fallback={null}>{children}</Suspense>
+          </AuthProvider>
+        </QueryProvider>
+
+        <Toaster />
+
+        {/* Vercel Analytics */}
         <Analytics />
       </body>
     </html>

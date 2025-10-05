@@ -68,8 +68,8 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar: #172232c0;
+  --sidebar-foreground: oklch(100% 0.00011 271.152);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
@@ -149,6 +149,16 @@
   .shad-input {
     @apply h-12 bg-[#172232] border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-green;
   }
+  .shad-button_press {
+    @apply flex flex-col cursor-pointer items-start text-left bg-green text-background font-semibold text-lg 
+         pl-6 pr-20 py-8 rounded-xl 
+         hover:bg-green 
+         shadow-[0_8px_0_#2f855a] transition-all duration-150 
+         hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
+         active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
+         gap-0 leading-none;
+  }
+  
 }
 
 @keyframes gradient {

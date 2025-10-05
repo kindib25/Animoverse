@@ -1,4 +1,5 @@
 import { SignupForm } from "@/components/auth/signup-form"
+import Link from "next/link"
 
 export default function SignupPage() {
   return (
@@ -7,7 +8,9 @@ export default function SignupPage() {
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
+              <Link href="/">
               <img src="/logoname.svg" alt="Logo"/>
+              </Link>
             </div>
           </div>
 
