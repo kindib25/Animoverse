@@ -23,6 +23,9 @@ export function SignupForm() {
     e.preventDefault()
     setIsLoading(true)
 
+
+
+
     const result = await clientSignup(email, password, name)
 
     if (result.success) {
