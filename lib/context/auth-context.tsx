@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { clientGetCurrentUser, clientLogout } from "@/lib/appwrite/client-auth"
-import { getUserProfile } from "@/lib/appwrite/database"
+import { getUserProfile, createUserProfile } from "@/lib/appwrite/database"
 import type { AuthUser, User } from "@/lib/types"
 
 interface AuthContextType {
@@ -27,10 +27,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (result.success && result.user) {
         setUser(result.user as AuthUser)
 
-        // Fetch user profile
         const profileResult = await getUserProfile(result.user.$id)
         if (profileResult.success && profileResult.profile) {
-          setProfile(profileResult.profile as unknown as User)
+          setProfile(profileResult.profile as User)
+        } else {
+          // Profile doesn't exist, create it for existing users
+          console.log("[v0] Profile not found, creating new profile for existing user")
+          const username = result.user.email.split("@")[0]
+          const createResult = await createUserProfile(result.user.$id, {
+            name: result.user.name,
+            username,
+            email: result.user.email,
+            accountId: result.user.$id,
+          })
+
+          if (createResult.success && createResult.profile) {
+            setProfile(createResult.profile as User)
+          }
         }
       }
     } catch (error) {
@@ -46,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const profileResult = await getUserProfile(user.$id)
       if (profileResult.success && profileResult.profile) {
-        setProfile(profileResult.profile as unknown as User)
+        setProfile(profileResult.profile as User)
       }
     } catch (error) {
       console.error("Failed to refresh profile:", error)

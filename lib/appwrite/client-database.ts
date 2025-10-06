@@ -1,10 +1,17 @@
-"use server"
-
 import { databases, DATABASE_ID, COLLECTIONS } from "./config"
 import { ID, Query } from "appwrite"
 
-// User Profile Operations
-export async function createUserProfile(
+// Client-side User Profile Operations
+export async function clientGetUserProfile(userId: string) {
+  try {
+    const profile = await databases.getDocument(DATABASE_ID, COLLECTIONS.USERS, userId)
+    return { success: true, profile }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientCreateUserProfile(
   userId: string,
   data: {
     name: string
@@ -25,16 +32,7 @@ export async function createUserProfile(
   }
 }
 
-export async function getUserProfile(userId: string) {
-  try {
-    const profile = await databases.getDocument(DATABASE_ID, COLLECTIONS.USERS, userId)
-    return { success: true, profile }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
-
-export async function updateUserProfile(userId: string, data: any) {
+export async function clientUpdateUserProfile(userId: string, data: any) {
   try {
     const profile = await databases.updateDocument(DATABASE_ID, COLLECTIONS.USERS, userId, data)
     return { success: true, profile }
@@ -43,8 +41,29 @@ export async function updateUserProfile(userId: string, data: any) {
   }
 }
 
-// Group Operations
-export async function createGroup(data: {
+// Client-side Group Operations
+export async function clientGetGroups(limit = 50) {
+  try {
+    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [
+      Query.limit(limit),
+      Query.orderDesc("createdAt"),
+    ])
+    return { success: true, groups: groups.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientGetGroup(groupId: string) {
+  try {
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+    return { success: true, group }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientCreateGroup(data: {
   name: string
   description: string
   subject: string
@@ -77,28 +96,7 @@ export async function createGroup(data: {
   }
 }
 
-export async function getGroups(limit = 50) {
-  try {
-    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [
-      Query.limit(limit),
-      Query.orderDesc("createdAt"),
-    ])
-    return { success: true, groups: groups.documents }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
-
-export async function getGroup(groupId: string) {
-  try {
-    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
-    return { success: true, group }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
-
-export async function searchGroups(searchTerm: string) {
+export async function clientSearchGroups(searchTerm: string) {
   try {
     const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [Query.search("name", searchTerm)])
     return { success: true, groups: groups.documents }
@@ -107,8 +105,8 @@ export async function searchGroups(searchTerm: string) {
   }
 }
 
-// Group Membership Operations
-export async function joinGroup(groupId: string, userId: string) {
+// Client-side Group Membership Operations
+export async function clientJoinGroup(groupId: string, userId: string) {
   try {
     const membership = await databases.createDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, ID.unique(), {
       groupId,
@@ -123,7 +121,7 @@ export async function joinGroup(groupId: string, userId: string) {
   }
 }
 
-export async function getUserGroups(userId: string) {
+export async function clientGetUserGroups(userId: string) {
   try {
     const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
       Query.equal("userId", userId),
@@ -131,7 +129,7 @@ export async function getUserGroups(userId: string) {
 
     // Fetch full group details for each membership
     const groupPromises = memberships.documents.map(async (membership: any) => {
-      const groupResult = await getGroup(membership.groupId)
+      const groupResult = await clientGetGroup(membership.groupId)
       return {
         ...groupResult.group,
         membershipStatus: membership.status,
@@ -146,7 +144,7 @@ export async function getUserGroups(userId: string) {
   }
 }
 
-export async function getSavedGroups(userId: string) {
+export async function clientGetSavedGroups(userId: string) {
   try {
     const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
       Query.equal("userId", userId),
@@ -154,7 +152,7 @@ export async function getSavedGroups(userId: string) {
     ])
 
     const groupPromises = memberships.documents.map(async (membership: any) => {
-      const groupResult = await getGroup(membership.groupId)
+      const groupResult = await clientGetGroup(membership.groupId)
       return groupResult.group
     })
 
@@ -165,8 +163,8 @@ export async function getSavedGroups(userId: string) {
   }
 }
 
-// Message Operations
-export async function sendMessage(groupId: string, userId: string, content: string) {
+// Client-side Message Operations
+export async function clientSendMessage(groupId: string, userId: string, content: string) {
   try {
     const message = await databases.createDocument(DATABASE_ID, COLLECTIONS.MESSAGES, ID.unique(), {
       groupId,
@@ -180,7 +178,7 @@ export async function sendMessage(groupId: string, userId: string, content: stri
   }
 }
 
-export async function getMessages(groupId: string, limit = 50) {
+export async function clientGetMessages(groupId: string, limit = 50) {
   try {
     const messages = await databases.listDocuments(DATABASE_ID, COLLECTIONS.MESSAGES, [
       Query.equal("groupId", groupId),

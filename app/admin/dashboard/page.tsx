@@ -8,12 +8,15 @@ import { useAdminStats } from "@/lib/hooks/use-admin"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, UsersRound, CircleAlert } from "lucide-react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { useAuth } from "@/lib/context/auth-context"
 
 export default function AdminDashboardPage() {
   const router = useRouter()
   const { data: stats, isLoading } = useAdminStats()
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [user, setUser] = useState<any>(null)
+    const { profile } = useAuth()
+
 
   useEffect(() => {
     async function checkAuth() {
@@ -43,7 +46,7 @@ export default function AdminDashboardPage() {
       <main className="flex-1 px-20 pt-10">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-green">Welcome back, {user?.name || "Admin"}</p>
+          <p className="text-green">Welcome back, {profile?.name || "Admin"}</p>
         </div>
 
         {isLoading ? (

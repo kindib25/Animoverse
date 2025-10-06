@@ -2,6 +2,7 @@ export interface User {
   $id: string
   name: string
   username: string
+  accountId: string
   email: string
   grade?: string
   subjects?: string[]
@@ -10,7 +11,7 @@ export interface User {
   avatarUrl?: string
   $createdAt?: string
   followers?: number
-  following?: number
+  following?: number  
   creates?: number
   $updatedAt?: string
 }
