@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Users, Sparkles } from "lucide-react"
 import Link from "next/link"
-import { getUserGroups } from "@/lib/appwrite/database"
+import { getAllGroups } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useRouter } from "next/navigation"
 
@@ -23,10 +23,10 @@ export default function DashboardPage() {
         return
       }
 
-      const groupsResult = await getUserGroups(userResult.user.$id)
+      const groupsResult = await getAllGroups();
 
-      if (groupsResult.success) {
-        setGroups(groupsResult.groups ?? [])
+    if (groupsResult.success) {
+      setGroups(groupsResult.groups ?? []);
       }
 
       setIsLoading(false)
@@ -77,9 +77,6 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-muted-foreground">
-                You're in {groups.length} group{groups.length !== 1 ? "s" : ""}
-              </p>
               <div className="grid gap-4 md:grid-cols-2">
                 {groups.map((group) => (
                   <Link

@@ -88,6 +88,16 @@ export async function getGroups(limit = 50) {
   }
 }
 
+export async function getAllGroups() {
+  try {
+    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS)
+    return { success: true, groups: groups.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+
 export async function getGroup(groupId: string) {
   try {
     const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)

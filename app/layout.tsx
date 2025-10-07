@@ -8,6 +8,8 @@ import "./globals.css"
 import { QueryProvider } from "@/lib/providers/query-provider"
 import { AuthProvider } from "@/lib/context/auth-context"
 import { Toaster } from "@/components/ui/toaster"
+import Stream from "stream"
+import { StreamProvider } from "@/lib/context/stream-context"
 
 // Load Space Mono font once
 const spaceMono = Space_Mono({
@@ -32,7 +34,9 @@ export default function RootLayout({
         {/* ✅ Wrap children inside QueryProvider */}
         <QueryProvider>
           <AuthProvider>
+            <StreamProvider>
             <Suspense fallback={null}>{children}</Suspense>
+            </StreamProvider>
           </AuthProvider>
         </QueryProvider>
 

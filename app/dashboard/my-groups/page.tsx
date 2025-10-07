@@ -68,6 +68,10 @@ export default function MyGroupsPage() {
           </div>
         </div>
 
+        <p className="text-muted-foreground">
+          You're in {groups.length} group{groups.length !== 1 ? "s" : ""}
+        </p>
+
         {groups.length === 0 ? (
           <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
@@ -100,41 +104,42 @@ export default function MyGroupsPage() {
                     : "bg-blue-500"
 
               return (
-                <Card key={group.$id} className="relative">
-                  <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${statusColor}`} />
-                  <CardHeader>
-                    <div>
-                      <h3 className="font-semibold text-lg pr-6">{group.name}</h3>
-                      <Badge variant="secondary" className="mt-2">
-                        {group.subject}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground line-clamp-2">{group.description}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{group.schedule}</span>
-                    </div>
-                    {group.teacher && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <BookOpen className="h-4 w-4" />
-                        <span>{group.teacher}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      <span>
-                        {group.memberCount || 0}/{group.maxMembers || 15} members
-                      </span>
-                    </div>
-                    {group.membershipStatus === "approved" && (
-                      <Button asChild className="w-full mt-4">
-                        <Link href={`/dashboard/groups/${group.$id}`}>View Group</Link>
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
+                <div>
+                  {group.membershipStatus === "approved" && (
+                    <Link href={`/dashboard/groups/${group.$id}`}>
+                      <Card key={group.$id} className="relative">
+                        <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${statusColor}`} />
+                        <CardHeader>
+                          <div>
+                            <h3 className="font-semibold text-lg pr-6">{group.name}</h3>
+                            <Badge variant="secondary" className="mt-2">
+                              {group.subject}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <p className="text-sm text-muted-foreground line-clamp-2">{group.description}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>{group.schedule}</span>
+                          </div>
+                          {group.teacher && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <BookOpen className="h-4 w-4" />
+                              <span>{group.teacher}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-4 w-4" />
+                            <span>
+                              {group.memberCount || 0}/{group.maxMembers || 15} members
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  )}
+                </div>
               )
             })}
           </div>
