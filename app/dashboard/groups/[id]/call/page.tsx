@@ -43,7 +43,7 @@ export default function VideoCallPage() {
   }, [videoClient, isReady, groupId])
 
   const handleLeaveCall = async () => {
-    if (call) {
+    if (call && call.active) {
       await call.leave()
       setIsCallActive(false)
     }
