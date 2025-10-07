@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/context/auth-context"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { getUserProfile } from "@/lib/appwrite/database"
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 
 const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
@@ -20,10 +23,37 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { profile, logout } = useAuth()
+  const { logout } = useAuth()
   const router = useRouter()
 
-   const handleLogout = async () => {
+  const [profile, setProfile] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadUserProfile() {
+      try {
+        const userResult = await clientGetCurrentUser()
+        if (!userResult?.success || !userResult?.user) {
+          router.push("/login")
+          return
+        }
+
+        const profileResult = await getUserProfile(userResult.user.$id)
+        if (profileResult?.success && profileResult?.profile) {
+          setProfile(profileResult.profile)
+        }
+      } catch (error) {
+        console.error("Error loading sidebar profile:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadUserProfile()
+  }, [router])
+
+
+  const handleLogout = async () => {
     try {
       await logout()
       router.push("/login")

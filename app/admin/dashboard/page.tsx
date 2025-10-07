@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
   const { data: stats, isLoading } = useAdminStats()
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [user, setUser] = useState<any>(null)
-    const { profile } = useAuth()
+  const { profile } = useAuth()
 
 
   useEffect(() => {

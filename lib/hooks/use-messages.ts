@@ -68,6 +68,7 @@ export function useSendMessage(groupId: string) {
             content: newMessage.content,
             userId: newMessage.userId,
             groupId,
+            createdAt: new Date().toISOString(),
           },
         ]
       })

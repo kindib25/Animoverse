@@ -2,18 +2,17 @@ export interface User {
   $id: string
   name: string
   username: string
-  accountId: string
   email: string
+  userType: "student" | "teacher" | "admin"
   grade?: string
   subjects?: string[]
   studyPreferences?: string[]
   bio?: string
   avatarUrl?: string
-  $createdAt?: string
+  createdAt?: string
   followers?: number
-  following?: number  
+  following?: number
   creates?: number
-  $updatedAt?: string
 }
 
 export interface Group {
@@ -29,7 +28,7 @@ export interface Group {
   memberCount: number
   maxMembers: number
   $createdAt: string
-  $updatedAt: string
+  status?: "pending" | "approved" | "rejected"
 }
 
 export interface GroupMember {
@@ -39,8 +38,6 @@ export interface GroupMember {
   status: "pending" | "approved" | "rejected"
   role: "creator" | "admin" | "member"
   joinedAt: string
-  $updatedAt: string
-  $createdAt: string
 }
 
 export interface Message {
@@ -50,8 +47,6 @@ export interface Message {
   content: string
   createdAt: string
   user?: User
-  $createdAt: string
-  $updatedAt: string
 }
 
 export interface GroupWithMembership extends Group {
@@ -63,4 +58,50 @@ export interface AuthUser {
   $id: string
   name: string
   email: string
+}
+
+export interface CallSession {
+  $id: string
+  groupId: string
+  startTime: string
+  endTime?: string
+  duration?: number
+  participants: string[]
+  createdAt: string
+}
+
+export interface Attendance {
+  $id: string
+  userId: string
+  groupId: string
+  sessionId: string
+  joinedAt: string
+  leftAt?: string
+  duration?: number
+}
+
+export interface Report {
+  $id: string
+  type: "user" | "group" | "session"
+  targetId: string
+  reportedBy: string
+  reason: string
+  status: "pending" | "reviewed" | "resolved"
+  createdAt: string
+}
+
+export interface GroupStats {
+  groupId: string
+  rank: number
+  sessionCount: number
+  totalUptime: number
+  averageAttendance: number
+}
+
+export interface UserStats {
+  userId: string
+  attendance: number
+  accountStatus: "healthy" | "needs-improvement" | "at-risk"
+  sessionCount: number
+  lastActive: string
 }

@@ -2,7 +2,7 @@
 
 import { account } from "./config"
 import { ID } from "appwrite"
-import { createUserProfile } from "./database"
+import { clientCreateUserProfile } from "./client-database"
 
 export async function clientLogin(email: string, password: string) {
   try {
@@ -19,7 +19,7 @@ export async function clientSignup(email: string, password: string, name: string
 
     // Create profile in database
     const username = email.split("@")[0] // Generate username from email
-    await createUserProfile(user.$id, {
+    await clientCreateUserProfile(user.$id, {
       name,
       username,
       email,

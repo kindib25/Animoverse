@@ -20,3 +20,5 @@ export const COLLECTIONS = {
   MESSAGES: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_MESSAGES ?? "",
   // Add more collections as needed
 };
+
+export { client }

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { clientGetCurrentUser, clientLogout } from "@/lib/appwrite/client-auth"
-import { getUserProfile, createUserProfile } from "@/lib/appwrite/database"
+import { clientGetUserProfile, clientCreateUserProfile } from "@/lib/appwrite/client-database"
 import type { AuthUser, User } from "@/lib/types"
 
 interface AuthContextType {
@@ -27,14 +27,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (result.success && result.user) {
         setUser(result.user as AuthUser)
 
-        const profileResult = await getUserProfile(result.user.$id)
+        const profileResult = await clientGetUserProfile(result.user.$id)
         if (profileResult.success && profileResult.profile) {
-          setProfile(profileResult.profile as User)
+          setProfile(profileResult.profile as unknown as User)
         } else {
-          // Profile doesn't exist, create it for existing users
           console.log("[v0] Profile not found, creating new profile for existing user")
           const username = result.user.email.split("@")[0]
-          const createResult = await createUserProfile(result.user.$id, {
+          const createResult = await clientCreateUserProfile(result.user.$id, {
             name: result.user.name,
             username,
             email: result.user.email,
@@ -42,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           })
 
           if (createResult.success && createResult.profile) {
-            setProfile(createResult.profile as User)
+            setProfile(createResult.profile as unknown as User)
           }
         }
       }
@@ -57,9 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return
 
     try {
-      const profileResult = await getUserProfile(user.$id)
+      const profileResult = await clientGetUserProfile(user.$id)
       if (profileResult.success && profileResult.profile) {
-        setProfile(profileResult.profile as User)
+        setProfile(profileResult.profile as unknown as User)
       }
     } catch (error) {
       console.error("Failed to refresh profile:", error)
