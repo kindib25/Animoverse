@@ -59,7 +59,6 @@ export async function createGroup(data: {
       ...data,
       memberCount: 1,
       maxMembers: 15,
-      createdAt: new Date().toISOString(),
     })
 
     // Add creator as first member
