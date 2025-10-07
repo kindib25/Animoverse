@@ -26,7 +26,7 @@ export default function GroupChatPage() {
       try {
         const newChannel = chatClient.channel("messaging", groupId, {
           name: group?.name || `Group ${groupId}`,
-        })
+        } as any)
 
         await newChannel.watch()
         setChannel(newChannel)
@@ -44,7 +44,7 @@ export default function GroupChatPage() {
     }
   }, [chatClient, isReady, groupId, group?.name])
 
-  if (!isReady || !channel) {
+  if (!isReady || !channel || !chatClient) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">

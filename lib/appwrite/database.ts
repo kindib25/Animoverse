@@ -59,6 +59,7 @@ export async function createGroup(data: {
       ...data,
       memberCount: 1,
       maxMembers: 15,
+      createdAt: new Date().toISOString(),
     })
 
     // Add creator as first member
@@ -87,16 +88,6 @@ export async function getGroups(limit = 50) {
     return { success: false, error: error.message }
   }
 }
-
-export async function getAllGroups() {
-  try {
-    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS)
-    return { success: true, groups: groups.documents }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
-
 
 export async function getGroup(groupId: string) {
   try {
@@ -127,6 +118,84 @@ export async function joinGroup(groupId: string, userId: string) {
       joinedAt: new Date().toISOString(),
     })
     return { success: true, membership }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function checkMembershipStatus(groupId: string, userId: string) {
+  try {
+    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
+      Query.equal("groupId", groupId),
+      Query.equal("userId", userId),
+    ])
+
+    if (memberships.documents.length > 0) {
+      const membership = memberships.documents[0]
+      return {
+        success: true,
+        hasMembership: true,
+        status: membership.status,
+        role: membership.role,
+      }
+    }
+
+    return { success: true, hasMembership: false }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getPendingMembershipRequests(groupId: string) {
+  try {
+    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
+      Query.equal("groupId", groupId),
+      Query.equal("status", "pending"),
+      Query.orderDesc("joinedAt"),
+    ])
+
+    // Fetch user details for each pending request
+    const requestPromises = memberships.documents.map(async (membership: any) => {
+      const userResult = await getUserProfile(membership.userId)
+      return {
+        membershipId: membership.$id,
+        user: userResult.profile,
+        requestedAt: membership.joinedAt,
+      }
+    })
+
+    const requests = await Promise.all(requestPromises)
+    return { success: true, requests }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function approveMembershipRequest(membershipId: string, groupId: string) {
+  try {
+    // Update membership status
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId, {
+      status: "approved",
+    })
+
+    // Increment group member count
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
+      memberCount: (group.memberCount || 0) + 1,
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function rejectMembershipRequest(membershipId: string) {
+  try {
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId, {
+      status: "rejected",
+    })
+    return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
   }
@@ -169,6 +238,15 @@ export async function getSavedGroups(userId: string) {
 
     const groups = await Promise.all(groupPromises)
     return { success: true, groups }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getAllGroups() {
+  try {
+    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS)
+    return { success: true, groups: groups.documents }
   } catch (error: any) {
     return { success: false, error: error.message }
   }

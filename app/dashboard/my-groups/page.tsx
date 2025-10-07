@@ -104,10 +104,10 @@ export default function MyGroupsPage() {
                     : "bg-blue-500"
 
               return (
-                <div>
+                <div key={group.$id}>
                   {group.membershipStatus === "approved" && (
                     <Link href={`/dashboard/groups/${group.$id}`}>
-                      <Card key={group.$id} className="relative">
+                      <Card  className="relative">
                         <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${statusColor}`} />
                         <CardHeader>
                           <div>

@@ -7,8 +7,8 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, ArrowLeft } from "lucide-react"
-import { getGroup, joinGroup } from "@/lib/appwrite/database"
+import { Calendar, Users, ArrowLeft, MessageSquare, Phone } from "lucide-react"
+import { getGroup, joinGroup, checkMembershipStatus } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -18,16 +18,22 @@ export default function GroupDetailPage() {
   const { toast } = useToast()
   const [group, setGroup] = useState<any>(null)
   const [userId, setUserId] = useState<string>("")
+  const [membershipStatus, setMembershipStatus] = useState<string | null>(null)
+  const [membershipRole, setMembershipRole] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
 
   useEffect(() => {
     async function loadGroup() {
       const userResult = await clientGetCurrentUser()
+      if (userResult.success && userResult.user) {
+        setUserId(userResult.user.$id)
 
-      if (!userResult.success || !userResult.user) {
-        router.push("/login")
-        return
+        const statusResult = await checkMembershipStatus(params.id as string, userResult.user.$id)
+        if (statusResult.success && statusResult.hasMembership) {
+          setMembershipStatus(statusResult.status)
+          setMembershipRole(statusResult.role)
+        }
       }
 
       const result = await getGroup(params.id as string)
@@ -61,14 +67,15 @@ export default function GroupDetailPage() {
     const result = await joinGroup(group.$id, userId)
 
     if (result.success) {
+      setMembershipStatus("pending")
       toast({
         title: "Request sent!",
-        description: "Your request to join the group has been sent.",
+        description: "Your request to join the group has been sent to the creator.",
       })
     } else {
       toast({
         title: "Error",
-        description: result.error || "Failed to join group.",
+        description: result.error || "Failed to send join request.",
         variant: "destructive",
       })
     }
@@ -91,16 +98,21 @@ export default function GroupDetailPage() {
         <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
           <p className="text-muted-foreground">Group not found.</p>
           <Button asChild>
-            <Link href="/dashboard/explore">Browse Groups</Link>
+            <Link href="/dashboard">Back to Home</Link>
           </Button>
         </div>
       </DashboardLayout>
     )
   }
 
+  const isCreator = membershipRole === "creator"
+  const isMember = membershipStatus === "approved"
+  const isPending = membershipStatus === "pending"
+  const isRejected = membershipStatus === "rejected"
+
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6 px-4">
         <Button variant="ghost" asChild>
           <Link href="/dashboard">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -135,7 +147,7 @@ export default function GroupDetailPage() {
                   <div className="flex items-center gap-4 text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
-                      <span>Schedule: {group.schedule}</span>
+                      <span>{group.schedule}</span>
                     </div>
                   </div>
                   <Badge>{group.subject}</Badge>
@@ -155,15 +167,46 @@ export default function GroupDetailPage() {
               )}
 
               <div className="flex gap-3">
-                <Button className="flex-1" onClick={handleJoinGroup} disabled={isJoining}>
-                  {isJoining ? "Sending request..." : "Request Join"}
-                </Button>
-                <Button variant="outline" asChild className="bg-transparent">
-                  <Link href={`/dashboard/groups/${group.$id}/chat`}>
-                    <Users className="mr-2 h-4 w-4" />
-                    Chat
-                  </Link>
-                </Button>
+                {!membershipStatus && (
+                  <Button className="flex-1" onClick={handleJoinGroup} disabled={isJoining}>
+                    {isJoining ? "Sending request..." : "Request to Join"}
+                  </Button>
+                )}
+
+                {isPending && (
+                  <Button className="flex-1" disabled variant="secondary">
+                    Request Pending
+                  </Button>
+                )}
+
+                {isRejected && (
+                  <Button className="flex-1" disabled variant="destructive">
+                    Request Rejected
+                  </Button>
+                )}
+
+                {(isMember || isCreator) && (
+                  <>
+                    <Button asChild className="flex-1">
+                      <Link href={`/dashboard/groups/${group.$id}/chat`}>
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        Chat
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="text-white">
+                      <Link href={`/dashboard/groups/${group.$id}/call`}>
+                        <Phone className="mr-2 h-4 w-4" />
+                        Call
+                      </Link>
+                    </Button>
+                  </>
+                )}
+
+                {isCreator && (
+                  <Button asChild variant="secondary">
+                    <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
