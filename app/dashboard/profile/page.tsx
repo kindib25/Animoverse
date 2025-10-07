@@ -85,6 +85,7 @@ export default function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
 
+
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold">{profile?.name || "User"}</h1>
                 <p className="text-muted-foreground">@{profile?.username || "username"}</p>
