@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { studentLoginSchema, type StudentLoginInput } from "@/lib/schemas/student"
+import { clientGetUserProfile } from "@/lib/appwrite/client-database"
 
 export function LoginForm() {
   const router = useRouter()
@@ -32,12 +33,34 @@ export function LoginForm() {
 
     const result = await clientLogin(data.email, data.password)
 
-    if (result.success) {
-      toast({
-        title: "Welcome back!",
-        description: "You've successfully logged in.",
-      })
-      router.push("/dashboard")
+   if (result.success && result.session) {
+      const userResult = await clientGetUserProfile(result.session.userId)
+
+      if (userResult.success && userResult.profile) {
+        const userType = (userResult.profile as any).userType
+
+        if (userType === "teacher" || userType === "admin") {
+          // Redirect teachers to admin portal
+          toast({
+            title: "Welcome back!",
+            description: "Redirecting to teacher portal...",
+          })
+          router.push("/admin/dashboard")
+        } else {
+          // Students go to regular dashboard
+          toast({
+            title: "Welcome back!",
+            description: "You've successfully logged in.",
+          })
+          router.push("/dashboard")
+        }
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You've successfully logged in.",
+        })
+        router.push("/dashboard")
+      }
     } else {
       toast({
         title: "Login failed",

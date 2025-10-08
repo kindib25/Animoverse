@@ -13,17 +13,23 @@ export async function clientLogin(email: string, password: string) {
   }
 }
 
-export async function clientSignup(email: string, password: string, name: string) {
+export async function clientSignup(
+  email: string,
+  password: string,
+  name: string,
+  userType: "student" | "teacher" | "admin" = "student",
+) {
   try {
     const user = await account.create(ID.unique(), email, password, name)
 
-    // Create profile in database
+    // Create profile in database with userType
     const username = email.split("@")[0] // Generate username from email
     await clientCreateUserProfile(user.$id, {
       name,
       username,
       email,
       accountId: user.$id,
+      userType, // Include userType in profile creation
     })
 
     // Auto login after signup

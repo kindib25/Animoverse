@@ -5,6 +5,9 @@ import { Sidebar } from "./sidebar"
 import { TopCreators } from "./top-creators"
 import { usePathname } from "next/navigation"
 import { use } from "react"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/context/auth-context"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -20,6 +23,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     "/dashboard/create-group",
   ].includes(pathname)
 
+  const router = useRouter()
+  const { profile, isLoading } = useAuth()
+  
+ 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  
   return (
     <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
       <Sidebar />

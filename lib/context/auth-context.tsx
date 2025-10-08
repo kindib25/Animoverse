@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username,
             email: result.user.email,
             accountId: result.user.$id,
+            userType: "student",
           })
 
           if (createResult.success && createResult.profile) {

@@ -18,6 +18,7 @@ export async function clientCreateUserProfile(
     username: string
     email: string
     accountId: string
+    userType: "student" | "teacher" | "admin"
     grade?: string
     subjects?: string[]
     studyPreferences?: string[]

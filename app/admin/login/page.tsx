@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { teacherLoginSchema, type TeacherLoginInput } from "@/lib/schemas/teacher"
+import { clientGetUserProfile } from "@/lib/appwrite/client-database" // Import to check user role
 import { clientLogin } from "@/lib/appwrite/client-auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,18 +32,41 @@ export default function AdminLoginPage() {
     try {
       const result = await clientLogin(data.email, data.password)
 
-      if (result.success) {
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully logged in.",
-        })
-        router.push("/admin/dashboard")
+      if (result.success && result.session) {
+
+        const userResult = await clientGetUserProfile(result.session.userId)
+        if (userResult.success && userResult.profile) {
+          const userType = (userResult.profile as any).userType
+
+          if (userType === "teacher" || userType === "admin") {
+            toast({
+              title: "Welcome back!",
+              description: "You've successfully logged in.",
+            })
+            router.push("/admin/dashboard")
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Access denied",
+              description: "Only teachers can access this portal.",
+            })
+            const { clientLogout } = await import("@/lib/appwrite/client-auth")
+            await clientLogout()
+          }
+        } else {
+          toast({
+            title: "Login failed",
+            description: "Unable to verify user permissions",
+          })
+          const { clientLogout } = await import("@/lib/appwrite/client-auth")
+            await clientLogout()
+        }
       } else {
         toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: result.error || "Please check your credentials and try again.",
-        })
+            variant: "destructive",
+            title: "Login failed",
+            description: result.error || "Please check your credentials and try again.",
+          })
       }
     } catch (err) {
       toast({
@@ -54,6 +78,7 @@ export default function AdminLoginPage() {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="flex min-h-screen">
