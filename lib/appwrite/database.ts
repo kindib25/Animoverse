@@ -54,12 +54,13 @@ export async function createGroup(data: {
   studyPreferences: string[]
   creatorId: string
   imageUrl?: string
+  maxMembers?: number
 }) {
   try {
     const group = await databases.createDocument(DATABASE_ID, COLLECTIONS.GROUPS, ID.unique(), {
       ...data,
       memberCount: 1,
-      maxMembers: 15,
+      maxMembers: data.maxMembers || 15,
     })
 
     // Add creator as first member

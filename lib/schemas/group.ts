@@ -16,6 +16,7 @@ export const createGroupSchema = z.object({
   endTime: z.string().nonempty("End time is required"),
   teacher: z.string().min(1, "Please select a teacher"),
   studyPreferences: z.array(z.string()).min(1, "Select at least one study preference"),
+  maxMembers: z.number().min(2, "Minimum of 2 members").max(50, "Maximum of 50 members").optional(),
 })
 
 export type CreateGroupInput = z.infer<typeof createGroupSchema>

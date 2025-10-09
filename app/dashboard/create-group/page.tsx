@@ -64,6 +64,7 @@ export default function CreateGroupPage() {
         teacher: data.teacher,
         studyPreferences: data.studyPreferences,
         creatorId: userResult.user ? userResult.user.$id : "",
+        maxMembers: data.maxMembers || 15,
       })
 
       if (!result.success) {
@@ -201,6 +202,14 @@ export default function CreateGroupPage() {
                   </Select>
                   {errors.teacher && <p className="text-sm text-destructive">{errors.teacher.message}</p>}
                 </div>
+
+                 <div className="space-y-2">
+                  <Label htmlFor="maxMembers">Maximum Members</Label>
+                  <Input id="maxMembers" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
+
+                  {errors.maxMembers && <p className="text-sm text-destructive">{errors.maxMembers.message}</p>}
+                </div>
+
                 <div className="space-y-3">
                   <Label>Study Preferences</Label>
                   <div className="space-y-2">

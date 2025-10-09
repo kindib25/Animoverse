@@ -3,7 +3,7 @@ export interface User {
   name: string
   username: string
   email: string
-  userType: "student" | "teacher" | "admin"
+  userType?: "student" | "teacher" | "admin"
   grade?: string
   subjects?: string[]
   studyPreferences?: string[]
@@ -22,6 +22,7 @@ export interface Group {
   subject: string
   schedule: string
   teacher?: string
+  teacherId: string
   studyPreferences: string[]
   creatorId: string
   imageUrl?: string

@@ -87,6 +87,7 @@ export default function DashboardPage() {
                     <h3 className="font-semibold">{group.name}</h3>
                     <p className="text-sm text-muted-foreground mt-1">{group.subject}</p>
                     <p className="text-sm text-muted-foreground">{group.schedule}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{group.memberCount}/{group.maxMembers}</p>
                   </Link>
                 ))}
               </div>

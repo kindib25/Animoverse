@@ -63,6 +63,15 @@ export default function GroupDetailPage() {
       return
     }
 
+    if (group.memberCount >= group.maxMembers) {
+      toast({
+        title: "Group Full",
+        description: "This group has reached the maximum number of members.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsJoining(true)
     const result = await joinGroup(group.$id, userId)
 
@@ -168,8 +177,16 @@ export default function GroupDetailPage() {
 
               <div className="flex gap-3">
                 {!membershipStatus && (
-                  <Button className="flex-1" onClick={handleJoinGroup} disabled={isJoining}>
-                    {isJoining ? "Sending request..." : "Request to Join"}
+                  <Button
+                    className="flex-1"
+                    onClick={handleJoinGroup}
+                    disabled={isJoining || group.memberCount >= group.maxMembers}
+                  >
+                    {group.memberCount >= group.maxMembers
+                      ? "Group Full"
+                      : isJoining
+                        ? "Sending request..."
+                        : "Request to Join"}
                   </Button>
                 )}
 
