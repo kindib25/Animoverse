@@ -280,3 +280,38 @@ export async function getMessages(groupId: string, limit = 50) {
     return { success: false, error: error.message }
   }
 }
+
+// Additional Group Operations
+export async function getPendingGroups() {
+  try {
+    const groups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [
+      Query.equal("status", "pending"),
+      Query.orderDesc("createdAt"),
+    ])
+    return { success: true, groups: groups.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function approveGroup(groupId: string) {
+  try {
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
+      status: "approved",
+    })
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function rejectGroup(groupId: string) {
+  try {
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
+      status: "rejected",
+    })
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

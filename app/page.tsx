@@ -51,7 +51,7 @@ export default function HomePage() {
           <Link href="#" className="hover:text-green-400 transition-colors">
             Developer
           </Link>
-          
+
         </nav>
         <div className="flex items-center space-x-4">
           <Button asChild size="lg" className="cursor-pointer bg-tranparent text-white text-lg hover:text-background hover:bg-white transition font-mono">
@@ -74,16 +74,16 @@ export default function HomePage() {
             Connect with study partners and collaborate on your learning journey
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mb-16">
-            <Button className="shad-button_press">
-              <Link href="/admin/login">
-              <span className="text-xs tracking-widest opacity-70 font-semibold">
-                TEACHERS
-              </span>
-              <span className="flex items-center gap-1 text-lg font-bold">
-                Sign in <ArrowRightIcon className="w-5 h-5" />
-              </span>
-              </Link>
-            </Button>
+            <Link href="/admin/login">
+              <Button className="shad-button_press">
+                <span className="text-xs tracking-widest opacity-70 font-semibold">
+                  TEACHERS
+                </span>
+                <span className="flex items-center gap-1 text-lg font-bold">
+                  Sign in <ArrowRightIcon className="w-5 h-5" />
+                </span>
+              </Button>
+            </Link>
             <Link
               href="#"
               className="flex items-center gap-3 text-lg text-gray-300 hover:text-green-400 transition-colors font-normal"

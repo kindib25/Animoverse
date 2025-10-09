@@ -1,7 +1,29 @@
+"use client"
+
 import { LoginForm } from "@/components/auth/login-form"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
+import { useEffect, useState } from "react"
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  
+   useEffect(() => {
+    const checkUser = async () => {
+      const userResult = await clientGetCurrentUser()
+
+      if (userResult.success && userResult.user) {
+        router.push("/dashboard")
+      } 
+      setIsLoading(false)
+    }
+
+    checkUser()
+  }, [router])
+  
+
   return (
     <div className="relative flex min-h-screen">
       <div className="flex w-full flex-col items-center justify-center px-6 py-12 lg:w-1/2 lg:px-12">

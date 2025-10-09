@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,11 +12,40 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 
 export default function AdminLoginPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+
+   useEffect(() => {
+  async function checkAuth() {
+    const result = await clientGetCurrentUser()
+
+    if (result.success && result.user) {
+      const userResult = await clientGetUserProfile(result.user.$id)
+
+      if (userResult.success && userResult.profile) {
+        const userType = (userResult.profile as any).userType
+
+        if (userType === "teacher" || userType === "admin") {
+          router.push("/admin/dashboard")
+        } else {
+          router.push("/dashboard")
+        }
+      } else {
+        // Fallback if user profile not found
+        router.push("/admin/login")
+      }
+    } else {
+      setIsLoading(false)
+    }
+  }
+
+  checkAuth()
+}, [router])
+  
 
   const {
     register,
