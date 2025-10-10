@@ -103,3 +103,49 @@ export function useUpdateUserProfile(userId: string) {
     },
   })
 }
+
+export function TeacherAdminUpdateUserProfile(userId: string) {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: (data: any) => updateUserProfile(userId, data),
+    onMutate: async (newData) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: userKeys.detail(userId) })
+
+      // Snapshot previous value
+      const previousProfile = queryClient.getQueryData(userKeys.detail(userId))
+
+      // Optimistically update
+      queryClient.setQueryData(userKeys.detail(userId), (old: any) => ({
+        ...old,
+        ...newData,
+      }))
+
+      return { previousProfile }
+    },
+    onError: (error: Error, newData, context) => {
+      // Rollback on error
+      queryClient.setQueryData(userKeys.detail(userId), context?.previousProfile)
+
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile",
+        variant: "destructive",
+      })
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      })
+
+      router.push("/admin/profile")
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) })
+    },
+  })
+}

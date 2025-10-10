@@ -283,32 +283,32 @@ export async function getMessages(groupId: string, limit = 50) {
   }
 }
 
+
+
 // Additional Group Operations
 export async function getPendingGroups(teacherId?: string) {
   try {
     const queries = [
-      Query.equal("status", "pending"), // only get pending groups
-      Query.orderDesc("$createdAt"), // order by creation date descending
+      Query.equal("status", "pending"),
+      Query.orderDesc("$createdAt"),
     ]
 
-    // If teacherId is provided, filter by that specific teacher
     if (teacherId) {
       queries.push(Query.equal("teacherId", teacherId))
     }
 
     const groups = await databases.listDocuments(
       DATABASE_ID,
-      COLLECTIONS.GROUPS, // ✅ keeping your exact style
+      COLLECTIONS.GROUPS,
       queries
     )
 
     return { success: true, groups: groups.documents }
   } catch (error: any) {
-    console.error("Error fetching pending groups:", error)
-    return { success: false, error: error.message }
+    console.error("[getPendingGroups] Failed:", error?.message ?? error)
+    return { success: false, error: error?.message ?? "Unknown error" }
   }
 }
-
 export async function approveGroup(groupId: string) {
   try {
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {

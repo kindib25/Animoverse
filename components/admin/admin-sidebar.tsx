@@ -7,6 +7,10 @@ import { cn } from "@/lib/utils"
 import { LayoutDashboard, UsersRound, Calendar, FileText, LogOut, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
+import { getUserProfile } from "@/lib/appwrite/database"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -18,8 +22,35 @@ const navigation = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const { profile, logout } = useAuth()
+  const { logout } = useAuth()
   const router = useRouter()
+
+  const [profile, setProfile] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+      async function loadUserProfile() {
+        try {
+          const userResult = await clientGetCurrentUser()
+          if (!userResult?.success || !userResult?.user) {
+            router.push("/login")
+            return
+          }
+  
+          const profileResult = await getUserProfile(userResult.user.$id)
+          if (profileResult?.success && profileResult?.profile) {
+            setProfile(profileResult.profile)
+          }
+        } catch (error) {
+          console.error("Error loading sidebar profile:", error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+  
+      loadUserProfile()
+    }, [router])
+  
 
      const handleLogout = async () => {
     try {
@@ -60,14 +91,25 @@ export function AdminSidebar() {
         })}
       </nav>
 
+      {/* User profile + logout */}
       <div className="p-4 flex flex-col gap-3">
-        <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-primary-foreground">
-            {profile?.name?.[0] || "A"}
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium">{profile?.name || "Admin"}</p>
-            <p className="truncate text-xs text-muted-foreground">{profile?.email || "@admin.lsu.edu"}</p>
+        <Link
+          href="/admin/profile"
+          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors"
+        >
+          <Avatar className="text-background">
+            <AvatarImage src={profile?.avatarUrl || "/placeholder.svg?height=40&width=40"} />
+            <AvatarFallback className="bg-gray-300">
+              {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">
+              {profile?.name || "New User"}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              @{profile?.username || "newuser"}
+            </span>
           </div>
         </Link>
 
@@ -79,3 +121,5 @@ export function AdminSidebar() {
     </aside>
   )
 }
+
+

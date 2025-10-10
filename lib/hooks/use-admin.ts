@@ -4,13 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/constants/query-keys"
 import {
   getAllUsers,
-  getPendingGroups,
   updateGroupStatus,
   getTeacherGroups,
   getGroupMembers,
   getDashboardStats,
   searchUsers,
 } from "@/lib/appwrite/teacher-database"
+import { getPendingGroups } from "@/lib/appwrite/database"
 
 // Get dashboard statistics
 export function useAdminStats() {
@@ -37,14 +37,15 @@ export function useAllUsers(filters?: Record<string, any>) {
 }
 
 // Get pending groups
-export function usePendingGroups() {
+export function usePendingGroups(teacherId: string) {
   return useQuery({
-    queryKey: queryKeys.admin.pendingGroups(),
+    queryKey: ["pendingGroups", teacherId],
     queryFn: async () => {
-      const result = await getPendingGroups()
-      if (!result.success) throw new Error(result.error)
-      return result.groups
+      const { success, groups, error } = await getPendingGroups(teacherId)
+      if (!success) throw new Error(error || "Failed to load pending groups")
+      return groups
     },
+    enabled: !!teacherId, // avoid fetching with empty ID
   })
 }
 

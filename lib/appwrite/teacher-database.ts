@@ -56,22 +56,18 @@ export async function updateGroupStatus(groupId: string, status: "approved" | "r
 // Get groups assigned to a teacher
 export async function getTeacherGroups(teacherId: string) {
   try {
-    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
-      Query.equal("userId", teacherId),
-      Query.equal("role", ["creator", "admin"]),
-    ])
+    const groupsList = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTIONS.GROUPS,
+      [Query.equal("teacherId", teacherId), Query.equal("status", "approved")]
+    )
 
-    const groupPromises = memberships.documents.map(async (membership: any) => {
-      const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, membership.groupId)
-      return group
-    })
-
-    const groups = await Promise.all(groupPromises)
-    return { success: true, groups }
+    return { success: true, groups: groupsList.documents }
   } catch (error: any) {
     return { success: false, error: error.message }
   }
 }
+
 
 // Get group members with details
 export async function getGroupMembers(groupId: string) {
