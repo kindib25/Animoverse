@@ -16,14 +16,17 @@ import { createGroup } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 import { createGroupSchema, type CreateGroupInput } from "@/lib/schemas/group"
+import { clientGetAllTeachers } from "@/lib/appwrite/client-database"
+import { useEffect, useState } from "react"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
-const teachers = ["Mr. Kean Baba", "Ms. Roda Mae", "Mrs. Russel Ashley Kook"]
 
 export default function CreateGroupPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const [teachers, setTeachers] = useState<any[]>([])
+  const [isLoadingTeachers, setIsLoadingTeachers] = useState(true)
 
   const {
     register,
@@ -40,13 +43,26 @@ export default function CreateGroupPage() {
       startTime: "",
       endTime: "",
       teacher: "",
+      status: "",
+      teacherId: "",
       studyPreferences: [],
     },
   })
 
   const selectedPreferences = watch("studyPreferences")
   const subject = watch("subject")
-  const teacher = watch("teacher")
+  const selectedTeacher = watch("teacher")
+
+  useEffect(() => {
+    async function loadTeachers() {
+      const result = await clientGetAllTeachers()
+      if (result.success && result.teachers) {
+        setTeachers(result.teachers)
+      }
+      setIsLoadingTeachers(false)
+    }
+    loadTeachers()
+  }, [])
 
   const createGroupMutation = useMutation({
     mutationFn: async (data: CreateGroupInput) => {
@@ -62,6 +78,8 @@ export default function CreateGroupPage() {
         subject: data.subject,
         schedule: `${data.startTime} - ${data.endTime}`,
         teacher: data.teacher,
+        status: "pending",
+        teacherId: data.teacherId,
         studyPreferences: data.studyPreferences,
         creatorId: userResult.user ? userResult.user.$id : "",
         maxMembers: data.maxMembers || 15,
@@ -182,28 +200,36 @@ export default function CreateGroupPage() {
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="teacher">Teacher</Label>
+                  <Label htmlFor="teacher">Assigned Teacher</Label>
                   <Select
-                    value={watch("teacher")}
-                    onValueChange={(value) =>
-                      setValue("teacher", value, { shouldValidate: true })
-                    }
+                    value={selectedTeacher}
+                    onValueChange={(value) => {
+                      const selected = teachers.find((teacher) => teacher.name === value);
+                      setValue("teacher", value, { shouldValidate: true });
+                      if (selected) {
+                        setValue("teacherId", selected.$id, { shouldValidate: true });
+                      }
+                    }}
+                    disabled={isLoadingTeachers}
                   >
                     <SelectTrigger id="teacher">
-                      <SelectValue placeholder="Select teacher" />
+                      <SelectValue placeholder={isLoadingTeachers ? "Loading teachers..." : "Select a teacher"} />
                     </SelectTrigger>
                     <SelectContent>
                       {teachers.map((teacher) => (
-                        <SelectItem key={teacher} value={teacher}>
-                          {teacher}
+                        <SelectItem key={teacher.$id} value={teacher.name}>
+                          {teacher.name}
                         </SelectItem>
                       ))}
+                      {teachers.length === 0 && !isLoadingTeachers && (
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">No teachers available</div>
+                      )}
                     </SelectContent>
                   </Select>
                   {errors.teacher && <p className="text-sm text-destructive">{errors.teacher.message}</p>}
                 </div>
 
-                 <div className="space-y-2">
+                <div className="space-y-2">
                   <Label htmlFor="maxMembers">Maximum Members</Label>
                   <Input id="maxMembers" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
 

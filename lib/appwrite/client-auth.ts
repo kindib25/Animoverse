@@ -66,3 +66,6 @@ export async function clientUpdatePassword(oldPassword: string, newPassword: str
     return { success: false, error: error.message }
   }
 }
+
+
+export const getCurrentUser = clientGetCurrentUser

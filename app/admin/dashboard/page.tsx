@@ -88,6 +88,7 @@ export default function AdminDashboardPage() {
               </Card>
             </Link>
 
+            <Link href="/admin/groups/pending">
             <Card className="bg-green border-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-lg font-medium">Pending Approvals</CardTitle>
@@ -98,6 +99,7 @@ export default function AdminDashboardPage() {
                 <p className="text-sm">Awaiting review</p>
               </CardContent>
             </Card>
+            </Link>
           </div>
         )}
       </main>

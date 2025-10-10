@@ -191,3 +191,15 @@ export async function clientGetMessages(groupId: string, limit = 50) {
     return { success: false, error: error.message }
   }
 }
+
+export async function clientGetAllTeachers() {
+  try {
+    const teachers = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
+      Query.equal("userType", "teacher"),
+      Query.orderAsc("name"),
+    ])
+    return { success: true, teachers: teachers.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

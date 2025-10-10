@@ -76,7 +76,7 @@ export default function GroupDetailPage() {
     const result = await joinGroup(group.$id, userId)
 
     if (result.success) {
-      setMembershipStatus("pending")
+      setMembershipStatus("pending_join")
       toast({
         title: "Request sent!",
         description: "Your request to join the group has been sent to the creator.",
@@ -116,7 +116,7 @@ export default function GroupDetailPage() {
 
   const isCreator = membershipRole === "creator"
   const isMember = membershipStatus === "approved"
-  const isPending = membershipStatus === "pending"
+  const isPending = membershipStatus === "pending_join"
   const isRejected = membershipStatus === "rejected"
 
   return (

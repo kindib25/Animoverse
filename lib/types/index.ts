@@ -36,7 +36,7 @@ export interface GroupMember {
   $id: string
   groupId: string
   userId: string
-  status: "pending" | "approved" | "rejected"
+  status: "pending_join" | "approved" | "rejected"
   role: "creator" | "admin" | "member"
   joinedAt: string
 }

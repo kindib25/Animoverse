@@ -24,18 +24,18 @@ export default function AdminGroupsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="flex min-h-screen">
       <AdminSidebar />
 
-      <main className="flex-1 px-20 pt-10">
+      <main className="flex-1 p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Groups</h1>
-          <p className="text-green">Manage and monitor study groups</p>
+          <p className="text-muted-foreground">Manage and monitor study groups</p>
         </div>
 
         <Tabs defaultValue="assigned" className="space-y-6">
-          <TabsList className="mb-4 flex gap-5 p-5">
-            <TabsTrigger value="assigned" >Assigned Groups</TabsTrigger>
+          <TabsList>
+            <TabsTrigger value="assigned">Assigned Groups</TabsTrigger>
             <TabsTrigger value="pending">
               Pending Approval
               {pendingGroups && pendingGroups.length > 0 && (
