@@ -5,24 +5,43 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useEffect, useState } from "react"
+import { clientGetUserProfile } from "@/lib/appwrite/client-database"
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  
-   useEffect(() => {
-    const checkUser = async () => {
-      const userResult = await clientGetCurrentUser()
 
-      if (userResult.success && userResult.user) {
-        router.push("/dashboard")
-      } 
+ useEffect(() => {
+  const checkUser = async () => {
+    try {
+      const result = await clientGetCurrentUser()
+
+      if (result.success && result.user) {
+        const userResult = await clientGetUserProfile(result.user.$id)
+
+        if (userResult.success && userResult.profile) {
+          const userType = (userResult.profile as any).userType
+
+          if (userType === "teacher" || userType === "admin") {
+            router.push("/admin/dashboard")
+          } else {
+            router.push("/dashboard")
+          }
+          return // prevent continuing after redirect
+        }
+      }
+    } catch (error) {
+      console.error("Error checking user:", error)
+    } finally {
       setIsLoading(false)
     }
+  }
 
-    checkUser()
-  }, [router])
-  
+  checkUser()
+}, [router])
+
+
+
 
   return (
     <div className="relative flex min-h-screen">
@@ -31,7 +50,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
               <Link href="/">
-              <img src="/logoname.svg" alt="Logo"/>
+                <img src="/logoname.svg" alt="Logo" />
               </Link>
             </div>
           </div>
@@ -44,11 +63,11 @@ export default function LoginPage() {
           <LoginForm />
         </div>
       </div>
-       <img
-            src="/night-bg2.gif"
-            alt="side image"
-            className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat bg-gray-600"
-          />
+      <img
+        src="/night-bg2.gif"
+        alt="side image"
+        className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat bg-gray-600"
+      />
     </div>
   )
 }

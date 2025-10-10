@@ -5,21 +5,38 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useEffect, useState } from "react"
+import { clientGetUserProfile } from "@/lib/appwrite/client-database"
 
 export default function SignupPage() {
   const router = useRouter()
     const [isLoading, setIsLoading] = useState(true)
     
-     useEffect(() => {
+    useEffect(() => {
       const checkUser = async () => {
-        const userResult = await clientGetCurrentUser()
-  
-        if (userResult.success && userResult.user) {
-          router.push("/dashboard")
-        } 
-        setIsLoading(false)
+        try {
+          const result = await clientGetCurrentUser()
+    
+          if (result.success && result.user) {
+            const userResult = await clientGetUserProfile(result.user.$id)
+    
+            if (userResult.success && userResult.profile) {
+              const userType = (userResult.profile as any).userType
+    
+              if (userType === "teacher" || userType === "admin") {
+                router.push("/admin/dashboard")
+              } else {
+                router.push("/dashboard")
+              }
+              return // prevent continuing after redirect
+            }
+          }
+        } catch (error) {
+          console.error("Error checking user:", error)
+        } finally {
+          setIsLoading(false)
+        }
       }
-  
+    
       checkUser()
     }, [router])
 
