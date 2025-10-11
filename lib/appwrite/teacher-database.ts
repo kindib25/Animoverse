@@ -17,7 +17,7 @@ export async function getAllUsers(limit = 50) {
 }
 
 // Get pending groups for approval
-export async function getPendingGroups(teacherId?: string) {
+export async function getPendingGroups(teacherId: string) {
   try {
     const queries = [
       Query.equal("status", "pending"), // only get pending groups

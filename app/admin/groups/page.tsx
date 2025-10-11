@@ -11,7 +11,6 @@ import { Check, X, MessageSquare, Users } from "lucide-react"
 
 export default function AdminGroupsPage() {
   const { profile } = useAuth()
-  const userId = profile?.$id
   const { data: assignedGroups, isLoading: loadingAssigned } = useTeacherGroups(profile?.$id || "")
   const { data: pendingGroups, isLoading: loadingPending } = usePendingGroups(profile?.$id || "")
   const updateStatus = useUpdateGroupStatus()

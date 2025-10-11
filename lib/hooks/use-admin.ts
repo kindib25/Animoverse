@@ -5,12 +5,12 @@ import { queryKeys } from "@/lib/constants/query-keys"
 import {
   getAllUsers,
   updateGroupStatus,
+   getPendingGroups,
   getTeacherGroups,
   getGroupMembers,
   getDashboardStats,
   searchUsers,
 } from "@/lib/appwrite/teacher-database"
-import { getPendingGroups } from "@/lib/appwrite/database"
 
 // Get dashboard statistics
 export function useAdminStats() {
@@ -39,13 +39,13 @@ export function useAllUsers(filters?: Record<string, any>) {
 // Get pending groups
 export function usePendingGroups(teacherId: string) {
   return useQuery({
-    queryKey: ["pendingGroups", teacherId],
+    queryKey: queryKeys.admin.pendingGroups(),
     queryFn: async () => {
-      const { success, groups, error } = await getPendingGroups(teacherId)
-      if (!success) throw new Error(error || "Failed to load pending groups")
-      return groups
+      const result = await getPendingGroups(teacherId)
+      if (!result.success) throw new Error(result.error)
+      return result.groups
     },
-    enabled: !!teacherId, // avoid fetching with empty ID
+    enabled: !!teacherId,
   })
 }
 
