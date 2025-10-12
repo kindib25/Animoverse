@@ -112,7 +112,7 @@ export default function MyGroupsPage() {
               onClick={handleRestoreRemoved}
               className="text-sm p-5 bg-background text-white hover:text-background  hover:bg-green cursor-pointer"
             >
-              Rejected Join Request
+              Rejected
             </Button>
           )}
         </div>
@@ -150,6 +150,7 @@ export default function MyGroupsPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {visibleGroups.map((group) => {
               const isPendingApproval = group.status === "pending"
+              const isPendingRejected = group.status === "rejected"
               const isJoinRequestPending = group.membershipStatus === "pending_join"
               const isJoinRequestRejected = group.membershipStatus === "rejected"
               const isActive = group.membershipStatus === "approved" && group.status === "approved"
@@ -158,21 +159,22 @@ export default function MyGroupsPage() {
                 ? "bg-orange-500"
                 : isJoinRequestPending
                 ? "bg-yellow-500"
-                : isJoinRequestRejected
+                : isJoinRequestRejected || isPendingRejected
                 ? "bg-red-500"
                 : "bg-green-500"
 
-              const removeButton = isJoinRequestRejected && !removedGroupIds.includes(group.$id) && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-2 right-2 flex items-center gap-1 cursor-pointer"
-                  onClick={() => handleRemove(group.$id)}
-                >
-                  <X className="h-4 w-4" />
-                  Remove
-                </Button>
-              )
+              const removeButton =
+                (isJoinRequestRejected || isPendingRejected) && !removedGroupIds.includes(group.$id) ? (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 flex items-center gap-1 cursor-pointer"
+                    onClick={() => handleRemove(group.$id)}
+                  >
+                    <X className="h-4 w-4" />
+                    Remove
+                  </Button>
+                ) : null
 
               const cardContent = (
                 <Card
@@ -201,6 +203,11 @@ export default function MyGroupsPage() {
                       {isJoinRequestRejected && (
                         <Badge variant="outline" className="mt-2 mr-2 border-red-500 text-red-500">
                           Rejected
+                        </Badge>
+                      )}
+                      {isPendingRejected && (
+                        <Badge variant="outline" className="mt-2 mr-2 border-red-500 text-red-500">
+                          Group Rejected
                         </Badge>
                       )}
                       <Badge variant="secondary" className="mt-2">
@@ -243,6 +250,11 @@ export default function MyGroupsPage() {
                     {isJoinRequestRejected && (
                       <div className="mt-4 rounded-md bg-red-50 border border-red-200 p-3 text-center text-sm text-red-700">
                         Your join request was rejected. You can remove this group from your list.
+                      </div>
+                    )}
+                    {isPendingRejected && (
+                      <div className="mt-4 rounded-md bg-red-50 border border-red-200 p-3 text-center text-sm text-red-700">
+                        This group was rejected by the teacher or admin. You can remove it from your list.
                       </div>
                     )}
                   </CardContent>
