@@ -26,7 +26,7 @@ export default function DashboardPage() {
       const groupsResult = await getAllGroups();
 
     if (groupsResult.success) {
-       const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending") ?? []
+       const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
         setGroups(activeGroups)
       }
 

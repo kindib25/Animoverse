@@ -124,7 +124,7 @@ export default function AdminGroupsPage() {
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          className="flex-1"
+                          className="flex-1 cursor-pointer"
                           onClick={() => handleApprove(group.$id)}
                           disabled={updateStatus.isPending}
                         >
@@ -134,7 +134,7 @@ export default function AdminGroupsPage() {
                         <Button
                           size="sm"
                           variant="destructive"
-                          className="flex-1"
+                          className="flex-1 cursor-pointer"
                           onClick={() => handleReject(group.$id)}
                           disabled={updateStatus.isPending}
                         >

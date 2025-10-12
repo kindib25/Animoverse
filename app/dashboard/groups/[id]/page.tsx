@@ -178,7 +178,7 @@ export default function GroupDetailPage() {
               <div className="flex gap-3">
                 {!membershipStatus && (
                   <Button
-                    className="flex-1"
+                    className="flex-1 cursor-pointer"
                     onClick={handleJoinGroup}
                     disabled={isJoining || group.memberCount >= group.maxMembers}
                   >

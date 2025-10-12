@@ -101,10 +101,7 @@ export default function MyGroupsPage() {
         </div>
 
         {/* Count and restore removed button */}
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground">
-            You're in {visibleGroups.length} group{visibleGroups.length !== 1 ? "s" : ""}
-          </p>
+        <div className="flex items-center justify-between float-end">
           {removedGroupIds.length > 0 && (
             <Button
               variant="outline"

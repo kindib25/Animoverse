@@ -1,7 +1,6 @@
 "use client"
 
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Input } from "@/components/ui/input"
 import { Search, Users, Clock, BookOpen } from "lucide-react"
@@ -9,28 +8,47 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useGroups, useJoinGroup } from "@/lib/hooks/use-groups"
+import { useJoinGroup } from "@/lib/hooks/use-groups"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
-import { useEffect } from "react"
+import { getAllGroups } from "@/lib/appwrite/database"
+
+
+
+
 
 export default function ExplorePage() {
+  const [allGroups, setGroups] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [userId, setUserId] = useState<string>("")
-
-  const { data: allGroups = [], isLoading } = useGroups()
+  const [isLoading, setIsLoading] = useState(true)
   const joinGroupMutation = useJoinGroup()
 
   useEffect(() => {
     async function loadUser() {
       const userResult = await clientGetCurrentUser()
+
       if (userResult.success && userResult.user) {
         setUserId(userResult.user.$id)
       }
+
+      const groupsResult = await getAllGroups();
+
+      if (groupsResult.success) {
+        const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
+        setGroups(activeGroups)
+      }
+
+      setIsLoading(false)
     }
+
     loadUser()
   }, [])
 
-  const filteredGroups = allGroups.filter((group: any) => group.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const approvedGroups = allGroups.filter((group: any) => group.status === "approved")
+  const filteredGroups = approvedGroups.filter((group: any) =>
+    group.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
+
 
   const handleJoinGroup = (groupId: string) => {
     if (!userId) return
@@ -41,7 +59,7 @@ export default function ExplorePage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading groups...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </DashboardLayout>
     )
@@ -81,6 +99,10 @@ export default function ExplorePage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredGroups.map((group: any) => (
+              <Link
+                    key={group.$id}
+                    href={`/dashboard/groups/${group.$id}`}
+                  >
               <Card key={group.$id}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -111,16 +133,8 @@ export default function ExplorePage() {
                     </span>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full"
-                    onClick={() => handleJoinGroup(group.$id)}
-                    disabled={joinGroupMutation.isPending}
-                  >
-                    {joinGroupMutation.isPending ? "Joining..." : "Join Group"}
-                  </Button>
-                </CardFooter>
               </Card>
+              </Link>
             ))}
           </div>
         )}

@@ -231,7 +231,7 @@ export default function CreateGroupPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="maxMembers">Maximum Members</Label>
-                  <Input id="maxMembers" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
+                  <Input id="maxMembers" className="selection:bg-background selection:text-white" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
 
                   {errors.maxMembers && <p className="text-sm text-destructive">{errors.maxMembers.message}</p>}
                 </div>
