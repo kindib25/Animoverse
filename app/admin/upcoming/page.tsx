@@ -20,19 +20,19 @@ export default function AdminUpcomingPage() {
   }))
 
   return (
-    <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="flex min-h-screen">
       <AdminSidebar />
 
-      <main className="flex-1 px-20 pt-10">
+      <main className="flex-1 p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Upcoming Sessions</h1>
-          <p className="text-green">Scheduled group sessions and active calls</p>
+          <p className="text-muted-foreground">Scheduled group sessions and active calls</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Upcoming Sessions</CardTitle>
+              <CardTitle>Upcoming Sessions</CardTitle>
               <CardDescription>Scheduled for today</CardDescription>
             </CardHeader>
             <CardContent>
@@ -74,7 +74,7 @@ export default function AdminUpcomingPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">On Call</CardTitle>
+              <CardTitle>On Call</CardTitle>
               <CardDescription>Currently active sessions</CardDescription>
             </CardHeader>
             <CardContent>

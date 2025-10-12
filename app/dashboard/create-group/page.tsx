@@ -21,6 +21,7 @@ import { useEffect, useState } from "react"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 export default function CreateGroupPage() {
   const router = useRouter()
@@ -46,12 +47,14 @@ export default function CreateGroupPage() {
       status: "",
       teacherId: "",
       studyPreferences: [],
+      day: "",
     },
   })
 
   const selectedPreferences = watch("studyPreferences")
   const subject = watch("subject")
   const selectedTeacher = watch("teacher")
+  const selectedDay = watch("day")
 
   useEffect(() => {
     async function loadTeachers() {
@@ -72,11 +75,13 @@ export default function CreateGroupPage() {
         throw new Error("Authentication required")
       }
 
+      const shortDay = data.day ? data.day.slice(0, 3) : ""
+
       const result = await createGroup({
         name: data.name,
         description: data.description || "",
         subject: data.subject,
-        schedule: `${data.startTime} - ${data.endTime}`,
+        schedule: `${shortDay} ${data.startTime} - ${data.endTime}`,
         teacher: data.teacher,
         status: "pending",
         teacherId: data.teacherId,
@@ -154,10 +159,26 @@ export default function CreateGroupPage() {
                 </div>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-1">
                 <div className="space-y-2">
                   <Label>Schedule</Label>
+                  
                   <div className="flex items-center gap-2">
+                    <Select
+                      value={selectedDay}
+                      onValueChange={(value) => setValue("day", value, { shouldValidate: true })}
+                    >
+                      <SelectTrigger id="day">
+                        <SelectValue placeholder="Select day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {daysOfWeek.map((day) => (
+                          <SelectItem key={day} value={day}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Input
                       type="time"
                       id="startTime"
@@ -177,6 +198,16 @@ export default function CreateGroupPage() {
                   )}
                 </div>
 
+                
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="maxMembers">Maximum Members</Label>
+                  <Input id="maxMembers" className="selection:bg-background selection:text-white" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
+
+                  {errors.maxMembers && <p className="text-sm text-destructive">{errors.maxMembers.message}</p>}
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject</Label>
                   <Select
@@ -196,9 +227,6 @@ export default function CreateGroupPage() {
                   </Select>
                   {errors.subject && <p className="text-sm text-destructive">{errors.subject.message}</p>}
                 </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="teacher">Assigned Teacher</Label>
                   <Select
@@ -229,12 +257,7 @@ export default function CreateGroupPage() {
                   {errors.teacher && <p className="text-sm text-destructive">{errors.teacher.message}</p>}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="maxMembers">Maximum Members</Label>
-                  <Input id="maxMembers" className="selection:bg-background selection:text-white" type="number" placeholder="15" {...register("maxMembers", { valueAsNumber: true })} min={2} max={50} />
-
-                  {errors.maxMembers && <p className="text-sm text-destructive">{errors.maxMembers.message}</p>}
-                </div>
+                
 
                 <div className="space-y-3">
                   <Label>Study Preferences</Label>

@@ -162,7 +162,7 @@ export default function PendingGroupsPage() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 cursor-pointer"
                       onClick={() => handleApprove(group.$id)}
                       disabled={processingId === group.$id}
                     >
@@ -172,7 +172,7 @@ export default function PendingGroupsPage() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      className="flex-1"
+                      className="flex-1 cursor-pointer"
                       onClick={() => handleReject(group.$id)}
                       disabled={processingId === group.$id}
                     >

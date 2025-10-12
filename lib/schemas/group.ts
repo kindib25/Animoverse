@@ -19,6 +19,13 @@ export const createGroupSchema = z.object({
   teacherId: z.string().optional(),
   studyPreferences: z.array(z.string()).min(1, "Select at least one study preference"),
   maxMembers: z.number().min(2, "Minimum of 2 members").max(50, "Maximum of 50 members").optional(),
+  day: z
+    .string()
+    .min(1, "Please select a day")
+    .refine(value => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].includes(value), {
+      message: "Invalid day selected",
+    }),
+
 })
 
 export type CreateGroupInput = z.infer<typeof createGroupSchema>
