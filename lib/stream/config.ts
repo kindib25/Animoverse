@@ -12,9 +12,11 @@ export function getStreamServerClient() {
     if (!apiKey || !apiSecret) {
       throw new Error("Stream API credentials are missing")
     }
+    
 
     serverClient = StreamChat.getInstance(apiKey, apiSecret)
   }
+  
 
   return serverClient
 }
