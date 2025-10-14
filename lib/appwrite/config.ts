@@ -13,6 +13,7 @@ export const avatars = new Avatars(client);
 
 // Database and Collection IDs from .env.local
 export const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
+export const STORAGE_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_ID ?? "";
 export const COLLECTIONS = {
   GROUP_MEMBERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUP_MEMBERS ?? "",
   GROUPS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUPS ?? "",
