@@ -23,18 +23,18 @@ export default function ProfilePage() {
     async function loadProfile() {
       const userResult = await clientGetCurrentUser()
 
-      if (!userResult.success) {
+      if (!userResult.success || !userResult.user) {
         router.push("/login")
         return
       }
 
-      const profileResult = await getUserProfile(userResult.user?.$id || "")
+      const profileResult = await getUserProfile(userResult.user.$id)
 
       if (profileResult.success) {
         setProfile(profileResult.profile)
       }
 
-      const groupsResult = await getUserGroups(userResult.user?.$id || "")
+      const groupsResult = await getUserGroups(userResult.user.$id)
       if (groupsResult.success && groupsResult.groups) {
         setGroupCount(groupsResult.groups.length)
       }
@@ -76,7 +76,7 @@ export default function ProfilePage() {
           <CardContent className="p-8">
             <div className="flex flex-col items-center gap-6 text-center">
               <Avatar className="h-32 w-32">
-                <AvatarImage src="/placeholder.svg?height=128&width=128" />
+                <AvatarImage src={profile.avatarUrl} />
                 <AvatarFallback className="text-3xl">
                   {profile?.name
                     ?.split(" ")
@@ -84,7 +84,6 @@ export default function ProfilePage() {
                     .join("") || "U"}
                 </AvatarFallback>
               </Avatar>
-
 
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold">{profile?.name || "User"}</h1>
@@ -117,9 +116,14 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <Button asChild className="w-full max-w-xs cursor-pointer bg-background py-6 px-10 text-[#ffffff] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
-                <Link href="/dashboard/profile/edit">Edit Profile</Link>
-              </Button>
+              <div className="flex gap-4 w-full max-w-xs">
+                <Button asChild className="cursor-pointer bg-accent py-8 px-7 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                  <Link href="/dashboard/profile/edit">Edit Profile</Link>
+                </Button>
+                <Button asChild  className="cursor-pointer py-8 bg-background text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                  <Link href="/dashboard/profile/change-password">Change Password</Link>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -145,7 +149,7 @@ export default function ProfilePage() {
                   <h2 className="mb-3 text-lg font-bold">Study Preferences</h2>
                   <div className="flex flex-wrap gap-2">
                     {profile.studyPreferences.map((pref: string) => (
-                      <Badge key={pref} variant="outline">
+                      <Badge key={pref} variant="outline" className="text-background">
                         {pref}
                       </Badge>
                     ))}

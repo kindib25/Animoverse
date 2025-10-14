@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,18 +14,26 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useUserProfile, useUpdateUserProfile } from "@/lib/hooks/use-user"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
+import { uploadProfileImage } from "@/lib/appwrite/storage"
+import { useToast } from "@/components/ui/use-toast"
+import { Upload, X } from "lucide-react"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
 
 export default function EditProfilePage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [userId, setUserId] = useState("")
   const [username, setUsername] = useState("")
   const [grade, setGrade] = useState("")
   const [bio, setBio] = useState("")
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([])
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: profile, isLoading } = useUserProfile(userId)
   const updateProfileMutation = useUpdateUserProfile(userId)
@@ -54,8 +62,40 @@ export default function EditProfilePage() {
       setBio(profile.bio || "")
       setSelectedSubjects(profile.subjects || [])
       setSelectedPreferences(profile.studyPreferences || [])
+      if (profile.avatarUrl) {
+        setImagePreview(profile.avatarUrl)
+      }
     }
   }, [profile])
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        })
+        return
+      }
+
+      setSelectedImage(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null)
+    setImagePreview(profile?.avatarUrl || null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
 
   const handleSubjectToggle = (subject: string) => {
     setSelectedSubjects((prev) => (prev.includes(subject) ? prev.filter((s) => s !== subject) : [...prev, subject]))
@@ -67,8 +107,27 @@ export default function EditProfilePage() {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    let avatarUrl = profile?.avatarUrl || ""
+
+    if (selectedImage) {
+      setIsUploadingImage(true)
+      const uploadResult = await uploadProfileImage(selectedImage)
+      setIsUploadingImage(false)
+
+      if (!uploadResult.success) {
+        toast({
+          title: "Error",
+          description: "Failed to upload profile picture",
+          variant: "destructive",
+        })
+        return
+      }
+
+      avatarUrl = uploadResult.fileUrl || ""
+    }
 
     updateProfileMutation.mutate({
       username,
@@ -76,6 +135,7 @@ export default function EditProfilePage() {
       bio,
       subjects: selectedSubjects,
       studyPreferences: selectedPreferences,
+      avatarUrl,
     })
   }
 
@@ -103,23 +163,63 @@ export default function EditProfilePage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex flex-col items-center gap-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src="/placeholder.svg?height=96&width=96" />
-                  <AvatarFallback>
-                    {username
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("") || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <Button type="button" variant="outline" size="sm" className="cursor-pointer bg-accent py-3 px-4 text-[#172232]">
-                  Change profile photo
+                {imagePreview ? (
+                  <div className="relative">
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src={imagePreview || "/placeholder.svg"} className="object-cover"/>
+                      <AvatarFallback>
+                        {username
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("") || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    {selectedImage && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full cursor-pointer"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src="/placeholder.svg?height=96&width=96" />
+                    <AvatarFallback>
+                      {username
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("") || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="cursor-pointer bg-accent  text-[#172232] hover:bg-[#172232] hover:text-white transition font-mono"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {isUploadingImage ? "Uploading..." : "Change profile photo"}
                 </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageSelect}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                <Input id="username" className="selection:bg-background selection:text-white" value={username} onChange={(e) => setUsername(e.target.value)} required />
               </div>
 
               <div className="space-y-2">
@@ -129,6 +229,7 @@ export default function EditProfilePage() {
                   placeholder="e.g., Grade 10"
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
+                  className="selection:bg-background selection:text-white"
                 />
               </div>
 
@@ -140,6 +241,7 @@ export default function EditProfilePage() {
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
+                  className="selection:bg-background selection:text-white"
                 />
               </div>
 
@@ -188,15 +290,14 @@ export default function EditProfilePage() {
               <div className="flex gap-4">
                 <Button
                   type="button"
-                  variant="outline"
                   onClick={handleCancel}
                   className="flex-1 cursor-pointer bg-accent py-6 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
-                  disabled={updateProfileMutation.isPending}
+                  disabled={updateProfileMutation.isPending || isUploadingImage}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 cursor-pointer py-6 bg-background gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono" disabled={updateProfileMutation.isPending}>
-                  {updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
+                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono" disabled={updateProfileMutation.isPending || isUploadingImage}>
+                  {isUploadingImage ? "Uploading..." : updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
                 </Button>
               </div>
             </form>

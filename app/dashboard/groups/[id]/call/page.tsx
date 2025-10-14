@@ -52,14 +52,19 @@ export default function VideoCallPage() {
 
   if (!isReady || !call || !videoClient) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
-        <p className="text-white">Loading call...</p>
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-[#C9E265] to-[#89D957]">
+        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center space-x-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-background border-t-transparent" />
+          <p className="text-background text-2xl">Loading...</p>
+        </div>
+      </div>
       </div>
     )
   }
 
   return (
-    <div className="relative flex h-screen flex-col bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+    <div className="relative flex h-screen flex-col bg-gradient-to-br from-[#C9E265] to-[#89D957]">
       <StreamVideo client={videoClient}>
         <StreamTheme>
           <StreamCall call={call}>
