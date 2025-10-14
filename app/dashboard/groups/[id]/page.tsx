@@ -122,7 +122,7 @@ export default function GroupDetailPage() {
   return (
     <DashboardLayout>
       <div className="mx-auto max-w-4xl space-y-6 px-4">
-        <Button variant="ghost" asChild>
+        <Button variant="ghost" asChild className="text-background bg-accent hover:bg-background hover:text-white">
           <Link href="/dashboard">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
@@ -130,14 +130,16 @@ export default function GroupDetailPage() {
         </Button>
 
         <Card>
-          <CardContent className="p-0">
+          <CardContent className="">
             <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#89D957] to-[#C9E265]">
               {group.imageUrl ? (
-                <img
-                  src={group.imageUrl || "/placeholder.svg"}
-                  alt={group.name}
-                  className="h-full w-full object-contain"
-                />
+                <div className="flex justify-center pt-20">
+                        <img
+                          src={group.imageUrl || "/placeholder.svg"}
+                          alt={group.name}
+                          className="h-60 w-60 object-contain rounded-full"
+                        />
+                      </div>
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
                   <Users className="h-24 w-24 text-white/50" />

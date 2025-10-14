@@ -25,8 +25,8 @@ export default function DashboardPage() {
 
       const groupsResult = await getAllGroups();
 
-    if (groupsResult.success) {
-       const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
+      if (groupsResult.success) {
+        const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
         setGroups(activeGroups)
       }
 
@@ -77,22 +77,47 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-4 px-4 md:px-20">
+              <div className="grid gap-6 md:grid-cols-1">
                 {groups.map((group) => (
                   <Link
                     key={group.$id}
                     href={`/dashboard/groups/${group.$id}`}
-                    className="block rounded-lg border bg-card p-4 transition-colors hover:bg-accent"
+                    className="block rounded-lg border border-transparent bg-gradient-to-br from-[#C9E265] to-[#89D957] p-6 transition-colors hover:border-black"
                   >
-                    <h3 className="font-semibold">{group.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{group.subject}</p>
-                    <p className="text-sm text-muted-foreground">{group.schedule}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{group.memberCount}/{group.maxMembers}</p>
+                    <div className="relative text-center space-y-4">
+                      {/* Member Count in the top-left corner */}
+                      <div className="absolute top-4 left-4 flex items-center justify-start gap-2 text-sm">
+                        <Users className="h-4 w-4" />
+                        <p className="font-bold">
+                          {group.memberCount}/{group.maxMembers}
+                        </p>
+                      </div>
+
+                      {/* Time Schedule in the top-right corner */}
+                      <div className="absolute top-4 right-4 text-sm">
+                        {group.schedule}
+                      </div>
+
+                      {/* Group Image in the center */}
+                      <div className="flex justify-center pt-15">
+                        <img
+                          src={group.imageUrl || "/placeholder.svg"}
+                          alt={group.name}
+                          className="h-32 w-32 object-contain rounded-full"
+                        />
+                      </div>
+
+                      {/* Group Name (Math Wizard) and Subject */}
+                      <h3 className="font-semibold text-2xl">{group.name}</h3>
+                      <p className="text-sm">{group.subject}</p>
+                    </div>
                   </Link>
                 ))}
               </div>
             </div>
+
+
           )}
         </div>
       </div>
