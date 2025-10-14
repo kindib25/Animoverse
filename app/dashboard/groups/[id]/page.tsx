@@ -131,12 +131,12 @@ export default function GroupDetailPage() {
 
         <Card>
           <CardContent className="p-0">
-            <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-purple-400 to-pink-400">
+            <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#89D957] to-[#C9E265]">
               {group.imageUrl ? (
                 <img
                   src={group.imageUrl || "/placeholder.svg"}
                   alt={group.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">

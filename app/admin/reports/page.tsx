@@ -88,13 +88,13 @@ export default function AdminReportsPage() {
                           </Badge>
                         </td>
                         <td className="py-4 text-center">
-                          <Badge variant="outline" className="gap-1">
+                          <Badge variant="outline" className="gap-1 text-black">
                             <Clock className="h-3 w-3" />
                             {formatUptime(group.uptime)}
                           </Badge>
                         </td>
                         <td className="py-4 text-right">
-                          <Button variant="outline" size="sm" asChild>
+                          <Button variant="outline" size="sm" asChild className="text-white">
                             <Link href={`/admin/groups/${group.$id}/reports`}>View Details</Link>
                           </Button>
                         </td>

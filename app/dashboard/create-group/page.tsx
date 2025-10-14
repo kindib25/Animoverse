@@ -228,7 +228,7 @@ export default function CreateGroupPage() {
                       alt="Group preview"
                       width={400}
                       height={200}
-                      className="w-full h-48 object-fill"
+                      className="w-full h-48 object-contain"
                     />
                     <Button
                       type="button"
