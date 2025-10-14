@@ -213,7 +213,7 @@ export default function CreateGroupPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="groupName">Group name</Label>
-                <Input id="groupName" placeholder="Enter group name" {...register("name")} />
+                <Input id="groupName" placeholder="Enter group name" {...register("name")} className="selection:bg-background selection:text-white"/>
                 {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
               </div>
 
@@ -313,6 +313,7 @@ export default function CreateGroupPage() {
                     {...register("maxMembers", { valueAsNumber: true })}
                     min={2}
                     max={50}
+                    className="selection:bg-background selection:text-white"
                   />
                   {errors.maxMembers && (
                     <p className="text-sm text-destructive">{errors.maxMembers.message}</p>
@@ -407,6 +408,7 @@ export default function CreateGroupPage() {
                   placeholder="Describe your group..."
                   {...register("description")}
                   rows={4}
+                  className="selection:bg-background selection:text-white"
                 />
                 {errors.description && (
                   <p className="text-sm text-destructive">{errors.description.message}</p>
