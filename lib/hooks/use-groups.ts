@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query"
 import {
   createGroup,
   getGroups,
@@ -9,9 +9,11 @@ import {
   joinGroup,
   getUserGroups,
   getSavedGroups,
+  getInfiniteGroups
 } from "@/lib/appwrite/database"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
+import type { Group } from "@/lib/types"
 
 
 // Query Keys
@@ -24,6 +26,7 @@ export const groupKeys = {
   userGroups: (userId: string) => [...groupKeys.all, "user", userId] as const,
   savedGroups: (userId: string) => [...groupKeys.all, "saved", userId] as const,
   search: (term: string) => [...groupKeys.all, "search", term] as const,
+  infinite: (userId: string) => [...groupKeys.all, "infinite", userId] as const,
 }
 
 // Fetch all groups
@@ -153,5 +156,31 @@ export function useJoinGroup() {
         variant: "destructive",
       })
     },
+  })
+}
+
+
+export function useInfiniteGroups(limit = 6) {
+  return useInfiniteQuery({
+    queryKey: ["groups"],
+    queryFn: async ({ pageParam }: { pageParam?: string }) => {
+
+      const { groups, nextCursor } = await getInfiniteGroups(limit, pageParam)
+
+
+      if (!nextCursor) {
+        const { groups: firstGroups, nextCursor: firstCursor } =
+          await getInfiniteGroups(limit, undefined)
+
+        return {
+          groups: [...groups, ...firstGroups], 
+          nextCursor: firstCursor, 
+        }
+      }
+
+      return { groups, nextCursor }
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
   })
 }

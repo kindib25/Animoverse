@@ -62,6 +62,7 @@ export default function CreateGroupPage() {
   })
 
   const selectedPreferences = watch("studyPreferences")
+  const [isCustomSubject, setIsCustomSubject] = useState(false)
   const subject = watch("subject")
   const selectedTeacher = watch("teacher")
   const selectedDay = watch("day")
@@ -213,56 +214,55 @@ export default function CreateGroupPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="groupName">Group name</Label>
-                <Input id="groupName" placeholder="Enter group name" {...register("name")} className="selection:bg-background selection:text-white"/>
+                <Input id="groupName" placeholder="Enter group name" {...register("name")} className="selection:bg-background selection:text-white" />
                 {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label>Image</Label>
-                
+
                 {imagePreview ? (
                   <div className="relative flex flex-col items-center justify-center rounded-lg border-2 p-8 text-center transition-colors">
-                  <div className="relative rounded-lg border-2 border-border overflow-hidden">
-                    <Image
-                      src={imagePreview}
-                      alt="Group preview"
-                      width={400}
-                      height={200}
-                      className="w-full h-48 object-contain"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2 cursor-pointer"
-                      onClick={handleRemoveImage}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <div className="relative rounded-lg border-2 border-border overflow-hidden">
+                      <Image
+                        src={imagePreview}
+                        alt="Group preview"
+                        width={400}
+                        height={200}
+                        className="w-full h-48 object-contain"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 cursor-pointer"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  </div>
-                  
+
                 ) : (
                   <div className="relative flex flex-col items-center justify-center rounded-lg border-2 p-8 text-center transition-colors">
-                  <div
-                    className={`relative flex flex-col items-center justify-center rounded-lg border-2 p-8 text-center transition-colors ${
-                      isDragOver ? "border-primary bg-primary/5" : "border-dashed border-border"
-                    }`}
-                    onClick={() => fileInputRef.current?.click()}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                  >
-                    {isDragOver && (
-                      <div className="absolute inset-0 bg-primary/10 rounded-lg z-10 pointer-events-none" />
-                    )}
-                    <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-                    <p className="mb-1 text-sm font-medium">Drag photo here</p>
-                    <p className="mb-3 text-xs text-muted-foreground">SVG, PNG, JPG (max 5MB)</p>
-                    <Button type="button" variant="outline" size="sm" className="cursor-pointer py-6 gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
-                      Select from computer
-                    </Button>
-                  </div>
+                    <div
+                      className={`relative flex flex-col items-center justify-center rounded-lg border-2 p-8 text-center transition-colors ${isDragOver ? "border-primary bg-primary/5" : "border-dashed border-border"
+                        }`}
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      {isDragOver && (
+                        <div className="absolute inset-0 bg-primary/10 rounded-lg z-10 pointer-events-none" />
+                      )}
+                      <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
+                      <p className="mb-1 text-sm font-medium">Drag photo here</p>
+                      <p className="mb-3 text-xs text-muted-foreground">SVG, PNG, JPG (max 5MB)</p>
+                      <Button type="button" variant="outline" size="sm" className="cursor-pointer py-6 gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                        Select from computer
+                      </Button>
+                    </div>
                   </div>
                 )}
                 <input
@@ -323,8 +323,16 @@ export default function CreateGroupPage() {
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject</Label>
                   <Select
-                    value={subject}
-                    onValueChange={(value) => setValue("subject", value, { shouldValidate: true })}
+                    value={isCustomSubject ? "Others" : subject}
+                    onValueChange={(value) => {
+                      if (value === "Others") {
+                        setIsCustomSubject(true)
+                        setValue("subject", "", { shouldValidate: true })
+                      } else {
+                        setIsCustomSubject(false)
+                        setValue("subject", value, { shouldValidate: true })
+                      }
+                    }}
                   >
                     <SelectTrigger id="subject">
                       <SelectValue placeholder="Select subject" />
@@ -337,6 +345,21 @@ export default function CreateGroupPage() {
                       ))}
                     </SelectContent>
                   </Select>
+
+                  {/* When "Others" is selected, show a text input */}
+                  {isCustomSubject && (
+                    <div className="mt-2">
+                      <Input
+                        id="customSubject"
+                        placeholder="Enter custom subject"
+                        {...register("subject")}
+                        onChange={(e) => setValue("subject", e.target.value, { shouldValidate: true })}
+                        className="selection:bg-background selection:text-white"
+                        autoFocus
+                      />
+                    </div>
+                  )}
+
                   {errors.subject && (
                     <p className="text-sm text-destructive">{errors.subject.message}</p>
                   )}
@@ -424,9 +447,10 @@ export default function CreateGroupPage() {
                   {isUploadingImage
                     ? "Uploading image..."
                     : createGroupMutation.isPending
-                    ? "Creating..."
-                    : "Submit"}
+                      ? "Creating..."
+                      : "Submit"}
                 </Button>
+
               </div>
             </form>
           </CardContent>

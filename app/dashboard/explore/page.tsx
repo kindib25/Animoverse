@@ -5,16 +5,13 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Input } from "@/components/ui/input"
 import { Search, Users, Clock, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useJoinGroup } from "@/lib/hooks/use-groups"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { getAllGroups } from "@/lib/appwrite/database"
-
-
-
-
+import { Sidebar } from "@/components/dashboard/sidebar"
 
 export default function ExplorePage() {
   const [allGroups, setGroups] = useState<any[]>([])
@@ -31,10 +28,13 @@ export default function ExplorePage() {
         setUserId(userResult.user.$id)
       }
 
-      const groupsResult = await getAllGroups();
+      const groupsResult = await getAllGroups()
 
       if (groupsResult.success) {
-        const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
+        const activeGroups =
+          groupsResult.groups?.filter(
+            (group) => group.status !== "pending" && group.status !== "rejected",
+          ) ?? []
         setGroups(activeGroups)
       }
 
@@ -48,7 +48,6 @@ export default function ExplorePage() {
   const filteredGroups = approvedGroups.filter((group: any) =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase()),
   )
-
 
   const handleJoinGroup = (groupId: string) => {
     if (!userId) return
@@ -66,79 +65,97 @@ export default function ExplorePage() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6 px-20 pt-10 text-black">
-        <div>
-          <h1 className="text-3xl font-bold">Search Groups</h1>
-        </div>
+    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+      {/* Sidebar */}
+      <Sidebar />
 
-        <div className="relative">
-          <Search className="absolute left-5 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-15 py-8 placeholder:text-lg selection:bg-background selection:text-white"
-          />
-        </div>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+        {/* Header Section */}
+        <div className="max-w-7xl mx-auto pt-10 space-y-6">
+          <h1 className="text-3xl font-bold text-black">Search Groups</h1>
 
-        {filteredGroups.length === 0 ? (
-          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-10 w-10 text-black" />
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search groups..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 py-6 text-background rounded-xl border-gray-300 selection:bg-background selection:text-white"
+            />
+          </div>
+
+          {/* Groups Section */}
+          {filteredGroups.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-muted-foreground/25 rounded-xl">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                <Users className="h-10 w-10 text-black" />
+              </div>
+              <h3 className="mt-6 text-xl font-semibold text-gray-900">
+                No groups available
+              </h3>
+              <p className="mt-2 max-w-sm text-muted-foreground">
+                Be the first to create a study group and help build the Animoverse community!
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                className="mt-6 bg-accent py-6 px-6 font-mono text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition"
+              >
+                <Link href="/dashboard/create-group">Create First Group</Link>
+              </Button>
             </div>
-            <h3 className="mt-6 text-xl font-semibold">No groups available</h3>
-            <p className="mt-2 max-w-sm text-balance text-muted-foreground">
-              Be the first to create a study group and help build the Animoverse community!
-            </p>
-            <Button asChild variant="outline" className="mt-6 cursor-pointer bg-accent py-8 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
-              <Link href="/dashboard/create-group">Create First Group</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredGroups.map((group: any) => (
-              <Link
-                    key={group.$id}
-                    href={`/dashboard/groups/${group.$id}`}
-                  >
-              <Card key={group.$id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg">{group.name}</h3>
-                      <Badge variant="secondary" className="mt-2">
-                        {group.subject}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground line-clamp-2">{group.description}</p>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{group.schedule}</span>
-                  </div>
-                  {group.teacher && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <BookOpen className="h-4 w-4" />
-                      <span>{group.teacher}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    <span>
-                      {group.memberCount || 0}/{group.maxMembers || 15} members
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
+              {filteredGroups.map((group: any) => (
+                <Link key={group.$id} href={`/dashboard/groups/${group.$id}`}>
+                  <Card className="hover:shadow-md transition-all rounded-xl border-gray-200">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-semibold text-lg text-gray-900">
+                            {group.name}
+                          </h3>
+                          <Badge variant="secondary" className="mt-2">
+                            {group.subject}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {group.description}
+                      </p>
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        <span>{group.schedule}</span>
+                      </div>
+
+                      {group.teacher && (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <BookOpen className="h-4 w-4" />
+                          <span>{group.teacher}</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Users className="h-4 w-4" />
+                        <span>
+                          {group.memberCount || 0}/{group.maxMembers || 15} members
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
   )
 }

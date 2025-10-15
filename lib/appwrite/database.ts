@@ -255,6 +255,40 @@ export async function getAllGroups() {
   }
 }
 
+export async function getInfiniteGroups(limit = 6, cursor?: string) {
+  try {
+    const queries = [
+      Query.notEqual("status", "pending"),
+      Query.notEqual("status", "rejected"),
+      Query.orderDesc("$createdAt"),
+      Query.limit(limit),
+    ]
+
+    if (cursor) {
+      queries.push(Query.cursorAfter(cursor))
+    }
+
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTIONS.GROUPS,
+      queries
+    )
+
+    const documents = response.documents
+    const lastDoc = documents[documents.length - 1]
+    const hasMore = documents.length === limit
+    const nextCursor = hasMore ? lastDoc.$id : null 
+
+    return {
+      groups: documents,
+      nextCursor,
+    }
+  } catch (error: any) {
+    console.error("Error fetching groups:", error)
+    throw new Error(error.message)
+  }
+}
+
 // Message Operations
 export async function sendMessage(groupId: string, userId: string, content: string) {
   try {
