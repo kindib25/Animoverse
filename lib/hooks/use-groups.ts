@@ -8,7 +8,10 @@ import {
   searchGroups,
   joinGroup,
   getUserGroups,
-  getSavedGroups,
+  saveGroup,
+  unsaveGroup,
+  checkSavedStatus,
+  getUserSavedGroups,
   getInfiniteGroups
 } from "@/lib/appwrite/database"
 import { useRouter } from "next/navigation"
@@ -27,6 +30,7 @@ export const groupKeys = {
   savedGroups: (userId: string) => [...groupKeys.all, "saved", userId] as const,
   search: (term: string) => [...groupKeys.all, "search", term] as const,
   infinite: (userId: string) => [...groupKeys.all, "infinite", userId] as const,
+  bookmarkedGroups: (userId: string) => [...groupKeys.all, "bookmarked", userId] as const,
 }
 
 // Fetch all groups
@@ -67,18 +71,6 @@ export function useUserGroups(userId: string) {
   })
 }
 
-// Fetch saved groups
-export function useSavedGroups(userId: string) {
-  return useQuery({
-    queryKey: groupKeys.savedGroups(userId),
-    queryFn: async () => {
-      const result = await getSavedGroups(userId)
-      if (!result.success) throw new Error(result.error)
-      return result.groups
-    },
-    enabled: !!userId,
-  })
-}
 
 // Search groups
 export function useSearchGroups(searchTerm: string) {
@@ -182,5 +174,93 @@ export function useInfiniteGroups(limit = 6) {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
+  })
+}
+
+// Fetch bookmarked groups
+export function useBookmarkedGroups(userId: string) {
+  return useQuery({
+    queryKey: groupKeys.bookmarkedGroups(userId),
+    queryFn: async () => {
+      const result = await getUserSavedGroups(userId)
+      if (!result.success) throw new Error(result.error)
+      return result.groups
+    },
+    enabled: !!userId,
+  })
+}
+
+// Save group mutation
+export function useSaveGroup() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: ({ userId, groupId }: { userId: string; groupId: string }) => saveGroup(userId, groupId),
+    onSuccess: (data, variables) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: groupKeys.bookmarkedGroups(variables.userId) })
+        queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+
+        if (!data.alreadySaved) {
+          toast({
+            title: "Saved",
+            description: "Group saved successfully!",
+          })
+        }
+      } else {
+        throw new Error(data.error)
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save group",
+        variant: "destructive",
+      })
+    },
+  })
+}
+
+// Unsave group mutation
+export function useUnsaveGroup() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: ({ userId, groupId }: { userId: string; groupId: string }) => unsaveGroup(userId, groupId),
+    onSuccess: (data, variables) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: groupKeys.bookmarkedGroups(variables.userId) })
+        queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+
+        toast({
+          title: "Removed",
+          description: "Group removed from saved",
+        })
+      } else {
+        throw new Error(data.error)
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to unsave group",
+        variant: "destructive",
+      })
+    },
+  })
+}
+
+// Check saved status query
+export function useCheckSavedStatus(userId: string, groupId: string) {
+  return useQuery({
+    queryKey: [...groupKeys.bookmarkedGroups(userId), groupId],
+    queryFn: async () => {
+      const result = await checkSavedStatus(userId, groupId)
+      if (!result.success) throw new Error(result.error)
+      return result.isSaved
+    },
+    enabled: !!userId && !!groupId,
   })
 }

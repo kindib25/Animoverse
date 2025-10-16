@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { TopCreators } from "@/components/dashboard/top-creators"
 import { Button } from "@/components/ui/button"
-import { Users, Sparkles, Loader2 } from "lucide-react"
+import { Users, Sparkles, Loader2, PenLine } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useInfiniteGroups } from "@/lib/hooks/use-groups"
@@ -21,7 +21,7 @@ export default function DashboardPage() {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useInfiniteGroups(10)
+  } = useInfiniteGroups(3)
 
   const groups = data?.pages.flatMap((page) => page.groups) ?? []
 
@@ -62,7 +62,6 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white">
         <div className="px-20 pt-10 text-black">
           <h1 className="text-3xl font-bold mb-6">Home Feed</h1>
-
           {groups.length === 0 ? (
             <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
@@ -128,6 +127,11 @@ export default function DashboardPage() {
                             </div>
                             <h3 className="font-semibold text-2xl">{group.name}</h3>
                             <p className="text-sm">{group.subject}</p>
+                            <p className="text-sm">{group.description}</p>
+                            <div className="flex items-center gap-2 justify-center">
+                            <PenLine className="h-4 w-4" />
+                            <span>{group.creator?.name || "Unknown"}</span>
+                          </div>
                           </div>
                         </Link>
                       </motion.div>
@@ -140,7 +144,7 @@ export default function DashboardPage() {
                 {isFetchingNextPage && (
                   <div className="flex justify-center items-center gap-2">
                     <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
-                    <span>Loading more...</span>
+                    <span>Loading more groups...</span>
                   </div>
                 )}
               </div>

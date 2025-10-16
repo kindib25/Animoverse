@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { Users, Sparkles, Clock, BookOpen, X } from "lucide-react"
+import { Users, Sparkles, Clock, BookOpen, X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -62,7 +62,8 @@ export default function MyGroupsPage() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
           <p className="text-muted-foreground">Loading your groups...</p>
         </div>
       </DashboardLayout>

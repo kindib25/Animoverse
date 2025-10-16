@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, Video } from "lucide-react"
+import { Calendar, Clock, Video, Loader2} from "lucide-react"
 import Link from "next/link"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { getAllGroups } from "@/lib/appwrite/database"
@@ -73,8 +73,9 @@ const [isLoading, setIsLoading] = useState(true)
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading...</p>
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
+          <p className="text-muted-foreground">Loading upcoming sessions...</p>
         </div>
       </DashboardLayout>
     )

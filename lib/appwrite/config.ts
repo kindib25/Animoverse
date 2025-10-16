@@ -19,6 +19,7 @@ export const COLLECTIONS = {
   GROUPS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_GROUPS ?? "",
   USERS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_USERS ?? "",
   MESSAGES: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_MESSAGES ?? "",
+  SAVED_GROUPS: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SAVED_GROUPS ?? "",
   // Add more collections as needed
 };
 

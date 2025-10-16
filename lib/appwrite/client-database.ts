@@ -145,24 +145,6 @@ export async function clientGetUserGroups(userId: string) {
   }
 }
 
-export async function clientGetSavedGroups(userId: string) {
-  try {
-    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
-      Query.equal("userId", userId),
-      Query.equal("status", "approved"),
-    ])
-
-    const groupPromises = memberships.documents.map(async (membership: any) => {
-      const groupResult = await clientGetGroup(membership.groupId)
-      return groupResult.group
-    })
-
-    const groups = await Promise.all(groupPromises)
-    return { success: true, groups }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
 
 // Client-side Message Operations
 export async function clientSendMessage(groupId: string, userId: string, content: string) {
@@ -201,5 +183,87 @@ export async function clientGetAllTeachers() {
     return { success: true, teachers: teachers.documents }
   } catch (error: any) {
     return { success: false, error: error.message }
+  }
+}
+
+export async function clientSaveGroup(userId: string, groupId: string) {
+  try {
+    // Check if already saved
+    const existing = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    if (existing.documents.length > 0) {
+      return { success: true, alreadySaved: true }
+    }
+
+    const savedGroup = await databases.createDocument(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, ID.unique(), {
+      userId,
+      groupId,
+      $createdAt: new Date().toISOString(),
+    })
+    return { success: true, savedGroup }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientUnsaveGroup(userId: string, groupId: string) {
+  try {
+    const saved = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    if (saved.documents.length > 0) {
+      await databases.deleteDocument(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, saved.documents[0].$id)
+    }
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientCheckSavedStatus(userId: string, groupId: string) {
+  try {
+    const saved = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    return { success: true, isSaved: saved.documents.length > 0 }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientGetUserSavedGroups(userId: string) {
+  try {
+    // Step 1: Get all saved group IDs for this user
+    const savedResponse = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTIONS.SAVED_GROUPS,
+      [Query.equal("userId", userId)]
+    )
+
+    const groupIds = savedResponse.documents.map((doc: any) => doc.groupId).filter(Boolean)
+
+    if (groupIds.length === 0) {
+      return { success: true, groups: [] }
+    }
+
+    // Step 2: Fetch full group documents from GROUPS collection
+    const groupsResponse = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTIONS.GROUPS,
+      [Query.contains("$id", groupIds)]
+    )
+
+    return { success: true, groups: groupsResponse.documents }
+  } catch (error) {
+    console.error("Error fetching saved groups:", error)
+    return { success: false, groups: [] }
   }
 }

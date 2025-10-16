@@ -227,24 +227,6 @@ export async function getUserGroups(userId: string) {
   }
 }
 
-export async function getSavedGroups(userId: string) {
-  try {
-    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
-      Query.equal("userId", userId),
-      Query.equal("status", "approved"),
-    ])
-
-    const groupPromises = memberships.documents.map(async (membership: any) => {
-      const groupResult = await getGroup(membership.groupId)
-      return groupResult.group
-    })
-
-    const groups = await Promise.all(groupPromises)
-    return { success: true, groups }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
-}
 
 export async function getAllGroups() {
   try {
@@ -274,13 +256,38 @@ export async function getInfiniteGroups(limit = 6, cursor?: string) {
       queries
     )
 
-    const documents = response.documents
-    const lastDoc = documents[documents.length - 1]
-    const hasMore = documents.length === limit
-    const nextCursor = hasMore ? lastDoc.$id : null 
+    const groups = response.documents
+
+    const creatorIds = [...new Set(groups.map((g: any) => g.creatorId).filter(Boolean))]
+
+    const userResponses = await Promise.all(
+      creatorIds.map(async (id) => {
+        try {
+          return await databases.getDocument(DATABASE_ID, COLLECTIONS.USERS, id)
+        } catch {
+          return null
+        }
+      })
+    )
+
+
+    const userMap = userResponses.reduce((acc, user) => {
+      if (user) acc[user.$id] = user
+      return acc
+    }, {} as Record<string, any>)
+
+    const mergedGroups = groups.map((group: any) => ({
+      ...group,
+      creator: userMap[group.creatorId] || null,
+      creatorName: userMap[group.creatorId]?.name || "Unknown",
+    }))
+
+    const lastDoc = groups[groups.length - 1]
+    const hasMore = groups.length === limit
+    const nextCursor = hasMore ? lastDoc.$id : null
 
     return {
-      groups: documents,
+      groups: mergedGroups,
       nextCursor,
     }
   } catch (error: any) {
@@ -360,6 +367,79 @@ export async function rejectGroup(groupId: string) {
       status: "rejected",
     })
     return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+// Saved Groups Operations
+export async function saveGroup(userId: string, groupId: string) {
+  try {
+    // Check if already saved
+    const existing = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    if (existing.documents.length > 0) {
+      return { success: true, alreadySaved: true }
+    }
+
+    const savedGroup = await databases.createDocument(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, ID.unique(), {
+      userId,
+      groupId,
+      $createdAt: new Date().toISOString(),
+    })
+    return { success: true, savedGroup }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function unsaveGroup(userId: string, groupId: string) {
+  try {
+    const saved = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    if (saved.documents.length > 0) {
+      await databases.deleteDocument(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, saved.documents[0].$id)
+    }
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function checkSavedStatus(userId: string, groupId: string) {
+  try {
+    const saved = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+
+    return { success: true, isSaved: saved.documents.length > 0 }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getUserSavedGroups(userId: string) {
+  try {
+    const savedGroups = await databases.listDocuments(DATABASE_ID, COLLECTIONS.SAVED_GROUPS, [
+      Query.equal("userId", userId),
+      Query.orderDesc("savedAt"),
+    ])
+
+    const groupPromises = savedGroups.documents.map(async (saved: any) => {
+      const groupResult = await getGroup(saved.groupId)
+      return groupResult.group
+    })
+
+    const groups = await Promise.all(groupPromises)
+    return { success: true, groups }
   } catch (error: any) {
     return { success: false, error: error.message }
   }

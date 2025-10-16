@@ -11,6 +11,8 @@ import { Calendar, Users, ArrowLeft, MessageSquare, Phone } from "lucide-react"
 import { getGroup, joinGroup, checkMembershipStatus } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
+import { Sidebar } from "@/components/dashboard/sidebar"
+import { TopCreators } from "@/components/dashboard/top-creators"
 
 export default function GroupDetailPage() {
   const params = useParams()
@@ -120,117 +122,127 @@ export default function GroupDetailPage() {
   const isRejected = membershipStatus === "rejected"
 
   return (
-    <DashboardLayout>
-      <div className="mx-auto max-w-4xl space-y-6 px-4">
-        <Button variant="ghost" asChild className="text-background bg-accent hover:bg-background hover:text-white">
-          <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
+    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+      {/* Sidebar */}
+      <Sidebar />
 
-        <Card>
-          <CardContent className="">
-            <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#89D957] to-[#C9E265]">
-              {group.imageUrl ? (
-                <div className="flex justify-center pt-20">
-                        <img
-                          src={group.imageUrl || "/placeholder.svg"}
-                          alt={group.name}
-                          className="h-60 w-60 object-contain rounded-full"
-                        />
-                      </div>
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <Users className="h-24 w-24 text-white/50" />
-                </div>
-              )}
-            </div>
-            <div className="space-y-6 p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold">{group.name}</h1>
-                    <Badge variant="secondary">
-                      {group.memberCount || 0}/{group.maxMembers || 15}
-                    </Badge>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+        <div className="max-w-7xl mx-auto space-y-6"></div>
+        <div className="mx-auto max-w-4xl space-y-6 px-4">
+          <Button variant="ghost" asChild className="text-background bg-accent hover:bg-background hover:text-white">
+            <Link href="/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Link>
+          </Button>
+
+          <Card>
+            <CardContent className="">
+              <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#89D957] to-[#C9E265]">
+                {group.imageUrl ? (
+                  <div className="flex justify-center pt-20">
+                    <img
+                      src={group.imageUrl || "/placeholder.svg"}
+                      alt={group.name}
+                      className="h-60 w-60 object-contain rounded-full"
+                    />
                   </div>
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{group.schedule}</span>
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <Users className="h-24 w-24 text-white/50" />
+                  </div>
+                )}
+              </div>
+              <div className="space-y-6 p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-3xl font-bold">{group.name}</h1>
+                      <Badge variant="secondary">
+                        {group.memberCount || 0}/{group.maxMembers || 15}
+                      </Badge>
                     </div>
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{group.schedule}</span>
+                      </div>
+                    </div>
+                    <Badge>{group.subject}</Badge>
                   </div>
-                  <Badge>{group.subject}</Badge>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold">About</h2>
-                <p className="text-muted-foreground">{group.description}</p>
-              </div>
-
-              {group.teacher && (
                 <div className="space-y-2">
-                  <h2 className="text-lg font-semibold">Teacher</h2>
-                  <p className="text-muted-foreground">{group.teacher}</p>
+                  <h2 className="text-lg font-semibold">About</h2>
+                  <p className="text-muted-foreground">{group.description}</p>
                 </div>
-              )}
 
-              <div className="flex gap-3">
-                {!membershipStatus && (
-                  <Button
-                    className="flex-1 cursor-pointer"
-                    onClick={handleJoinGroup}
-                    disabled={isJoining || group.memberCount >= group.maxMembers}
-                  >
-                    {group.memberCount >= group.maxMembers
-                      ? "Group Full"
-                      : isJoining
-                        ? "Sending request..."
-                        : "Request to Join"}
-                  </Button>
+                {group.teacher && (
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-semibold">Assigned Teacher</h2>
+                    <p className="text-muted-foreground">{group.teacher}</p>
+                  </div>
                 )}
 
-                {isPending && (
-                  <Button className="flex-1" disabled variant="secondary">
-                    Request Pending
-                  </Button>
-                )}
-
-                {isRejected && (
-                  <Button className="flex-1" disabled variant="destructive">
-                    Request Rejected
-                  </Button>
-                )}
-
-                {(isMember || isCreator) && (
-                  <>
-                    <Button asChild className="flex-1">
-                      <Link href={`/dashboard/groups/${group.$id}/chat`}>
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        Chat
-                      </Link>
+                <div className="flex gap-3">
+                  {!membershipStatus && (
+                    <Button
+                      className="flex-1 cursor-pointer"
+                      onClick={handleJoinGroup}
+                      disabled={isJoining || group.memberCount >= group.maxMembers}
+                    >
+                      {group.memberCount >= group.maxMembers
+                        ? "Group Full"
+                        : isJoining
+                          ? "Sending request..."
+                          : "Request to Join"}
                     </Button>
-                    <Button asChild variant="outline" className="text-white">
-                      <Link href={`/dashboard/groups/${group.$id}/call`}>
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call
-                      </Link>
-                    </Button>
-                  </>
-                )}
+                  )}
 
-                {isCreator && (
-                  <Button asChild variant="secondary">
-                    <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
-                  </Button>
-                )}
+                  {isPending && (
+                    <Button className="flex-1" disabled variant="secondary">
+                      Request Pending
+                    </Button>
+                  )}
+
+                  {isRejected && (
+                    <Button className="flex-1" disabled variant="destructive">
+                      Request Rejected
+                    </Button>
+                  )}
+
+                  {(isMember || isCreator) && (
+                    <>
+                      <Button asChild className="flex-1">
+                        <Link href={`/dashboard/groups/${group.$id}/chat`}>
+                          <MessageSquare className="mr-2 h-4 w-4" />
+                          Chat
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" className="text-white">
+                        <Link href={`/dashboard/groups/${group.$id}/call`}>
+                          <Phone className="mr-2 h-4 w-4" />
+                          Call
+                        </Link>
+                      </Button>
+                    </>
+                  )}
+
+                  {isCreator && (
+                    <Button asChild variant="secondary">
+                      <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+      <div className="flex min-h-screen">
+        <TopCreators />
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
