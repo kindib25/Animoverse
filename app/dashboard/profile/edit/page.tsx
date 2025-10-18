@@ -35,6 +35,8 @@ export default function EditProfilePage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [isCustomSubject, setIsCustomSubject] = useState(false)
+
   const { data: profile, isLoading } = useUserProfile(userId)
   const updateProfileMutation = useUpdateUserProfile(userId)
 
@@ -166,7 +168,7 @@ export default function EditProfilePage() {
                 {imagePreview ? (
                   <div className="relative">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src={imagePreview || "/placeholder.svg"} className="object-cover"/>
+                      <AvatarImage src={imagePreview || "/placeholder.svg"} className="object-cover" />
                       <AvatarFallback>
                         {username
                           .split(" ")
@@ -245,15 +247,37 @@ export default function EditProfilePage() {
                 />
               </div>
 
+              {/* Select Interested subjects) */}
               <div className="space-y-3">
                 <Label>Interested subjects</Label>
+
                 <div className="grid grid-cols-2 gap-3">
                   {subjects.map((subject) => (
                     <div key={subject} className="flex items-center space-x-2">
                       <Checkbox
                         id={subject}
-                        checked={selectedSubjects.includes(subject)}
-                        onCheckedChange={() => handleSubjectToggle(subject)}
+                        checked={
+                          subject === "Others"
+                            ? isCustomSubject
+                            : selectedSubjects.includes(subject)
+                        }
+                        onCheckedChange={() => {
+                          if (subject === "Others") {
+                            setIsCustomSubject((prev) => !prev)
+                            if (isCustomSubject) {
+                              // If unchecking "Others", clear custom subject
+                              setSelectedSubjects((prev) =>
+                                prev.filter((s) => subjects.includes(s))
+                              )
+                            }
+                          } else {
+                            setSelectedSubjects((prev) =>
+                              prev.includes(subject)
+                                ? prev.filter((s) => s !== subject)
+                                : [...prev, subject]
+                            )
+                          }
+                        }}
                       />
                       <label
                         htmlFor={subject}
@@ -264,6 +288,28 @@ export default function EditProfilePage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Custom subject input */}
+                {isCustomSubject && (
+                  <div className="mt-2">
+                    <Input
+                      id="custom-subject"
+                      placeholder="Enter custom subject"
+                      value={
+                        selectedSubjects.find((s) => !subjects.includes(s)) || ""
+                      }
+                      onChange={(e) => {
+                        const value = e.target.value.trim()
+                        setSelectedSubjects((prev) => {
+                          const filtered = prev.filter((s) => subjects.includes(s))
+                          return value ? [...filtered, value] : filtered
+                        })
+                      }}
+                      className="selection:bg-background selection:text-white"
+                      autoFocus
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3">
