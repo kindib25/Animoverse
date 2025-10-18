@@ -1,15 +1,16 @@
 "use client"
 
 
-import { useEffect,useState } from "react"
+import { useEffect, useState } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, Video, Loader2} from "lucide-react"
+import { Calendar, Clock, Video, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
-import { getAllGroups } from "@/lib/appwrite/database"
+import { getUserUpcoming } from "@/lib/appwrite/database"
+import { useRouter } from "next/navigation"
 
 function isUpcoming(schedule: string): boolean {
   if (!schedule) return false
@@ -43,30 +44,30 @@ function isUpcoming(schedule: string): boolean {
 }
 
 export default function UpcomingPage() {
-const [userId, setUserId] = useState<string>("")
-const [groups, setGroups] = useState<any[]>([])
-const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+  const [groups, setGroups] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-      async function loadUser() {
-        const userResult = await clientGetCurrentUser()
-  
-        if (userResult.success && userResult.user) {
-          setUserId(userResult.user.$id)
-        }
-  
-        const groupsResult = await getAllGroups();
-  
-        if (groupsResult.success) {
-          const activeGroups = groupsResult.groups?.filter(group => group.status !== "pending" && group.status !== "rejected") ?? []
-          setGroups(activeGroups)
-        }
-  
-        setIsLoading(false)
+    async function loadUser() {
+      const userResult = await clientGetCurrentUser()
+
+      if (!userResult.success || !userResult.user) {
+        router.push("/login")
+        return
       }
-  
-      loadUser()
-    }, [])
+      const groupsResult = await getUserUpcoming(userResult.user.$id);
+
+       if (groupsResult.success && groupsResult.groups) {
+        setGroups(groupsResult.groups)
+      }
+
+      setIsLoading(false)
+    }
+
+    loadUser()
+  }, [])
+
 
   const upcomingSessions = groups?.filter((group: any) => group.status === "approved" && isUpcoming(group.schedule))
 
