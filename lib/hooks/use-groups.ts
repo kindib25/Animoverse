@@ -12,7 +12,8 @@ import {
   unsaveGroup,
   checkSavedStatus,
   getUserSavedGroups,
-  getInfiniteGroups
+  getInfiniteGroups,
+  getNewInfiniteGroups
 } from "@/lib/appwrite/database"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
@@ -165,8 +166,8 @@ export function useInfiniteGroups(limit = 6) {
           await getInfiniteGroups(limit, undefined)
 
         return {
-          groups: [...groups, ...firstGroups], 
-          nextCursor: firstCursor, 
+          groups: [...groups, ...firstGroups],
+          nextCursor: firstCursor,
         }
       }
 
@@ -262,5 +263,28 @@ export function useCheckSavedStatus(userId: string, groupId: string) {
       return result.isSaved
     },
     enabled: !!userId && !!groupId,
+  })
+}
+
+export function useNewInfiniteGroups(subjects: string[] | undefined, limit = 6) {
+  return useInfiniteQuery({
+    queryKey: ["new-groups", subjects], // use unique key
+    enabled: !!subjects && subjects.length > 0,
+    queryFn: async ({ pageParam }: { pageParam?: string }) => {
+      const { groups, nextCursor } = await getNewInfiniteGroups(subjects!, limit, pageParam)
+
+      return {
+        groups: groups ?? [],
+        nextCursor: nextCursor ?? null, // explicitly null when done
+      }
+    },
+    getNextPageParam: (lastPage) => {
+      // ✅ stop fetching if there’s no nextCursor
+      if (!lastPage.nextCursor) return undefined
+      return lastPage.nextCursor
+    },
+    initialPageParam: undefined,
+    staleTime: 1000 * 60 * 5, // optional: keeps cache for 5 mins
+    gcTime: 1000 * 60 * 30,   // optional: garbage collect after 30 mins
   })
 }

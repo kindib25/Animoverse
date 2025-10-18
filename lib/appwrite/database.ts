@@ -35,6 +35,8 @@ export async function getUserProfile(userId: string) {
   }
 }
 
+
+
 export async function updateUserProfile(userId: string, data: any) {
   try {
     const profile = await databases.updateDocument(DATABASE_ID, COLLECTIONS.USERS, userId, data)
@@ -236,6 +238,30 @@ export async function getAllGroups() {
     return { success: false, error: error.message }
   }
 }
+
+export async function getUserUpcoming(userId: string) {
+  try {
+    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
+      Query.equal("userId", userId),
+    ])
+
+    // Fetch full group details for each membership
+    const groupPromises = memberships.documents.map(async (membership: any) => {
+      const groupResult = await getGroup(membership.groupId)
+      return {
+        ...groupResult.group,
+        membershipStatus: membership.status,
+        membershipRole: membership.role,
+      }
+    })
+
+    const groups = await Promise.all(groupPromises)
+    return { success: true, groups }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 
 export async function getInfiniteGroups(limit = 6, cursor?: string) {
   try {
@@ -442,5 +468,76 @@ export async function getUserSavedGroups(userId: string) {
     return { success: true, groups }
   } catch (error: any) {
     return { success: false, error: error.message }
+  }
+}
+
+
+export async function getNewInfiniteGroups(subjects: string[], limit = 6, cursor?: string) {
+  try {
+    if (!subjects || subjects.length === 0) {
+      return { groups: [], nextCursor: null }
+    }
+
+    const normalizedSubjects = subjects.map((s) => s.trim())
+    const queries: any[] = [
+      Query.notEqual("status", "pending"),
+      Query.notEqual("status", "rejected"),
+      Query.orderDesc("$createdAt"),
+      Query.limit(limit),
+    ]
+
+    // ✅ Apply subject filter correctly
+    if (normalizedSubjects.length === 1) {
+      queries.push(Query.equal("subject", normalizedSubjects[0]))
+    } else {
+      queries.push(Query.or(normalizedSubjects.map((s) => Query.equal("subject", s))))
+    }
+
+    // ✅ Apply pagination cursor
+    if (cursor) {
+      queries.push(Query.cursorAfter(cursor))
+    }
+
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTIONS.GROUPS,
+      queries
+    )
+
+    const groups = response.documents ?? []
+
+    // ✅ Pagination
+    let nextCursor: string | null = null
+    if (groups.length > 0) {
+      const lastDoc = groups[groups.length - 1]
+      nextCursor = groups.length === limit ? lastDoc.$id : null
+    }
+
+    // ✅ Fetch creator info (unchanged)
+    const creatorIds = [...new Set(groups.map((g: any) => g.creatorId).filter(Boolean))]
+    let userMap: Record<string, any> = {}
+
+    if (creatorIds.length > 0) {
+      try {
+        const usersRes = await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTIONS.USERS,
+          [Query.equal("$id", creatorIds)]
+        )
+        userMap = Object.fromEntries(usersRes.documents.map((u) => [u.$id, u]))
+      } catch (e) {
+        console.warn("Failed to fetch creators", e)
+      }
+    }
+
+    const mergedGroups = groups.map((group: any) => ({
+      ...group,
+      creator: userMap[group.creatorId] || null,
+    }))
+
+    return { groups: mergedGroups, nextCursor }
+  } catch (error: any) {
+    console.error("Error fetching groups:", error)
+    return { groups: [], nextCursor: null }
   }
 }

@@ -31,7 +31,7 @@ export function SignupForm() {
         title: "Account created!",
         description: "Welcome to Animoverse!",
       })
-      router.push("/dashboard")
+      router.push("/onboarding/welcome")
     } else {
       toast({
         title: "Signup failed",
