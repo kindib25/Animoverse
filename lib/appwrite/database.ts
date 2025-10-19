@@ -472,13 +472,24 @@ export async function getUserSavedGroups(userId: string) {
 }
 
 
-export async function getNewInfiniteGroups(subjects: string[], limit = 6, cursor?: string) {
+export async function getNewInfiniteGroups(
+  subjects: string[] = [],
+  studyPreferences: string[] = [],
+  limit = 6,
+  cursor?: string
+) {
   try {
-    if (!subjects || subjects.length === 0) {
+    // 🛑 No filters at all → return empty
+    if (
+      (!subjects || subjects.length === 0) &&
+      (!studyPreferences || studyPreferences.length === 0)
+    ) {
       return { groups: [], nextCursor: null }
     }
 
     const normalizedSubjects = subjects.map((s) => s.trim())
+    const normalizedPreferences = studyPreferences.map((p) => p.trim())
+
     const queries: any[] = [
       Query.notEqual("status", "pending"),
       Query.notEqual("status", "rejected"),
@@ -486,14 +497,34 @@ export async function getNewInfiniteGroups(subjects: string[], limit = 6, cursor
       Query.limit(limit),
     ]
 
-    // ✅ Apply subject filter correctly
+    // ✅ Build subject filter
+    let subjectFilter: any = null
     if (normalizedSubjects.length === 1) {
-      queries.push(Query.equal("subject", normalizedSubjects[0]))
-    } else {
-      queries.push(Query.or(normalizedSubjects.map((s) => Query.equal("subject", s))))
+      subjectFilter = Query.equal("subject", normalizedSubjects[0])
+    } else if (normalizedSubjects.length > 1) {
+      subjectFilter = Query.or(normalizedSubjects.map((s) => Query.equal("subject", s)))
     }
 
-    // ✅ Apply pagination cursor
+    // ✅ Build study preference filter
+    let preferenceFilter: any = null
+    if (normalizedPreferences.length === 1) {
+      preferenceFilter = Query.contains("studyPreferences", normalizedPreferences[0])
+    } else if (normalizedPreferences.length > 1) {
+      preferenceFilter = Query.or(
+        normalizedPreferences.map((p) => Query.contains("studyPreferences", p))
+      )
+    }
+
+    // ✅ Combine filters
+    if (subjectFilter && preferenceFilter) {
+      queries.push(Query.and([subjectFilter, preferenceFilter]))
+    } else if (subjectFilter) {
+      queries.push(subjectFilter)
+    } else if (preferenceFilter) {
+      queries.push(preferenceFilter)
+    }
+
+    // ✅ Pagination
     if (cursor) {
       queries.push(Query.cursorAfter(cursor))
     }
@@ -513,7 +544,7 @@ export async function getNewInfiniteGroups(subjects: string[], limit = 6, cursor
       nextCursor = groups.length === limit ? lastDoc.$id : null
     }
 
-    // ✅ Fetch creator info (unchanged)
+    // ✅ Fetch creator info (same logic)
     const creatorIds = [...new Set(groups.map((g: any) => g.creatorId).filter(Boolean))]
     let userMap: Record<string, any> = {}
 

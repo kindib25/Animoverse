@@ -266,12 +266,23 @@ export function useCheckSavedStatus(userId: string, groupId: string) {
   })
 }
 
-export function useNewInfiniteGroups(subjects: string[] | undefined, limit = 6) {
+export function useNewInfiniteGroups(
+  subjects: string[] | undefined,
+  studyPreferences: string[] | undefined,
+  limit = 6
+) {
   return useInfiniteQuery({
-    queryKey: ["new-groups", subjects], // use unique key
-    enabled: !!subjects && subjects.length > 0,
+    queryKey: ["new-groups", subjects, studyPreferences], // ✅ include both filters
+    enabled:
+      (!!subjects && subjects.length > 0) ||
+      (!!studyPreferences && studyPreferences.length > 0), // ✅ enable if either has values
     queryFn: async ({ pageParam }: { pageParam?: string }) => {
-      const { groups, nextCursor } = await getNewInfiniteGroups(subjects!, limit, pageParam)
+      const { groups, nextCursor } = await getNewInfiniteGroups(
+        subjects ?? [],
+        studyPreferences ?? [],
+        limit,
+        pageParam
+      )
 
       return {
         groups: groups ?? [],
