@@ -10,8 +10,10 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useInfiniteGroups } from "@/lib/hooks/use-groups"
 import { useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
+  const router = useRouter()
   const loaderRef = useRef<HTMLDivElement | null>(null)
   const queryClient = useQueryClient()
 
@@ -43,6 +45,10 @@ export default function DashboardPage() {
     return () => observer.unobserve(node)
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, queryClient])
 
+  const handleClick = () => {
+    router.push("/dashboard/view-match")
+  }
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -54,12 +60,18 @@ export default function DashboardPage() {
   }
 
   return (
+
     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
       <div className="flex min-h-screen">
         <Sidebar />
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white">
+        <div className="float-end">
+          <Button className="shad-button_showMatch" onClick={handleClick}>
+            View Match
+          </Button>
+        </div>
         <div className="px-20 pt-10 text-black">
           <h1 className="text-3xl font-bold mb-6">Home Feed</h1>
           {groups.length === 0 ? (
@@ -129,9 +141,9 @@ export default function DashboardPage() {
                             <p className="text-sm">{group.subject}</p>
                             <p className="text-sm">{group.description}</p>
                             <div className="flex items-center gap-2 justify-center">
-                            <PenLine className="h-4 w-4" />
-                            <span>{group.creator?.name || "Unknown"}</span>
-                          </div>
+                              <PenLine className="h-4 w-4" />
+                              <span>{group.creator?.name || "Unknown"}</span>
+                            </div>
                           </div>
                         </Link>
                       </motion.div>
