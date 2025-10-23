@@ -112,7 +112,7 @@ export default function EditProfilePage() {
                       .join("") || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <Button type="button" variant="outline" size="sm" className="cursor-pointer bg-accent py-3 px-4 text-[#172232]">
+                <Button type="button" variant="outline" size="sm" className="cursor-pointer bg-accent py-3 px-4 text-black">
                   Change profile photo
                 </Button>
               </div>
@@ -190,12 +190,12 @@ export default function EditProfilePage() {
                   type="button"
                   variant="outline"
                   onClick={handleCancel}
-                  className="flex-1 cursor-pointer bg-accent py-6 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                  className="flex-1 cursor-pointer bg-accent py-6 text-black hover:bg-green hover:text-black transition font-mono"
                   disabled={updateProfileMutation.isPending}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 cursor-pointer py-6 bg-background gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono" disabled={updateProfileMutation.isPending}>
+                <Button type="submit" className="flex-1 cursor-pointer py-6 bg-background gap-2 text-white hover:bg-green hover:text-black transition font-mono" disabled={updateProfileMutation.isPending}>
                   {updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
                 </Button>
               </div>

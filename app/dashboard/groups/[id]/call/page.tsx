@@ -56,7 +56,7 @@ export default function VideoCallPage() {
         <div className="flex min-h-screen items-center justify-center">
         <div className="flex items-center space-x-4">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-background border-t-transparent" />
-          <p className="text-background text-2xl">Loading...</p>
+          <p className="text-black text-2xl">Loading...</p>
         </div>
       </div>
       </div>

@@ -92,7 +92,7 @@ export default function MyGroupsPage() {
         <div className="max-w-7xl mx-auto pt-10 space-y-6">
           <div className="space-y-6 text-black">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">My Groups</h1>
+              <h1 className="text-4xl font-peace-sans">My Groups</h1>
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-orange-500" />
@@ -117,7 +117,7 @@ export default function MyGroupsPage() {
                   variant="outline"
                   size="sm"
                   onClick={handleRestoreRemoved}
-                  className="text-sm p-5 bg-background text-white hover:text-background  hover:bg-green cursor-pointer"
+                  className="text-sm p-5 bg-background text-white hover:text-black  hover:bg-green cursor-pointer"
                 >
                   Rejected
                 </Button>
@@ -129,7 +129,7 @@ export default function MyGroupsPage() {
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                   <Users className="h-10 w-10 text-black" />
                 </div>
-                <h3 className="mt-6 text-xl font-semibold">You haven't joined any groups yet</h3>
+                <h3 className="mt-6 text-xl font-semibold text-black">You haven't joined any groups yet</h3>
                 <p className="mt-2 max-w-sm text-balance text-muted-foreground">
                   Create your own study group or explore existing ones to start collaborating with other students.
                 </p>
@@ -137,7 +137,7 @@ export default function MyGroupsPage() {
                   <Button
                     asChild
                     variant="outline"
-                    className="cursor-pointer bg-accent py-8 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                    className="cursor-pointer bg-accent py-8 text-black hover:bg-green hover:text-black transition font-mono"
                   >
                     <Link href="/dashboard/create-group">
                       <Sparkles className="mr-2 h-4 w-4" />
@@ -147,7 +147,7 @@ export default function MyGroupsPage() {
                   <Button
                     variant="outline"
                     asChild
-                    className="cursor-pointer py-8 gap-2 bg-[#172232] text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                    className="cursor-pointer py-8 gap-2 bg-background text-white hover:bg-green hover:text-black transition font-mono"
                   >
                     <Link href="/dashboard/explore">Explore Groups</Link>
                   </Button>
@@ -194,8 +194,15 @@ export default function MyGroupsPage() {
                       {removeButton}
 
                       <CardHeader>
-                        <div>
-                          <h3 className="font-semibold text-lg pr-6">{group.name}</h3>
+                        <div className="flex flex-col justify-center items-center pt-5">
+                           <div className="flex justify-center">
+                              <img
+                                src={group.imageUrl || "/placeholder.svg"}
+                                alt={group.name}
+                                className="h-32 w-32 object-contain rounded-full"
+                              />
+                            </div>
+                            <h3 className="font-semibold text-2xl">{group.name}</h3>
                           {isPendingApproval && (
                             <Badge variant="outline" className="mt-2 mr-2 border-orange-500 text-orange-500">
                               Awaiting Teacher Approval
@@ -222,19 +229,12 @@ export default function MyGroupsPage() {
                         </div>
                       </CardHeader>
 
-                      <CardContent className="space-y-3">
-                        <p className="text-sm text-muted-foreground line-clamp-2">{group.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CardContent className="space-y-3 flex justify-center items-center flex-col">
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Clock className="h-4 w-4" />
                           <span>{group.schedule}</span>
-                        </div>
-                        {group.teacher && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <BookOpen className="h-4 w-4" />
-                            <span>{group.teacher}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        </div>       
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Users className="h-4 w-4" />
                           <span>
                             {group.memberCount || 0}/{group.maxMembers || 15} members

@@ -54,10 +54,10 @@ export default function HomePage() {
 
         </nav>
         <div className="flex items-center space-x-4">
-          <Button asChild size="lg" className="cursor-pointer bg-tranparent text-white text-lg hover:text-background hover:bg-white transition font-mono">
+          <Button asChild size="lg" className="cursor-pointer bg-tranparent text-white text-lg hover:text-black hover:bg-white transition font-mono">
             <Link href="/login">Log In</Link>
           </Button>
-          <Button asChild size="lg" className="cursor-pointer bg-green text-[#172232] text-lg hover:bg-green hover:text-background transition font-mono">
+          <Button asChild size="lg" className="cursor-pointer bg-green text-black text-lg hover:bg-green hover:text-black transition font-mono">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </div>

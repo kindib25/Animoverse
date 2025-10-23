@@ -3,6 +3,7 @@
 import { databases, DATABASE_ID, COLLECTIONS } from "./config"
 import { ID, Query } from "appwrite"
 
+
 // User Profile Operations
 export async function createUserProfile(
   userId: string,
@@ -61,6 +62,9 @@ export async function createGroup(data: {
   maxMembers?: number
 }) {
   try {
+    const creatorProfile = await getUserProfile(data.creatorId)
+    const isTeacher = creatorProfile.success && creatorProfile.profile?.userType === "teacher"
+    
     const group = await databases.createDocument(DATABASE_ID, COLLECTIONS.GROUPS, ID.unique(), {
       ...data,
       memberCount: 1,
@@ -75,6 +79,26 @@ export async function createGroup(data: {
       role: "creator",
       joinedAt: new Date().toISOString(),
     })
+
+    if (!isTeacher) {
+      const admins = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
+        Query.equal("userType", ["teacher", "admin"]),
+      ])
+
+      const creator = await getUserProfile(data.creatorId)
+      const notificationPromises = admins.documents.map((admin: any) =>
+        createNotification({
+          recipientId: admin.$id,
+          type: "group_submitted",
+          title: "New Group Submission",
+          message: `${creator.profile?.name || "A student"} has submitted "${group.name}" for approval`,
+          groupId: group.$id,
+          userId: data.creatorId,
+        }),
+      )
+
+      await Promise.all(notificationPromises)
+    }
 
     return { success: true, group }
   } catch (error: any) {
@@ -122,6 +146,21 @@ export async function joinGroup(groupId: string, userId: string) {
       role: "member",
       joinedAt: new Date().toISOString(),
     })
+
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+    const user = await databases.getDocument(DATABASE_ID, COLLECTIONS.USERS, userId)
+
+    if (group.creatorId) {
+      await createNotification({
+        recipientId: group.creatorId,
+        type: "join_request",
+        title: "New Join Request",
+        message: `${user.name} has requested to join "${group.name}"`,
+        groupId: groupId,
+        userId: userId,
+        relatedId: membership.$id,
+      })
+    }
     return { success: true, membership }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -178,6 +217,8 @@ export async function getPendingMembershipRequests(groupId: string) {
 
 export async function approveMembershipRequest(membershipId: string, groupId: string) {
   try {
+    const membership = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId)
+
     // Update membership status
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId, {
       status: "approved",
@@ -188,6 +229,16 @@ export async function approveMembershipRequest(membershipId: string, groupId: st
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
       memberCount: (group.memberCount || 0) + 1,
     })
+    if (membership.userId) {
+      await createNotification({
+        recipientId: membership.userId,
+        type: "join_approved",
+        title: "Join Request Approved",
+        message: `Your request to join "${group.name}" has been approved!`,
+        groupId: groupId,
+        relatedId: membershipId,
+      })
+    }
 
     return { success: true }
   } catch (error: any) {
@@ -197,9 +248,24 @@ export async function approveMembershipRequest(membershipId: string, groupId: st
 
 export async function rejectMembershipRequest(membershipId: string) {
   try {
+    const membership = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId)
+
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membershipId, {
       status: "rejected",
     })
+
+    if (membership.userId && membership.groupId) {
+      const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, membership.groupId)
+      await createNotification({
+        recipientId: membership.userId,
+        type: "join_rejected",
+        title: "Join Request Rejected",
+        message: `Your request to join "${group.name}" has been rejected.`,
+        groupId: membership.groupId,
+        relatedId: membershipId,
+      })
+    }
+
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -378,9 +444,22 @@ export async function getPendingGroups(teacherId?: string) {
 }
 export async function approveGroup(groupId: string) {
   try {
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
       status: "approved",
     })
+
+    if (group.creatorId) {
+      await createNotification({
+        recipientId: group.creatorId,
+        type: "group_approved",
+        title: "Group Approved",
+        message: `Your group "${group.name}" has been approved and is now live!`,
+        groupId: groupId,
+      })
+    }
+
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -389,9 +468,22 @@ export async function approveGroup(groupId: string) {
 
 export async function rejectGroup(groupId: string) {
   try {
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+
     await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
       status: "rejected",
     })
+
+    if (group.creatorId) {
+      await createNotification({
+        recipientId: group.creatorId,
+        type: "group_rejected",
+        title: "Group Rejected",
+        message: `Your group "${group.name}" has been rejected. Please review and resubmit.`,
+        groupId: groupId,
+      })
+    }
+
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -570,5 +662,91 @@ export async function getNewInfiniteGroups(
   } catch (error: any) {
     console.error("Error fetching groups:", error)
     return { groups: [], nextCursor: null }
+  }
+}
+
+// Notification Operations
+export async function createNotification(data: {
+  recipientId?: string
+  type: "group_approved" | "group_rejected" | "join_request" | "join_approved" | "join_rejected" | "group_submitted"
+  title: string
+  message: string
+  groupId?: string
+  userId?: string
+  relatedId?: string // membershipId or groupId depending on type
+}) {
+  try {
+    const notification = await databases.createDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, ID.unique(), {
+      ...data,
+      isRead: false,
+    })
+    return { success: true, notification }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getUserNotifications(userId: string, limit = 50) {
+  try {
+    const notifications = await databases.listDocuments(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, [
+      Query.equal("recipientId", userId),
+      Query.limit(limit),
+      Query.orderDesc("$createdAt"),
+    ])
+    return { success: true, notifications: notifications.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getUnreadNotificationCount(userId: string) {
+  try {
+    const notifications = await databases.listDocuments(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, [
+      Query.equal("recipientId", userId),
+      Query.equal("isRead", false),
+    ])
+    return { success: true, count: notifications.documents.length }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function markNotificationAsRead(notificationId: string) {
+  try {
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, notificationId, {
+      isRead: true,
+    })
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function markAllNotificationsAsRead(userId: string) {
+  try {
+    const notifications = await databases.listDocuments(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, [
+      Query.equal("recipientId", userId),
+      Query.equal("isRead", false),
+    ])
+
+    const updatePromises = notifications.documents.map((notification: any) =>
+      databases.updateDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, notification.$id, {
+        isRead: true,
+      }),
+    )
+
+    await Promise.all(updatePromises)
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function deleteNotification(notificationId: string) {
+  try {
+    await databases.deleteDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, notificationId)
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
   }
 }

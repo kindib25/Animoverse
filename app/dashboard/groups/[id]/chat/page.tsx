@@ -66,7 +66,14 @@ export default function GroupChatPage() {
                     <ArrowLeft className="h-4 w-4" />
                   </Link>
                 </Button>
-                <CardTitle>{group?.name || "Group Chat"}</CardTitle>
+                <CardTitle className="flex items-center gap-3">
+                  <img
+                    src={group?.imageUrl || "/placeholder.svg"}
+                    alt={group?.name || "Group Chat"}
+                    className="h-10 w-10 object-contain rounded-full"
+                  />
+                  <span>{group?.name || "Group Chat"}</span>
+                </CardTitle>
               </div>
               <Button variant="outline" size="sm" asChild className="bg-transparent">
                 <Link href={`/dashboard/groups/${params.id}/call`}>

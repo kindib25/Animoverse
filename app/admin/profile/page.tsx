@@ -117,7 +117,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <Button asChild className="w-full max-w-xs cursor-pointer bg-background py-6 px-10 text-[#ffffff] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+              <Button asChild className="w-full max-w-xs cursor-pointer bg-background py-6 px-10 text-[#ffffff] hover:bg-green hover:text-black transition font-mono">
                 <Link href="/admin/profile/edit">Edit Profile</Link>
               </Button>
             </div>

@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Space_Mono } from "next/font/google"
+import { Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react"
 import "./globals.css"
@@ -10,11 +10,12 @@ import { AuthProvider } from "@/lib/context/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import { StreamProvider } from "@/lib/context/stream-context"
 
-// Load Space Mono font once
-const spaceMono = Space_Mono({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-})
+
+// Load Poppins font once
+const poppins = Poppins({
+  weight: ['300', '400', '600'], // Light, Regular, Semi-Bold
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: "Animoverse - Student Study Groups",
@@ -29,7 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${spaceMono.className}`}>
+      <head>
+        <link href="https://fonts.cdnfonts.com/css/peace-sans" rel="stylesheet" />
+      </head>
+      <body className={`${poppins.className}`}>
         {/* ✅ Wrap children inside QueryProvider */}
         <QueryProvider>
           <AuthProvider>

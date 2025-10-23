@@ -2,15 +2,16 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Compass, Bookmark, Calendar, Users, PlusCircle, LogOut } from "lucide-react"
+import { Home, Compass, Bookmark, Calendar, Users, PlusCircle, LogOut, Bell } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/context/auth-context"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getUserProfile } from "@/lib/appwrite/database"
-import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
+import { useUnreadNotificationCount } from "@/lib/hooks/use-notifications"
+
 
 const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
@@ -23,35 +24,16 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { logout } = useAuth()
+  const { profile, logout } = useAuth()
   const router = useRouter()
-
-  const [profile, setProfile] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [userId, setUserId] = useState<string>("")
+  const { data: unreadCount = 0 } = useUnreadNotificationCount(userId)
 
   useEffect(() => {
-    async function loadUserProfile() {
-      try {
-        const userResult = await clientGetCurrentUser()
-        if (!userResult?.success || !userResult?.user) {
-          router.push("/login")
-          return
-        }
-
-        const profileResult = await getUserProfile(userResult.user.$id)
-        if (profileResult?.success && profileResult?.profile) {
-          setProfile(profileResult.profile)
-        }
-      } catch (error) {
-        console.error("Error loading sidebar profile:", error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (profile?.$id) {
+      setUserId(profile.$id)
     }
-
-    loadUserProfile()
-  }, [router])
-
+  }, [profile])
 
   const handleLogout = async () => {
     try {
@@ -80,7 +62,7 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-10 rounded-lg px-3 py-5 text-md font-medium transition-colors",
                 isActive
-                  ? "bg-green text-background"
+                  ? "bg-green text-black"
                   : "text-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
@@ -89,27 +71,44 @@ export function Sidebar() {
             </Link>
           )
         })}
+        <Link
+          href="/dashboard/notifications"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors relative",
+            pathname === "/dashboard/notifications"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          )}
+        >
+          <Bell className="h-5 w-5" />
+          Notifications
+          {unreadCount > 0 && (
+            <Badge variant="destructive" className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </Badge>
+          )}
+        </Link>
       </nav>
 
       {/* User profile + logout */}
       <div className="p-4 flex flex-col gap-3">
         <Link
           href="/dashboard/profile"
-          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors"
+          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-black transition-colors"
         >
-          <Avatar className="text-background">
+          <Avatar className="text-black">
             <AvatarImage src={profile?.avatarUrl || "/placeholder.svg?height=40&width=40"} />
             <AvatarFallback className="bg-gray-300">
               {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">
-              {profile?.name || "New User"}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              @{profile?.username || "newuser"}
-            </span>
+          <div className="flex flex-col pl-2">
+            <p className="leading-tight text-sm">
+              {profile?.name || "New User"} <br />
+              <span className="text-xs font-medium">
+                @{profile?.username || "newuser"}
+              </span>
+            </p>
           </div>
         </Link>
 

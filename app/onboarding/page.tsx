@@ -33,7 +33,7 @@ export function OnboardingLayout({ children }: OnboardingLayoutProps) {
 
 
     return (
-        <div className="flex-1 min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+        <div className="flex-1 min-h-screen bg-[url('/bgDefault2.svg')] bg-cover bg-center bg-no-repeat">
             <Logo />
             <main className="flex-1 flex items-center justify-center py-10 lg:px-12">
                 {children}

@@ -121,7 +121,7 @@ export default function ExplorePage() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
         <div className="max-w-7xl mx-auto pt-10 space-y-6">
-          <h1 className="text-3xl font-bold text-black">Search Groups</h1>
+          <h1 className="text-4xl font-peace-sans text-black">Search Groups</h1>
 
           {/* Search Input */}
           <div className="relative">
@@ -131,7 +131,7 @@ export default function ExplorePage() {
               placeholder="Search groups..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 py-6 text-background rounded-xl border-gray-300 selection:bg-background selection:text-white"
+              className="pl-12 py-6 text-black rounded-xl border-gray-300 selection:bg-background selection:text-white"
             />
           </div>
 
@@ -151,7 +151,7 @@ export default function ExplorePage() {
               <Button
                 asChild
                 variant="outline"
-                className="mt-6 bg-accent py-6 px-6 font-mono text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition"
+                className="mt-6 bg-accent py-6 px-6 font-mono text-black hover:bg-green hover:text-black transition"
               >
                 <Link href="/dashboard/create-group">Create First Group</Link>
               </Button>
@@ -166,52 +166,51 @@ export default function ExplorePage() {
                     key={group.$id}
                     href={`/dashboard/groups/${group.$id}`}
                   >
-                    <Card className="hover:shadow-md transition-all rounded-xl border-gray-200">
+                    <Card className="bg-gradient-to-br from-[#4ec66a] to-green hover:shadow-md hover:border-1 hover:border-black transition-all rounded-xl border-gray-200">
                       <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold text-lg text-gray-900">
-                              {group.name}
-                            </h3>
-                            <Badge variant="secondary" className="mt-2">
-                              {group.subject}
-                            </Badge>
-                          </div>
-                          <Button
+                         <div>
+                        <Button
                             variant="ghost"
                             size="icon"
                             onClick={(e) => handleToggleSave(group.$id, e)}
-                            className="h-8 w-8"
+                            className="h-8 w-8 hover:bg-[#59e279]"
                           >
                             <Bookmark
                               className={`h-5 w-5 ${
                                 isSaved
                                   ? "fill-black text-black"
-                                  : "text-gray-500"
+                                  : "text-gray-600"
                               }`}
                             />
                           </Button>
+                         </div>
+                        <div className="flex items-center justify-center">
+                          <div>
+                             <div className="flex justify-center">
+                              <img
+                                src={group.imageUrl || "/placeholder.svg"}
+                                alt={group.name}
+                                className="h-32 w-32 object-contain rounded-full"
+                              />
+                            </div>
+                            <h3 className="font-semibold text-2xl">{group.name}</h3>
+                            <div className="flex items-center justify-center">
+                            <Badge variant="secondary" className="mt-2">
+                              {group.subject}
+                            </Badge>
+                            </div>
+                          </div>
+                          
                         </div>
                       </CardHeader>
 
-                      <CardContent className="space-y-3">
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {group.description}
-                        </p>
-
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <CardContent className="space-y-3 flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Clock className="h-4 w-4" />
                           <span>{group.schedule}</span>
                         </div>
-
-                        {group.teacher && (
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <BookOpen className="h-4 w-4" />
-                            <span>{group.teacher}</span>
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Users className="h-4 w-4" />
                           <span>
                             {group.memberCount || 0}/{group.maxMembers || 15}{" "}

@@ -45,7 +45,7 @@ export default function AdminGroupDetailPage({ params }: { params: Promise<{ id:
 
         <div className="mb-6 flex gap-3">
           <Button asChild className="border-1 bg-background">
-            <Link href={`/admin/groups/${id}/chat`} className="text-white hover:text-background">
+            <Link href={`/admin/groups/${id}/chat`} className="text-white hover:text-black">
               <MessageSquare className="mr-2 h-4 w-4" />
               Message
             </Link>

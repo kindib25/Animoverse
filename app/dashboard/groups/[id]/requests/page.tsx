@@ -146,7 +146,7 @@ export default function MembershipRequestsPage() {
                         size="sm"
                         onClick={() => handleApprove(request.membershipId)}
                         disabled={processingId === request.membershipId}
-                        className="cursor-pointer"
+                        className="shad-button_ReqJoin"
                       >
                         <Check className="h-4 w-4 mr-1" />
                         Approve
@@ -156,10 +156,10 @@ export default function MembershipRequestsPage() {
                         variant="destructive"
                         onClick={() => handleReject(request.membershipId)}
                         disabled={processingId === request.membershipId}
-                        className="cursor-pointer"
+                        className="shad-button_ReqRejected"
                       >
-                        <X className="h-4 w-4 mr-1" />
-                        Reject
+                        <X className="h-4 w-4 mr-1 ml-1 " />
+                        <span className="pr-3">Reject</span>
                       </Button>
                     </div>
                   </div>

@@ -129,7 +129,7 @@ export default function Onboarding() {
                                 {/* Study Preferences - keep as-is */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                     {profile.studyPreferences.map((pref: string) => (
-                                        <Badge key={pref} variant="outline" className="text-background text-sm p-3 px-5">
+                                        <Badge key={pref} variant="outline" className="text-black text-sm p-3 px-5 border-black">
                                             {pref}
                                         </Badge>
                                     ))}

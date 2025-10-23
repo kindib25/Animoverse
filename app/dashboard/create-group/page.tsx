@@ -267,7 +267,7 @@ export default function CreateGroupPage() {
                           <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
                           <p className="mb-1 text-sm font-medium">Drag photo here</p>
                           <p className="mb-3 text-xs text-muted-foreground">SVG, PNG, JPG (max 5MB)</p>
-                          <Button type="button" variant="outline" size="sm" className="cursor-pointer py-6 gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                          <Button type="button" variant="outline" size="sm" className="cursor-pointer py-6 gap-2 text-white hover:bg-green hover:text-black transition font-mono">
                             Select from computer
                           </Button>
                         </div>
@@ -450,7 +450,7 @@ export default function CreateGroupPage() {
                     <Button
                       type="submit"
                       disabled={createGroupMutation.isPending || isUploadingImage}
-                      className="bg-background py-6 px-10 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono cursor-pointer"
+                      className="bg-background py-6 px-10 text-white hover:bg-green hover:text-black transition font-mono cursor-pointer"
                     >
                       {isUploadingImage
                         ? "Uploading image..."

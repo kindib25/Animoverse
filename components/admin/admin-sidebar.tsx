@@ -4,12 +4,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/context/auth-context"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, UsersRound, Calendar, FileText, LogOut, Users } from "lucide-react"
+import { LayoutDashboard, UsersRound, Calendar, FileText, LogOut, Users, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
-import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
-import { getUserProfile } from "@/lib/appwrite/database"
+import { useUnreadNotificationCount } from "@/lib/hooks/use-notifications"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
@@ -22,34 +22,16 @@ const navigation = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const { logout } = useAuth()
   const router = useRouter()
-
-  const [profile, setProfile] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { profile, logout } = useAuth()
+  const [userId, setUserId] = useState<string>("")
+  const { data: unreadCount = 0 } = useUnreadNotificationCount(userId)
 
   useEffect(() => {
-      async function loadUserProfile() {
-        try {
-          const userResult = await clientGetCurrentUser()
-          if (!userResult?.success || !userResult?.user) {
-            router.push("/login")
-            return
-          }
-  
-          const profileResult = await getUserProfile(userResult.user.$id)
-          if (profileResult?.success && profileResult?.profile) {
-            setProfile(profileResult.profile)
-          }
-        } catch (error) {
-          console.error("Error loading sidebar profile:", error)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-  
-      loadUserProfile()
-    }, [router])
+    if (profile?.$id) {
+      setUserId(profile.$id)
+    }
+  }, [profile])
   
 
      const handleLogout = async () => {
@@ -80,7 +62,7 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-10 rounded-lg px-3 py-5 text-md font-medium transition-colors",
                 isActive
-                  ? "bg-green text-background"
+                  ? "bg-green text-black"
                   : "text-foreground hover:bg-accent hover:text-accent-foreground",
               )}
             >
@@ -89,15 +71,33 @@ export function AdminSidebar() {
             </Link>
           )
         })}
+
+         <Link
+          href="/admin/notifications"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors relative",
+            pathname === "/dashboard/notifications"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          )}
+        >
+          <Bell className="h-5 w-5" />
+          Notifications
+          {unreadCount > 0 && (
+            <Badge variant="destructive" className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </Badge>
+          )}
+        </Link>
       </nav>
 
       {/* User profile + logout */}
       <div className="p-4 flex flex-col gap-3">
         <Link
           href="/admin/profile"
-          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-background transition-colors"
+          className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent hover:text-black transition-colors"
         >
-          <Avatar className="text-background">
+          <Avatar className="text-black">
             <AvatarImage src={profile?.avatarUrl || "/placeholder.svg?height=40&width=40"} />
             <AvatarFallback className="bg-gray-300">
               {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}

@@ -94,7 +94,7 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full shad-button_primary" size="lg" disabled={isLoading}>
+      <Button type="submit" className="w-full shad-button_Login" size="lg" disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log in"}
       </Button>
 
@@ -103,7 +103,7 @@ export function LoginForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
+          <span className="bg-[#087830] px-2 text-white">or</span>
         </div>
       </div>
 
@@ -129,9 +129,9 @@ export function LoginForm() {
         Continue with Google
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-gray-300">
         {"Don't have an account? "}
-        <Link href="/signup" className="font-medium text-green hover:text-green-700">
+        <Link href="/signup" className="pl-1 font-medium text-white hover:text-[#67d0aa]">
           Sign up
         </Link>
       </p>

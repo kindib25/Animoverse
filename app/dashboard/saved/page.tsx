@@ -4,10 +4,10 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { Bookmark, Users, Clock, BookOpen } from "lucide-react"
+import { Bookmark, Users, Clock, BookOpen, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, } from "@/components/ui/badge"
 import Link from "next/link"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { clientGetUserSavedGroups, clientUnsaveGroup } from "@/lib/appwrite/client-database"
@@ -50,7 +50,8 @@ export default function SavedPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading saved groups...</p>
+          <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
+          <p className="pl-2 text-muted-foreground">Loading saved groups...</p>
         </div>
       </DashboardLayout>
     )
@@ -67,8 +68,8 @@ export default function SavedPage() {
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-black">Saved Groups</h1>
-              <p className="text-muted-foreground mt-2">
+              <h1 className="text-4xl font-peace-sans text-black">Saved Groups</h1>
+              <p className="text-muted-foreground font-semibold mt-2">
                 Groups you've bookmarked for quick access
               </p>
             </div>
@@ -78,13 +79,13 @@ export default function SavedPage() {
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                   <Bookmark className="h-10 w-10 text-black" />
                 </div>
-                <h3 className="mt-6 text-xl font-semibold">No saved groups yet</h3>
+                <h3 className="mt-6 text-xl font-semibold text-black">No saved groups yet</h3>
                 <p className="mt-2 max-w-sm text-balance text-muted-foreground">
                   Save groups you're interested in to easily find them later.
                 </p>
                 <Button
                   asChild
-                  className="mt-6 bg-background py-6 px-6 font-mono text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition"
+                  className="mt-6 bg-background py-6 px-6 font-mono text-white hover:bg-green hover:text-black transition"
                   variant="outline"
                 >
                   <Link href="/dashboard/explore">Explore Groups</Link>
@@ -97,45 +98,48 @@ export default function SavedPage() {
                     <Card
                       key={group.$id}
                       onClick={() => router.push(`/dashboard/groups/${group.$id}`)}
-                      className="cursor-pointer transition-all hover:shadow-lg h-full"
+                      className="cursor-pointer transition-all hover:shadow-lg h-full bg-gradient-to-br from-[#4ec66a] to-green hover:border-1 hover:border-black"
                     >
                       <CardHeader>
-                        <div className="flex items-start justify-between">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleUnsave(group.$id, e)}
+                          className="h-8 w-8"
+                        >
+                          <Bookmark className="h-5 w-5 text-black fill-black" />
+                        </Button>
+                        <div className="flex items-center justify-center">
                           <div>
-                            <h3 className="font-semibold text-lg">{group.name}</h3>
-                            <Badge variant="secondary" className="mt-2">
-                              {group.subject}
-                            </Badge>
+                            <div className="flex justify-center">
+                              <img
+                                src={group.imageUrl || "/placeholder.svg"}
+                                alt={group.name}
+                                className="h-32 w-32 object-contain rounded-full"
+                              />
+                            </div>
+                            <h3 className="font-semibold text-2xl">{group.name}</h3>
+                            <div className="flex items-center justify-center">
+                              <Badge variant="secondary" className="mt-2">
+                                {group.subject}
+                              </Badge>
+                            </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => handleUnsave(group.$id, e)}
-                            className="h-8 w-8"
-                          >
-                            <Bookmark className="h-5 w-5 text-black fill-black" />
-                          </Button>
+
                         </div>
                       </CardHeader>
 
-                      <CardContent className="space-y-3">
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {group.description}
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CardContent className="space-y-3 flex justify-center items-center flex-col">
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Clock className="h-4 w-4" />
                           <span>{group.schedule}</span>
                         </div>
-                        {group.teacher && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <BookOpen className="h-4 w-4" />
-                            <span>{group.teacher}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+
+                        <div className="flex items-center gap-2 text-sm text-black">
                           <Users className="h-4 w-4" />
                           <span>
-                            {group.memberCount || 0}/{group.maxMembers || 15} members
+                            {group.memberCount || 0}/{group.maxMembers || 15}{" "}
+                            members
                           </span>
                         </div>
                       </CardContent>

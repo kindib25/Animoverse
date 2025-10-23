@@ -205,7 +205,7 @@ export default function EditProfilePage() {
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingImage}
-                  className="cursor-pointer bg-accent  text-[#172232] hover:bg-[#172232] hover:text-white transition font-mono"
+                  className="cursor-pointer bg-accent  text-black hover:bg-background hover:text-white transition font-mono"
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   {isUploadingImage ? "Uploading..." : "Change profile photo"}
@@ -337,12 +337,12 @@ export default function EditProfilePage() {
                 <Button
                   type="button"
                   onClick={handleCancel}
-                  className="flex-1 cursor-pointer bg-accent py-6 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                  className="flex-1 cursor-pointer bg-accent py-6 text-black hover:bg-green hover:text-black transition font-mono"
                   disabled={updateProfileMutation.isPending || isUploadingImage}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono" disabled={updateProfileMutation.isPending || isUploadingImage}>
+                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-green hover:text-black transition font-mono" disabled={updateProfileMutation.isPending || isUploadingImage}>
                   {isUploadingImage ? "Uploading..." : updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
                 </Button>
               </div>

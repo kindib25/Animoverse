@@ -2,6 +2,7 @@
 
 import { databases, DATABASE_ID, COLLECTIONS } from "./config"
 import { Query } from "appwrite"
+import { createNotification } from "./database"
 
 // Get all users for admin management
 export async function getAllUsers(limit = 50) {
@@ -42,13 +43,39 @@ export async function getPendingGroups(teacherId: string) {
   }
 }
 // Approve or reject a group
+
 export async function updateGroupStatus(groupId: string, status: "approved" | "rejected") {
   try {
-    const group = await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
       status,
     })
-    return { success: true, group }
+
+    if (group.creatorId) {
+      let title = ""
+      let message = ""
+
+      if (status === "approved") {
+        title = "Group Approved"
+        message = `Your group "${group.name}" has been approved and is now live!`
+      } else if (status === "rejected") {
+        title = "Group Rejected"
+        message = `Your group "${group.name}" has been rejected. Please review and resubmit if needed.`
+      }
+
+      await createNotification({
+        recipientId: group.creatorId,
+        type: `group_${status}`,
+        title,
+        message,
+        groupId,
+      })
+    }
+
+    return { success: true }
   } catch (error: any) {
+    console.error("Error updating group status:", error)
     return { success: false, error: error.message }
   }
 }

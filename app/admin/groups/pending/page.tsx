@@ -119,7 +119,7 @@ export default function PendingGroupsPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                <CheckCircle className="h-10 w-10 text-background/60" />
+                <CheckCircle className="h-10 w-10 text-black/60" />
               </div>
               <h3 className="mt-6 text-xl font-semibold">All caught up!</h3>
               <p className="mt-2 text-muted-foreground">
@@ -136,8 +136,8 @@ export default function PendingGroupsPage() {
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">{group.subject}</Badge>
                     <Badge variant="outline">
-                      <Users className="mr-1 h-3 w-3 text-background" />
-                      <p className="text-background">{group.memberCount || 0}/{group.maxMembers || 15}</p>
+                      <Users className="mr-1 h-3 w-3 text-black" />
+                      <p className="text-black">{group.memberCount || 0}/{group.maxMembers || 15}</p>
                     </Badge>
                   </div>
                 </CardHeader>

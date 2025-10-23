@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -45,7 +46,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #050e1b;
+  --background: #3c4142;
   --foreground: oklch(1 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -68,7 +69,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #172232c0;
+  --sidebar: #3c4142f5;
   --sidebar-foreground: oklch(100% 0.00011 271.152);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -113,7 +114,11 @@
 }
 
 @theme {
-  --font-space-mono: "Space Mono";
+  --font-poppins-light: "Poppins", sans-serif;
+  --font-poppins-regular: "Poppins", sans-serif;
+  --font-poppins-semibold: "Poppins", sans-serif;
+  --font-peace-sans: 'Peace Sans', sans-serif;
+
 
   /* Extended Colors */
   --color-primary-500: #877EFF;
@@ -129,13 +134,14 @@
   --color-light-2: #EFEFEF;
   --color-light-3: #7878A3;
   --color-light-4: #2a5e92;
-  --color-green: #c3db3f;
+  --color-green: #aed141;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -147,70 +153,78 @@
   }
 
   .shad-input {
-    @apply h-12 bg-[#172232] border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-green;
-  }
-  .shad-button_press {
-    @apply flex flex-col cursor-pointer items-start text-left bg-green text-background font-semibold text-lg 
-         pl-6 pr-20 py-8 rounded-xl 
-         hover:bg-green 
-         shadow-[0_8px_0_#2f855a] transition-all duration-150 
-         hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
-         active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
-         gap-0 leading-none;
+    @apply h-12 bg-white border-none text-black placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-gray-400 selection:bg-background selection:text-white;
   }
 
-   .shad-button_onboarding {
-    @apply flex cursor-pointer text-center bg-green text-background text-lg 
-          py-10 px-20 rounded-xl border-2 border-black
-        hover:bg-green 
-          shadow-[0_8px_0_#2f855a] transition-all duration-150 
-          hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
-          active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
+  .shad-button_press {
+    @apply flex flex-col cursor-pointer items-start text-left bg-green text-black font-semibold text-lg pl-6 pr-20 py-8 rounded-xl hover:bg-green shadow-[0_8px_0_#2f855a] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] gap-0 leading-none;
   }
+
+  .shad-button_onboarding {
+    @apply flex cursor-pointer text-center bg-green text-black text-lg py-10 px-20 rounded-xl border-2 border-black hover:bg-green shadow-[0_8px_0_#2f855a] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
   .shad-button_subjectUnselected {
-    @apply flex cursor-pointer text-center bg-white text-background text-lg 
-          py-7 px-10 rounded-xl border-2 border-black
-        hover:bg-white 
-          shadow-[0_8px_0_#b3b3b3] transition-all duration-150 
-          hover:translate-y-[3px] hover:shadow-[0_5px_0_#b3b3b3] 
-          active:translate-y-[6px] active:shadow-[0_2px_0_#b3b3b3] 
+    @apply flex cursor-pointer text-center bg-white text-black text-lg py-7 px-10 rounded-xl border-2 border-black hover:bg-white shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#b3b3b3] active:translate-y-[6px] active:shadow-[0_2px_0_#b3b3b3]
   }
 
   .shad-button_subjectSelected {
-    @apply flex cursor-pointer text-center bg-green text-background text-lg 
-          py-7 px-10 rounded-xl border-2 border-black
-        hover:bg-green 
-          shadow-[0_8px_0_#2f855a] transition-all duration-150 
-          hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
-          active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
+    @apply flex cursor-pointer text-center bg-green text-black text-lg py-7 px-10 rounded-xl border-2 border-black hover:bg-green shadow-[0_8px_0_#2f855a] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
   .shad-button_showAll {
-    @apply flex cursor-pointer text-center bg-white text-background text-base 
-          py-5 px-10 rounded-lg border-2 border-black
-        hover:bg-green 
-          shadow-[0_8px_0_#b3b3b3] transition-all duration-150 
-          hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
-          active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
+    @apply flex cursor-pointer text-center bg-white text-black text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
   .shad-button_showMatch {
-    @apply flex cursor-pointer text-center bg-white text-background text-base 
-          py-5 px-5 rounded-lg border-2 border-black
-        hover:bg-green 
-          shadow-[0_8px_0_#b3b3b3] transition-all duration-150 
-          hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] 
-          active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] 
+    @apply flex cursor-pointer text-center bg-white text-black text-base py-5 px-5 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
   
+   .shad-button_ReqJoin {
+    @apply flex cursor-pointer text-center bg-white text-black text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+   .shad-button_ReqPending {
+    @apply flex cursor-pointer text-center bg-background text-white text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+  .shad-button_ReqRejected {
+    @apply flex cursor-pointer text-center bg-destructive text-white text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-destructive shadow-[0_8px_0_#ff7171] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#ff7171] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+   .shad-button_Login {
+    @apply flex cursor-pointer text-center bg-white text-black text-xl py-7 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+  .shad-button_JoinSession {
+    @apply flex cursor-pointer text-center bg-white text-black text-xl py-7 px-10 rounded-lg border-2 border-black hover:bg-white shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
 }
 
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-gradient {
   animation: gradient 15s ease infinite;
 }
+
+
+/*Poppins font weight: 
+
+Light: 300
+Regular: 400
+Semi-bold: 600
+
+*/

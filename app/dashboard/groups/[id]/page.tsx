@@ -130,7 +130,7 @@ export default function GroupDetailPage() {
       <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
         <div className="max-w-7xl mx-auto space-y-6"></div>
         <div className="mx-auto max-w-4xl space-y-6 px-4">
-          <Button variant="ghost" asChild className="text-background bg-accent hover:bg-background hover:text-white">
+          <Button variant="ghost" asChild className="text-black bg-accent hover:bg-background hover:text-white">
             <Link href="/dashboard">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -139,7 +139,7 @@ export default function GroupDetailPage() {
 
           <Card>
             <CardContent className="">
-              <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#89D957] to-[#C9E265]">
+              <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#4ec66a] to-green">
                 {group.imageUrl ? (
                   <div className="flex justify-center pt-20">
                     <img
@@ -159,7 +159,7 @@ export default function GroupDetailPage() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h1 className="text-3xl font-bold">{group.name}</h1>
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" className="text-sm">
                         {group.memberCount || 0}/{group.maxMembers || 15}
                       </Badge>
                     </div>
@@ -169,13 +169,22 @@ export default function GroupDetailPage() {
                         <span>{group.schedule}</span>
                       </div>
                     </div>
-                    <Badge>{group.subject}</Badge>
+                    <Badge className="text-sm">{group.subject}</Badge>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h2 className="text-lg font-semibold">About</h2>
                   <p className="text-muted-foreground">{group.description}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-lg font-semibold">Study Preferences</h2>
+                  <p className="text-muted-foreground">
+                    {Array.isArray(group.studyPreferences) && group.studyPreferences.length === 2
+                      ? group.studyPreferences.join(' / ')
+                      : group.studyPreferences}
+                  </p>
                 </div>
 
                 {group.teacher && (
@@ -185,10 +194,10 @@ export default function GroupDetailPage() {
                   </div>
                 )}
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center items-center">
                   {!membershipStatus && (
                     <Button
-                      className="flex-1 cursor-pointer"
+                      className="shad-button_ReqJoin"
                       onClick={handleJoinGroup}
                       disabled={isJoining || group.memberCount >= group.maxMembers}
                     >
@@ -201,13 +210,13 @@ export default function GroupDetailPage() {
                   )}
 
                   {isPending && (
-                    <Button className="flex-1" disabled variant="secondary">
+                    <Button className="shad-button_ReqPending" disabled variant="secondary">
                       Request Pending
                     </Button>
                   )}
 
                   {isRejected && (
-                    <Button className="flex-1" disabled variant="destructive">
+                    <Button className="shad-button_ReqRejected" disabled variant="destructive">
                       Request Rejected
                     </Button>
                   )}

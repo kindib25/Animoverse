@@ -111,7 +111,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="flex w-full flex-col items-center justify-center bg-background p-8 lg:w-1/2">
+      <div className="flex w-full flex-col items-center justify-center bg-[#087830] p-8 lg:w-1/2">
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col items-center space-y-2">
             <div className="flex items-center gap-2">
@@ -122,10 +122,10 @@ export default function AdminLoginPage() {
           </div>
 
           <div className="space-y-2 text-center">
-            <h2 className="text-balance text-3xl font-bold tracking-tight">
+            <h2 className="text-balance text-4xl font-peace-sans tracking-tight">
               Log in to your account
             </h2>
-            <p className="text-pretty text-muted-foreground">
+            <p className="text-pretty font-normal">
               Welcome Admin! Please enter your details.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function AdminLoginPage() {
             <div className="py-2"></div>
             <Button
               type="submit"
-              className="w-full shad-button_primary"
+              className="w-full shad-button_Login"
               disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Log-in"}

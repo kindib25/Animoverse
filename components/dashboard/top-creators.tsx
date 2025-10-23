@@ -33,7 +33,7 @@ export function TopCreators() {
                 <span className="text-xs text-muted-foreground">{creator.username}</span>
               </div>
             </div>
-            <Button size="sm" variant="outline" className="cursor-pointer py-1 px-3 text-xs bg-green hover:bg-[#172232] hover:text-[#FFFFFF] transition font-mono">
+            <Button size="sm" variant="outline" className="cursor-pointer py-1 px-3 text-xs bg-green hover:bg-black hover:text-[#FFFFFF] transition font-mono">
               Follow
             </Button>
           </div>

@@ -102,7 +102,7 @@ export default function DashboardPage() {
             Skip
           </Button>
         </div>
-        <div className="px-80 pt-10 text-black">
+        <div className="px-100 pt-10 text-black">
           <div className="flex justify-center items-center text-center">
             <h1 className="text-2xl font-mono mb-6">
               Hey{" "}
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="cursor-pointer bg-accent py-8 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                  className="cursor-pointer bg-accent py-8 text-black hover:bg-green hover:text-black transition font-mono"
                 >
                   <Link href="/dashboard/create-group">
                     <Sparkles className="mr-2 h-4 w-4" />
@@ -142,7 +142,7 @@ export default function DashboardPage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="cursor-pointer py-8 gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                  className="cursor-pointer py-8 gap-2 text-white hover:bg-green hover:text-black transition font-mono"
                 >
                   <Link href="/dashboard/explore">Explore Groups</Link>
                 </Button>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                     >
                       <Link
                         href={`/dashboard/groups/${group.$id}`}
-                        className="block rounded-lg border border-transparent bg-gradient-to-br from-[#C9E265] to-[#89D957] p-6 transition-colors hover:border-black"
+                        className="block rounded-lg border border-transparent bg-gradient-to-br from-[#4ec66a] to-green p-6 transition-colors hover:border-black"
                       >
                         <div className="relative text-center space-y-4">
                           <div className="absolute top-4 left-4 flex items-center justify-start gap-2 text-sm">
@@ -184,7 +184,7 @@ export default function DashboardPage() {
                           <h3 className="font-semibold text-2xl">
                             {group.name}
                           </h3>
-                          <p className="text-sm">{group.description}</p>
+                          <p className="text-sm px-30">{group.description}</p>
                           <div className="flex items-cente justify-center gap-3">
                           <Badge className="text-sm" variant={"secondary"}>{group.subject}</Badge>
 

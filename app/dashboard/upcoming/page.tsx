@@ -86,8 +86,8 @@ export default function UpcomingPage() {
     <DashboardLayout>
       <div className="space-y-6 px-20 pt-10 text-black">
         <div>
-          <h1 className="text-3xl font-bold">Upcoming Schedules</h1>
-          <p className="text-muted-foreground">Your scheduled sessions for today</p>
+          <h1 className="text-4xl font-peace-sans">Upcoming Schedules</h1>
+          <p className="text-muted-foreground font-semibold">Your scheduled sessions for today</p>
         </div>
 
         {isLoading ? (
@@ -99,12 +99,12 @@ export default function UpcomingPage() {
         ) : upcomingSessions && upcomingSessions.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {upcomingSessions.map((group: any) => (
-              <Card key={group.$id}>
+              <Card key={group.$id} className="bg-green">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle>{group.name}</CardTitle>
-                      <CardDescription className="mt-1">{group.subject}</CardDescription>
+                      <CardTitle className="text-black">{group.name}</CardTitle>
+                      <CardDescription className="mt-1 text-black">{group.subject}</CardDescription>
                     </div>
                     <Badge variant="default">Today</Badge>
                   </div>
@@ -112,10 +112,10 @@ export default function UpcomingPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{group.schedule}</span>
+                      <Clock className="h-4 w-4 text-black" />
+                      <span className="text-black">{group.schedule}</span>
                     </div>
-                    <Button asChild className="w-full">
+                    <Button asChild className=" shad-button_JoinSession">
                       <Link href={`/dashboard/groups/${group.$id}/call`}>
                         <Video className="mr-2 h-4 w-4" />
                         Join Session
@@ -129,17 +129,17 @@ export default function UpcomingPage() {
         ) : (
           <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-              <Calendar className="h-10 w-10 text-background" />
+              <Calendar className="h-10 w-10 text-black" />
             </div>
             <h3 className="mt-6 text-xl font-semibold">No upcoming sessions</h3>
             <p className="mt-2 max-w-sm text-balance text-muted-foreground">
               Join or create study groups to see your upcoming sessions here.
             </p>
             <div className="mt-6 flex gap-3">
-              <Button variant="outline" asChild className="cursor-pointer bg-accent py-8 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono" >
+              <Button variant="outline" asChild className="cursor-pointer bg-accent py-8 text-black hover:bg-green hover:text-black transition font-mono" >
                 <Link href="/dashboard/create-group" >Create Group</Link>
               </Button>
-              <Button variant="outline" asChild className="cursor-pointer py-8 gap-2 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+              <Button variant="outline" asChild className="cursor-pointer py-8 gap-2 text-white hover:bg-green hover:text-black transition font-mono">
                 <Link href="/dashboard/explore">Explore Groups</Link>
               </Button>
             </div>

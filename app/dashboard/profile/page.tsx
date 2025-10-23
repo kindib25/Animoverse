@@ -117,10 +117,10 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex gap-4 w-full max-w-xs">
-                <Button asChild className="cursor-pointer bg-accent py-8 px-7 text-[#172232] hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                <Button asChild className="cursor-pointer bg-accent py-8 px-7 text-black hover:bg-green hover:text-black transition font-mono">
                   <Link href="/dashboard/profile/edit">Edit Profile</Link>
                 </Button>
-                <Button asChild  className="cursor-pointer py-8 bg-background text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono">
+                <Button asChild  className="cursor-pointer py-8 bg-background text-white hover:bg-green hover:text-black transition font-mono">
                   <Link href="/dashboard/profile/change-password">Change Password</Link>
                 </Button>
               </div>
@@ -149,7 +149,7 @@ export default function ProfilePage() {
                   <h2 className="mb-3 text-lg font-bold">Study Preferences</h2>
                   <div className="flex flex-wrap gap-2">
                     {profile.studyPreferences.map((pref: string) => (
-                      <Badge key={pref} variant="outline" className="text-background">
+                      <Badge key={pref} variant="outline" className="text-black">
                         {pref}
                       </Badge>
                     ))}

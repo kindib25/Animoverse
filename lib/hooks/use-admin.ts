@@ -5,7 +5,7 @@ import { queryKeys } from "@/lib/constants/query-keys"
 import {
   getAllUsers,
   updateGroupStatus,
-   getPendingGroups,
+  getPendingGroups,
   getTeacherGroups,
   getGroupMembers,
   getDashboardStats,
@@ -83,7 +83,7 @@ export function useUpdateGroupStatus() {
     mutationFn: async ({ groupId, status }: { groupId: string; status: "approved" | "rejected" }) => {
       const result = await updateGroupStatus(groupId, status)
       if (!result.success) throw new Error(result.error)
-      return result.group
+      return (result as { success: true; group: any }).group
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.pendingGroups() })

@@ -114,12 +114,12 @@ export default function ChangePasswordPage() {
                   type="button"
                   variant="outline"
                   onClick={() => router.push("/dashboard/profile")}
-                  className="flex-1 cursor-pointer bg-accent py-6 text-background hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono"
+                  className="flex-1 cursor-pointer bg-accent py-6 text-black hover:bg-green hover:text-black transition font-mono"
                   disabled={isLoading}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-[#C3DB3F] hover:text-[#172232] transition font-mono " disabled={isLoading}>
+                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-green hover:text-black transition font-mono " disabled={isLoading}>
                   {isLoading ? "Updating..." : "Update Password"}
                 </Button>
               </div>
