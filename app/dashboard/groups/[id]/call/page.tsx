@@ -73,7 +73,7 @@ export default function VideoCallPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-full bg-black/50 text-white backdrop-blur-md hover:bg-black/70"
+                className="h-10 w-10 rounded-full bg-black/50 text-white backdrop-blur-md hover:bg-black/70 hover:text-white"
                 asChild
               >
                 <Link href={`/dashboard/groups/${groupId}/chat`}>
@@ -83,7 +83,7 @@ export default function VideoCallPage() {
             </div>
 
             {/* Video layout */}
-            <div className="flex flex-1 items-center justify-center p-4">
+            <div className="flex flex-1 items-center justify-center p-4 mt-20 md:mt-0">
               <SpeakerLayout participantsBarPosition="bottom" />
             </div>
 

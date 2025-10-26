@@ -2,10 +2,7 @@
 
 import type React from "react"
 import { Sidebar } from "./sidebar"
-import { TopCreators } from "./top-creators"
 import { usePathname } from "next/navigation"
-import { use } from "react"
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/context/auth-context"
 
@@ -15,13 +12,6 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
-  const hideTopCreators = [
-    "/dashboard/explore",
-    "/dashboard/saved",
-    "/dashboard/upcoming",
-    "/dashboard/my-groups",
-    "/dashboard/create-group",
-  ].includes(pathname)
 
   const router = useRouter()
   const { profile, isLoading } = useAuth()
@@ -44,9 +34,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+      <div className="hidden md:flex min-h-screen">
       <Sidebar />
+      </div>
       <main className="flex-1 p-6 lg:p-8 bg-white">{children}</main>
-      {!hideTopCreators && <TopCreators />}
     </div>
   )
 }

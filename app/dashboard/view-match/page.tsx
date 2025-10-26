@@ -96,14 +96,14 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
-      <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white">
+      <div className="flex-1 overflow-y-auto p-6 bg-white">
         <div className="float-end">
           <Button className="shad-button_showAll" onClick={handleClick}>
             Back
           </Button>
         </div>
-        <div className="px-100 pt-10 text-black">
-          <div className="flex justify-center items-center text-center">
+        <div className="pt-10 text-black md:px-50">
+          <div className="flex justify-center items-center text-center mt-6 md:mt-0">
             <h1 className="text-2xl font-mono mb-6">
               Hey{" "}
               <span className="font-bold">
@@ -118,7 +118,7 @@ export default function DashboardPage() {
           </div>
 
           {displayedGroups.length === 0 ? (
-            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-2 text-center">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                 <Users className="h-10 w-10" />
               </div>
@@ -149,7 +149,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4 px-4 md:px-20">
+            <div className="space-y-4">
               <div className="grid gap-6 md:grid-cols-1">
                 <AnimatePresence>
                   {displayedGroups.map((group, index) => (
@@ -184,8 +184,8 @@ export default function DashboardPage() {
                           <h3 className="font-semibold text-2xl">
                             {group.name}
                           </h3>
-                          <p className="text-sm px-30">{group.description}</p>
-                          <div className="flex items-cente justify-center gap-3">
+                          <p className="text-sm px-10 md:px-30">{group.description}</p>
+                          <div className="flex items-center justify-center gap-3 flex-col md:flex-row">
                           <Badge className="text-sm" variant={"secondary"}>{group.subject}</Badge>
 
                           <Badge className="text-black border-black text-sm" variant={"outline"}>

@@ -7,12 +7,12 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, ArrowLeft, MessageSquare, Phone } from "lucide-react"
+import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu } from "lucide-react"
 import { getGroup, joinGroup, checkMembershipStatus } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 import { Sidebar } from "@/components/dashboard/sidebar"
-import { TopCreators } from "@/components/dashboard/top-creators"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function GroupDetailPage() {
   const params = useParams()
@@ -24,6 +24,7 @@ export default function GroupDetailPage() {
   const [membershipRole, setMembershipRole] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     async function loadGroup() {
@@ -124,13 +125,56 @@ export default function GroupDetailPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
       {/* Sidebar */}
-      <Sidebar />
+       <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+               <Sidebar />
+              </div>
+              
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+      <main className="flex-1 overflow-y-auto bg-white py-5">
+        
         <div className="max-w-7xl mx-auto space-y-6"></div>
         <div className="mx-auto max-w-4xl space-y-6 px-4">
-          <Button variant="ghost" asChild className="text-black bg-accent hover:bg-background hover:text-white">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="sm:flex md:hidden cursor-pointer text-black"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+             <Menu className="!w-6 !h-6" />
+          </Button>
+
+          <Button variant="ghost" asChild className="hidden md:inline-flex text-black bg-accent hover:bg-background hover:text-white">
             <Link href="/dashboard">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -141,11 +185,11 @@ export default function GroupDetailPage() {
             <CardContent className="">
               <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#4ec66a] to-green">
                 {group.imageUrl ? (
-                  <div className="flex justify-center pt-20">
+                  <div className="flex justify-center pt-10 md:pt-20">
                     <img
                       src={group.imageUrl || "/placeholder.svg"}
                       alt={group.name}
-                      className="h-60 w-60 object-contain rounded-full"
+                      className="h-30 w-30 md:h-60 md:w-60 object-contain rounded-full"
                     />
                   </div>
                 ) : (
@@ -249,9 +293,6 @@ export default function GroupDetailPage() {
           </Card>
         </div>
       </main>
-      <div className="flex min-h-screen">
-        <TopCreators />
-      </div>
     </div>
   )
 }

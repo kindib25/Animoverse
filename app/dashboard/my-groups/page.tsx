@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { Users, Sparkles, Clock, BookOpen, X, Loader2 } from "lucide-react"
+import { Users, Sparkles, Clock, X, Loader2, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,12 +11,15 @@ import { getUserGroups } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function MyGroupsPage() {
   const router = useRouter()
   const [groups, setGroups] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [removedGroupIds, setRemovedGroupIds] = useState<string[]>([])
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [showRejectedModal, setShowRejectedModal] = useState(false)
 
   // Load removed group IDs from localStorage
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function MyGroupsPage() {
     }
   }, [])
 
-  // Save removed group IDs to localStorage (slight debounce)
+  // Save removed group IDs to localStorage
   useEffect(() => {
     if (typeof window === "undefined") return
     const timeout = setTimeout(() => {
@@ -72,28 +75,81 @@ export default function MyGroupsPage() {
 
   // Filter out removed rejected groups
   const visibleGroups = groups.filter((group) => !removedGroupIds.includes(group.$id))
+  const rejectedGroups = groups.filter(
+    (g) => g.status === "rejected" || g.membershipStatus === "rejected"
+  )
 
   const handleRemove = (groupId: string) => {
     setRemovedGroupIds((prev) => [...prev, groupId])
   }
 
-  const handleRestoreRemoved = () => {
-    setRemovedGroupIds([])
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+                <Sidebar />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+
+
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+      <main className="flex-1 overflow-y-auto bg-white">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:flex md:hidden cursor-pointer text-black m-3"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="!w-6 !h-6" />
+        </Button>
+
+        <div className="flex float-end mr-4 mt-4 font-poppins-regular">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowRejectedModal(true)}
+            className="text-sm p-3 md:text-base font-medium md:p-5 bg-background text-white hover:text-black hover:bg-green cursor-pointer"
+          >
+            Rejected
+          </Button>
+        </div>
+
+
         {/* Header Section */}
-        <div className="max-w-7xl mx-auto pt-10 space-y-6">
+        <div className="max-w-7xl mx-auto pt-10 space-y-6 p-5">
           <div className="space-y-6 text-black">
-            <div className="flex items-center justify-between">
-              <h1 className="text-4xl font-peace-sans">My Groups</h1>
-              <div className="flex items-center gap-4 text-sm">
+            <div className="flex flex-col items-center justify-between gap-7">
+              <h1 className="text-4xl font-peace-sans">
+                My Groups
+              </h1>
+              <div className="flex items-center gap-2 md:gap-10 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-orange-500" />
                   <span>Awaiting Teacher Approval</span>
@@ -108,175 +164,246 @@ export default function MyGroupsPage() {
                 </div>
               </div>
             </div>
-            </div>
+          </div>
 
-            {/* Count and restore removed button */}
-            <div className="flex items-center justify-between float-end">
-              {removedGroupIds.length > 0 && (
+
+          {/* Empty State */}
+          {visibleGroups.length === 0 ? (
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                <Users className="h-10 w-10 text-black" />
+              </div>
+              <h3 className="mt-6 text-xl font-semibold text-black">
+                You haven't joined any groups yet
+              </h3>
+              <p className="mt-2 max-w-sm text-balance text-muted-foreground">
+                Create your own study group or explore existing ones to start collaborating with other students.
+              </p>
+              <div className="mt-6 flex gap-3">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="cursor-pointer bg-accent py-8 text-black hover:bg-green hover:text-black transition font-mono"
+                >
+                  <Link href="/dashboard/create-group">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Create Group
+                  </Link>
+                </Button>
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={handleRestoreRemoved}
-                  className="text-sm p-5 bg-background text-white hover:text-black  hover:bg-green cursor-pointer"
+                  asChild
+                  className="cursor-pointer py-8 gap-2 bg-background text-white hover:bg-green hover:text-black transition font-mono"
                 >
-                  Rejected
+                  <Link href="/dashboard/explore">Explore Groups</Link>
                 </Button>
-              )}
-            </div>
-
-            {visibleGroups.length === 0 ? (
-              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                  <Users className="h-10 w-10 text-black" />
-                </div>
-                <h3 className="mt-6 text-xl font-semibold text-black">You haven't joined any groups yet</h3>
-                <p className="mt-2 max-w-sm text-balance text-muted-foreground">
-                  Create your own study group or explore existing ones to start collaborating with other students.
-                </p>
-                <div className="mt-6 flex gap-3">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="cursor-pointer bg-accent py-8 text-black hover:bg-green hover:text-black transition font-mono"
-                  >
-                    <Link href="/dashboard/create-group">
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Create Group
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="cursor-pointer py-8 gap-2 bg-background text-white hover:bg-green hover:text-black transition font-mono"
-                  >
-                    <Link href="/dashboard/explore">Explore Groups</Link>
-                  </Button>
-                </div>
               </div>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {visibleGroups.map((group) => {
-                  const isPendingApproval = group.status === "pending"
-                  const isPendingRejected = group.status === "rejected"
-                  const isJoinRequestPending = group.membershipStatus === "pending_join"
-                  const isJoinRequestRejected = group.membershipStatus === "rejected"
-                  const isActive = group.membershipStatus === "approved" && group.status === "approved"
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {visibleGroups.map((group) => {
+                const isPendingApproval = group.status === "pending"
+                const isJoinRequestPending = group.membershipStatus === "pending_join"
+                const isPendingRejected = group.status === "rejected"
+                const isJoinRequestRejected = group.membershipStatus === "rejected"
+                const isActive =
+                  group.membershipStatus === "approved" && group.status === "approved"
 
-                  const statusColor = isPendingApproval
-                    ? "bg-orange-500"
-                    : isJoinRequestPending
-                      ? "bg-yellow-500"
-                      : isJoinRequestRejected || isPendingRejected
-                        ? "bg-red-500"
-                        : "bg-green-500"
+                const statusColor = isPendingApproval
+                  ? "bg-orange-500"
+                  : isJoinRequestPending
+                    ? "bg-yellow-500"
+                    : isPendingRejected || isJoinRequestRejected
+                      ? "bg-red-500"
+                      : "bg-green-500"
 
-                  const removeButton =
-                    (isJoinRequestRejected || isPendingRejected) && !removedGroupIds.includes(group.$id) ? (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2 flex items-center gap-1 cursor-pointer"
-                        onClick={() => handleRemove(group.$id)}
-                      >
-                        <X className="h-4 w-4" />
-                        Remove
-                      </Button>
-                    ) : null
-
-                  const cardContent = (
-                    <Card
-                      className={`relative ${isPendingApproval || isJoinRequestPending
-                          ? "opacity-60 cursor-not-allowed"
-                          : "hover:shadow-lg transition-shadow"
-                        }`}
+                const removeButton =
+                  (isJoinRequestRejected || isPendingRejected) &&
+                    !removedGroupIds.includes(group.$id) ? (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2 flex items-center gap-1 cursor-pointer"
+                      onClick={() => handleRemove(group.$id)}
                     >
-                      <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${statusColor}`} />
-                      {removeButton}
+                      <X className="h-4 w-4" />
+                      Remove
+                    </Button>
+                  ) : null
 
-                      <CardHeader>
-                        <div className="flex flex-col justify-center items-center pt-5">
-                           <div className="flex justify-center">
+                const cardContent = (
+                  <Card
+                    className={`relative ${isPendingApproval || isJoinRequestPending
+                      ? "opacity-60 cursor-not-allowed"
+                      : "hover:shadow-lg transition-shadow"
+                      }`}
+                  >
+                    <div
+                      className={`absolute top-4 right-4 h-3 w-3 rounded-full ${statusColor}`}
+                    />
+                    {removeButton}
+
+                    <CardHeader>
+                      <div className="flex flex-col justify-center items-center pt-5">
+                        <img
+                          src={group.imageUrl || "/placeholder.svg"}
+                          alt={group.name}
+                          className="h-32 w-32 object-contain rounded-full"
+                        />
+                        <h3 className="font-semibold text-2xl">{group.name}</h3>
+                        {isPendingApproval && (
+                          <Badge
+                            variant="outline"
+                            className="mt-2 mr-2 border-orange-500 text-orange-500"
+                          >
+                            Awaiting Teacher Approval
+                          </Badge>
+                        )}
+                        {isJoinRequestPending && (
+                          <Badge
+                            variant="outline"
+                            className="mt-2 mr-2 border-yellow-500 text-yellow-500"
+                          >
+                            Join Request Pending
+                          </Badge>
+                        )}
+                        {isJoinRequestRejected && (
+                          <Badge
+                            variant="outline"
+                            className="mt-2 mr-2 border-red-500 text-red-500"
+                          >
+                            Rejected
+                          </Badge>
+                        )}
+                        {isPendingRejected && (
+                          <Badge
+                            variant="outline"
+                            className="mt-2 mr-2 border-red-500 text-red-500"
+                          >
+                            Group Rejected
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="mt-2">
+                          {group.subject}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3 flex justify-center items-center flex-col">
+                      <div className="flex items-center gap-2 text-sm text-black">
+                        <Clock className="h-4 w-4" />
+                        <span>{group.schedule}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-black">
+                        <Users className="h-4 w-4" />
+                        <span>
+                          {group.memberCount || 0}/{group.maxMembers || 15} members
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+
+                return (
+                  <div key={group.$id}>
+                    {isActive ? (
+                      <Link href={`/dashboard/groups/${group.$id}`}>{cardContent}</Link>
+                    ) : (
+                      cardContent
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Rejected Groups Popup */}
+        <AnimatePresence>
+          {showRejectedModal && (
+            <>
+              {/* Overlay */}
+              <motion.div
+                className="fixed inset-0 bg-black/50 z-40"
+                onClick={() => setShowRejectedModal(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+              {/* Popup Container */}
+              <motion.div
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+              >
+                <div className="bg-white rounded-2xl shadow-xl w-[90%] max-w-3xl max-h-[80vh] overflow-y-auto relative p-6">
+                  <button
+                    onClick={() => setShowRejectedModal(false)}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                  >
+                    <X className="h-5 w-5 cursor-pointer" />
+                  </button>
+
+                  <h2 className="text-2xl font-semibold mb-4 text-center">
+                    Rejected Groups
+                  </h2>
+
+                  {rejectedGroups.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-10">
+                      No rejected groups found.
+                    </p>
+                  ) : (
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      {rejectedGroups.map((group) => (
+                        <Card key={group.$id} className="relative">
+                          <div className="absolute top-4 right-4 h-3 w-3 rounded-full bg-red-500" />
+                          <CardHeader>
+                            <div className="flex flex-col items-center justify-center pt-3">
                               <img
                                 src={group.imageUrl || "/placeholder.svg"}
                                 alt={group.name}
-                                className="h-32 w-32 object-contain rounded-full"
+                                className="h-24 w-24 rounded-full object-cover"
                               />
+                              <h3 className="mt-3 font-semibold text-lg">
+                                {group.name}
+                              </h3>
+                              <Badge
+                                variant="outline"
+                                className="mt-2 border-red-500 text-red-500"
+                              >
+                                Rejected
+                              </Badge>
+                              <Badge variant="secondary" className="mt-2">
+                                {group.subject}
+                              </Badge>
                             </div>
-                            <h3 className="font-semibold text-2xl">{group.name}</h3>
-                          {isPendingApproval && (
-                            <Badge variant="outline" className="mt-2 mr-2 border-orange-500 text-orange-500">
-                              Awaiting Teacher Approval
-                            </Badge>
-                          )}
-                          {isJoinRequestPending && (
-                            <Badge variant="outline" className="mt-2 mr-2 border-yellow-500 text-yellow-500">
-                              Join Request Pending
-                            </Badge>
-                          )}
-                          {isJoinRequestRejected && (
-                            <Badge variant="outline" className="mt-2 mr-2 border-red-500 text-red-500">
-                              Rejected
-                            </Badge>
-                          )}
-                          {isPendingRejected && (
-                            <Badge variant="outline" className="mt-2 mr-2 border-red-500 text-red-500">
-                              Group Rejected
-                            </Badge>
-                          )}
-                          <Badge variant="secondary" className="mt-2">
-                            {group.subject}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="space-y-3 flex justify-center items-center flex-col">
-                        <div className="flex items-center gap-2 text-sm text-black">
-                          <Clock className="h-4 w-4" />
-                          <span>{group.schedule}</span>
-                        </div>       
-                        <div className="flex items-center gap-2 text-sm text-black">
-                          <Users className="h-4 w-4" />
-                          <span>
-                            {group.memberCount || 0}/{group.maxMembers || 15} members
-                          </span>
-                        </div>
-
-                        {isPendingApproval && (
-                          <div className="mt-4 rounded-md bg-orange-50 border border-orange-200 p-3 text-center text-sm text-orange-700">
-                            Group will be visible to others once approved by {group.teacher || "the assigned teacher"}.
-                          </div>
-                        )}
-
-                        {isJoinRequestPending && (
-                          <div className="mt-4 rounded-md bg-yellow-50 border border-yellow-200 p-3 text-center text-sm text-yellow-700">
-                            Waiting for group admin to approve your join request.
-                          </div>
-                        )}
-
-                        {isJoinRequestRejected && (
-                          <div className="mt-4 rounded-md bg-red-50 border border-red-200 p-3 text-center text-sm text-red-700">
-                            Your join request was rejected. You can remove this group from your list.
-                          </div>
-                        )}
-                        {isPendingRejected && (
-                          <div className="mt-4 rounded-md bg-red-50 border border-red-200 p-3 text-center text-sm text-red-700">
-                            This group was rejected by the teacher or admin. You can remove it from your list.
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )
-
-                  return (
-                    <div key={group.$id}>
-                      {isActive ? <Link href={`/dashboard/groups/${group.$id}`}>{cardContent}</Link> : cardContent}
+                          </CardHeader>
+                          <CardContent className="text-center space-y-2">
+                            <div className="flex items-center justify-center gap-2 text-sm text-black">
+                              <Clock className="h-4 w-4" />
+                              <span>{group.schedule}</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-2 text-sm text-black">
+                              <Users className="h-4 w-4" />
+                              <span>
+                                {group.memberCount || 0}/{group.maxMembers || 15} members
+                              </span>
+                            </div>
+                            <p className="text-red-600 text-sm mt-3">
+                              This group was rejected by teacher/admin.
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-          </main>
-          </div>
-          )
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  )
 }

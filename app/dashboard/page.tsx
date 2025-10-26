@@ -1,11 +1,10 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Sidebar } from "@/components/dashboard/sidebar"
-import { TopCreators } from "@/components/dashboard/top-creators"
 import { Button } from "@/components/ui/button"
-import { Users, Sparkles, Loader2, PenLine } from "lucide-react"
+import { Users, Sparkles, Loader2, PenLine, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useInfiniteGroups } from "@/lib/hooks/use-groups"
@@ -13,10 +12,12 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 
+
 export default function DashboardPage() {
   const router = useRouter()
   const loaderRef = useRef<HTMLDivElement | null>(null)
   const queryClient = useQueryClient()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const {
     data,
@@ -63,18 +64,57 @@ export default function DashboardPage() {
   return (
 
     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
-      <div className="flex min-h-screen">
+      <div className="hidden md:flex min-h-screen">
         <Sidebar />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white">
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+               <Sidebar />
+              </div>
+              
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 overflow-y-auto bg-white p-4 sm:p-6 lg:p-8 relative">
         <div className="float-end">
           <Button className="shad-button_showMatch" onClick={handleClick}>
             View Match
           </Button>
         </div>
-        <div className="px-20 pt-10 text-black">
-          <h1 className="text-4xl font-peace-sans mb-6 ml-20">Home Feed</h1>
+
+        <div className=" text-black">
+           <Button
+            variant="ghost"
+            size="icon"
+            className="sm:flex md:hidden cursor-pointer"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+             <Menu className="!w-6 !h-6" />
+          </Button>
+          <h1 className="text-3xl font-peace-sans mb-3 ml-10 mt-5 md:mb-6 md:ml-20 md:text-4xl">Home Feed</h1>
           {groups.length === 0 ? (
             <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
@@ -139,8 +179,8 @@ export default function DashboardPage() {
                               />
                             </div>
                             <h3 className="font-semibold text-2xl">{group.name}</h3>
-                            <p className="text-sm px-30">{group.description}</p>
-                            <div className="flex items-cente justify-center gap-3">
+                            <p className="text-sm px-10 md:px-30">{group.description}</p>
+                            <div className="flex flex-col items-center justify-center gap-3 md:flex-row">
                               <Badge className="text-sm" variant={"secondary"}>{group.subject}</Badge>
 
                               <Badge className="text-black border-black text-sm" variant={"outline"}>
@@ -172,10 +212,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="flex min-h-screen">
-        <TopCreators />
       </div>
     </div>
   )

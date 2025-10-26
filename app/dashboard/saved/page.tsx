@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { Bookmark, Users, Clock, BookOpen, Loader2 } from "lucide-react"
+import { Bookmark, Users, Clock, BookOpen, Loader2, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge, } from "@/components/ui/badge"
@@ -12,12 +12,14 @@ import Link from "next/link"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { clientGetUserSavedGroups, clientUnsaveGroup } from "@/lib/appwrite/client-database"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function SavedPage() {
   const [savedGroups, setSavedGroups] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [userId, setUserId] = useState<string>("")
   const router = useRouter()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     async function loadSavedGroups() {
@@ -58,18 +60,59 @@ export default function SavedPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+                <Sidebar />
+              </div>
+
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+      <main className="flex-1 overflow-y-auto bg-white">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:flex md:hidden cursor-pointer text-black m-3"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="!w-6 !h-6" />
+        </Button>
+
         {/* Header Section */}
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6 p-7 md:mt-5">
           <div className="space-y-6">
             <div>
-              <h1 className="text-4xl font-peace-sans text-black">Saved Groups</h1>
-              <p className="text-muted-foreground font-semibold mt-2">
+              <h1 className="text-3xl md:text-4xl font-peace-sans text-black">Saved Groups</h1>
+              <p className="text-muted-foreground font-semibold mt-2 text-sm md:text-base">
                 Groups you've bookmarked for quick access
               </p>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Input } from "@/components/ui/input"
-import { Search, Users, Clock, BookOpen, Loader2, Bookmark } from "lucide-react"
+import { Search, Users, Clock, BookOpen, Loader2, Bookmark, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +17,7 @@ import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { getAllGroups } from "@/lib/appwrite/database"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { clientCheckSavedStatus } from "@/lib/appwrite/client-database"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function ExplorePage() {
   const [allGroups, setGroups] = useState<any[]>([])
@@ -27,6 +28,7 @@ export default function ExplorePage() {
   const saveGroupMutation = useSaveGroup()
   const unsaveGroupMutation = useUnsaveGroup()
   const [savedMap, setSavedMap] = useState<Record<string, boolean>>({})
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     async function loadUser() {
@@ -114,14 +116,55 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+
+    <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+                <Sidebar />
+              </div>
+
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
-        <div className="max-w-7xl mx-auto pt-10 space-y-6">
-          <h1 className="text-4xl font-peace-sans text-black">Search Groups</h1>
+      <main className="flex-1 overflow-y-auto bg-white">
+         <Button
+            variant="ghost"
+            size="icon"
+            className="sm:flex md:hidden cursor-pointer text-black m-3"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+             <Menu className="!w-6 !h-6" />
+          </Button>
+        <div className="max-w-7xl mx-auto pt-5 md:pt-10 space-y-6 p-7 md:mt-5">
+          <h1 className="text-3xl md:text-4xl font-peace-sans text-black">Search Groups</h1>
 
           {/* Search Input */}
           <div className="relative">
@@ -168,25 +211,24 @@ export default function ExplorePage() {
                   >
                     <Card className="bg-gradient-to-br from-[#4ec66a] to-green hover:shadow-md hover:border-1 hover:border-black transition-all rounded-xl border-gray-200">
                       <CardHeader>
-                         <div>
-                        <Button
+                        <div>
+                          <Button
                             variant="ghost"
                             size="icon"
                             onClick={(e) => handleToggleSave(group.$id, e)}
                             className="h-8 w-8 hover:bg-[#59e279]"
                           >
                             <Bookmark
-                              className={`h-5 w-5 ${
-                                isSaved
+                              className={`h-5 w-5 ${isSaved
                                   ? "fill-black text-black"
                                   : "text-gray-600"
-                              }`}
+                                }`}
                             />
                           </Button>
-                         </div>
+                        </div>
                         <div className="flex items-center justify-center">
                           <div>
-                             <div className="flex justify-center">
+                            <div className="flex justify-center">
                               <img
                                 src={group.imageUrl || "/placeholder.svg"}
                                 alt={group.name}
@@ -195,12 +237,12 @@ export default function ExplorePage() {
                             </div>
                             <h3 className="font-semibold text-2xl">{group.name}</h3>
                             <div className="flex items-center justify-center">
-                            <Badge variant="secondary" className="mt-2">
-                              {group.subject}
-                            </Badge>
+                              <Badge variant="secondary" className="mt-2">
+                                {group.subject}
+                              </Badge>
                             </div>
                           </div>
-                          
+
                         </div>
                       </CardHeader>
 
@@ -209,7 +251,7 @@ export default function ExplorePage() {
                           <Clock className="h-4 w-4" />
                           <span>{group.schedule}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 text-sm text-black">
                           <Users className="h-4 w-4" />
                           <span>

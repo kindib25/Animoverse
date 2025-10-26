@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { PlusCircle, Upload, X } from "lucide-react"
+import { PlusCircle, Upload, X, Menu } from "lucide-react"
 import { createGroup } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
@@ -23,6 +23,8 @@ import { useEffect, useState, useRef, DragEvent } from "react"
 import Image from "next/image"
 import { uploadGroupImage } from "@/lib/appwrite/storage"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { motion, AnimatePresence } from "framer-motion"
+
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
@@ -39,6 +41,7 @@ export default function CreateGroupPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const {
     register,
@@ -206,15 +209,55 @@ export default function CreateGroupPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+                <Sidebar />
+              </div>
+
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white py-10 lg:px-12">
+      <main className="flex-1 overflow-y-auto bg-white">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:flex md:hidden cursor-pointer text-black m-3"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="!w-6 !h-6" />
+        </Button>
         {/* Header Section */}
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="mx-auto max-w-4xl">
+        <div className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6">
+          <div className="mx-auto w-full max-w-2xl sm:max-w-4xl">
             <Card>
-              <CardHeader className="flex col-2">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <PlusCircle className="mb-2 h-8 w-8" />
                 <CardTitle className="text-2xl ml-1">Create Group</CardTitle>
               </CardHeader>
@@ -311,7 +354,7 @@ export default function CreateGroupPage() {
                   </div>
 
                   {/* Subject and Teacher */}
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="maxMembers">Maximum Members</Label>
                       <Input

@@ -18,9 +18,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Animoverse - Student Study Groups",
+  title: "Animoverse",
   description: "Connect with study partners and collaborate on your learning journey",
   generator: "v0.app",
+  icons: {
+    icon: "animoverse-logo.svg",
+  },
 }
 
 export default function RootLayout({
@@ -31,6 +34,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <title>Animoverse</title>
+        <link rel="icon" href="/animoverse-logo.svg" />
         <link href="https://fonts.cdnfonts.com/css/peace-sans" rel="stylesheet" />
       </head>
       <body className={`${poppins.className}`}>
@@ -38,7 +43,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <StreamProvider>
-            <Suspense fallback={null}>{children}</Suspense>
+              <Suspense fallback={null}>{children}</Suspense>
             </StreamProvider>
           </AuthProvider>
         </QueryProvider>
