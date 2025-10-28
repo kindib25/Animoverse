@@ -16,7 +16,9 @@ import { useUserProfile, useUpdateUserProfile } from "@/lib/hooks/use-user"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { uploadProfileImage } from "@/lib/appwrite/storage"
 import { useToast } from "@/components/ui/use-toast"
-import { Upload, X } from "lucide-react"
+import { Upload, X, Menu } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Sidebar } from "@/components/dashboard/sidebar"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
@@ -39,6 +41,7 @@ export default function EditProfilePage() {
 
   const { data: profile, isLoading } = useUserProfile(userId)
   const updateProfileMutation = useUpdateUserProfile(userId)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     async function loadUser() {
@@ -156,8 +159,54 @@ export default function EditProfilePage() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="mx-auto max-w-2xl">
+     <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
+         {/* Sidebar */}
+         <div className="hidden md:flex min-h-screen">
+           <Sidebar />
+         </div>
+   
+         {/* Mobile Sidebar Overlay */}
+         <AnimatePresence>
+           {isSidebarOpen && (
+             <>
+               {/* Dimmed background */}
+               <motion.div
+                 className="fixed inset-0 bg-black/40 z-40"
+                 onClick={() => setIsSidebarOpen(false)}
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+               />
+   
+               {/* Sidebar Slide-in */}
+               <motion.div
+                 className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+                 initial={{ x: -300 }}
+                 animate={{ x: 0 }}
+                 exit={{ x: -300 }}
+                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+               >
+                 <div className="flex min-h-screen">
+                   <Sidebar />
+                 </div>
+   
+               </motion.div>
+             </>
+           )}
+         </AnimatePresence>
+   
+         {/* Main Content */}
+         <main className="flex-1 overflow-y-auto bg-white">
+            <Button
+               variant="ghost"
+               size="icon"
+               className="sm:flex md:hidden cursor-pointer text-black m-3"
+               onClick={() => setIsSidebarOpen(true)}
+             >
+                <Menu className="!w-6 !h-6" />
+             </Button>
+    
+      <div className="mx-auto max-w-4xl space-y-6 p-5">
         <Card>
           <CardHeader>
             <CardTitle>Edit Profile</CardTitle>
@@ -350,6 +399,7 @@ export default function EditProfilePage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+      </main>
+      </div>
   )
 }

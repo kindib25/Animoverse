@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Bell, Trash2, CheckCircle, AlertCircle, Clock, FileText } from "lucide-react"
+import { Bell, Trash2, CheckCircle, AlertCircle, Clock, FileText, X, Menu } from "lucide-react"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useRouter } from "next/navigation"
 import {
@@ -14,6 +14,8 @@ import {
   useDeleteNotification,
   useMarkAllNotificationsAsRead,
 } from "@/lib/hooks/use-notifications"
+import { motion, AnimatePresence } from "framer-motion"
+import { Sidebar } from "@/components/dashboard/sidebar"
 
 export default function NotificationsPage() {
   const router = useRouter()
@@ -22,6 +24,7 @@ export default function NotificationsPage() {
   const { mutate: markAsRead } = useMarkNotificationAsRead()
   const { mutate: deleteNotif } = useDeleteNotification()
   const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
 
   useEffect(() => {
@@ -89,12 +92,58 @@ export default function NotificationsPage() {
   }
 
   return (
-    <DashboardLayout>
+     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
+          {/* Sidebar */}
+          <div className="hidden md:flex min-h-screen">
+            <Sidebar />
+          </div>
+    
+          {/* Mobile Sidebar Overlay */}
+          <AnimatePresence>
+            {isSidebarOpen && (
+              <>
+                {/* Dimmed background */}
+                <motion.div
+                  className="fixed inset-0 bg-black/40 z-40"
+                  onClick={() => setIsSidebarOpen(false)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+    
+                {/* Sidebar Slide-in */}
+                <motion.div
+                  className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+                  initial={{ x: -300 }}
+                  animate={{ x: 0 }}
+                  exit={{ x: -300 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                  </div>
+    
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+    
+          {/* Main Content */}
+          <main className="flex-1 overflow-y-auto bg-white">
+             <Button
+                variant="ghost"
+                size="icon"
+                className="sm:flex md:hidden cursor-pointer text-black m-3"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                 <Menu className="!w-6 !h-6" />
+              </Button>
+    
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Bell className="h-8 w-8" />
-            <h1 className="text-3xl font-bold text-black">Notifications</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-black font-peace-sans">Notifications</h1>
             {unreadCount > 0 && (
               <Badge variant="destructive" className="ml-2">
                 {unreadCount} new
@@ -165,6 +214,8 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
+      </main>
+      </div>
+   
   )
 }

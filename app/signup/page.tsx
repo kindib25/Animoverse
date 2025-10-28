@@ -53,7 +53,7 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2 text-center">
-            <h2 className="text-balance text-4xl font-peace-sans tracking-tight">Create a new account</h2>
+            <h2 className="text-balance text-3xl md:text-4xl font-peace-sans tracking-tight">Create a new account</h2>
             <p className="text-pretty font-normal">To use Animoverse, please enter your details</p>
           </div>
 
@@ -64,7 +64,7 @@ export default function SignupPage() {
       <img
             src="/night-bg3.gif"
             alt="side image"
-            className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat bg-gray-600"
+            className="hidden lg:block h-screen w-1/2 object-cover bg-no-repeat bg-gray-600"
           />
     </div>
   )

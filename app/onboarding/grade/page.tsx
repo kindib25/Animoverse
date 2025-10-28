@@ -111,17 +111,24 @@ export default function Onboarding() {
                         <CardHeader>
                             <Progress value={48} />
                             <div className="py-10" />
-                            <CardTitle className="flex items-center justify-center text-3xl">
+                            <CardTitle className="flex items-center justify-center text-2xl md:text-3xl">
                                 What grade are you in?
                             </CardTitle>
                             <div className="space-y-2 pt-20 flex justify-center items-center flex-col ">
                                 <Input
                                     id="grade"
-                                    className="py-10 pr-6 border-3 border-black selection:bg-background selection:text-white"
+                                    className="
+                                    border-3 border-black
+                                    selection:bg-background selection:text-white
+                                    text-center py-7
+                                    text-2xl md:text-[2rem]
+                                    w-[90%] md:w-[450px]
+                                    md:py-10 md:pr-6
+                                    "
                                     placeholder="e.g., Grade 10"
                                     value={grade}
                                     onChange={(e) => setGrade(e.target.value)}
-                                    style={{ fontSize: '2rem', width: '450px', textAlign: 'center' }}
+                                    
                                 />
                             </div>
                         </CardHeader>

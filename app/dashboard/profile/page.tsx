@@ -1,49 +1,52 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getUserProfile, getUserGroups } from "@/lib/appwrite/database"
-import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, X, Menu } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getUserProfile, getUserGroups } from "@/lib/appwrite/database";
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth";
+import { motion, AnimatePresence } from "framer-motion"
+import { Sidebar } from "@/components/dashboard/sidebar";
 
 export default function ProfilePage() {
-  const router = useRouter()
-  const [profile, setProfile] = useState<any>(null)
-  const [groupCount, setGroupCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const [profile, setProfile] = useState<any>(null);
+  const [groupCount, setGroupCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     async function loadProfile() {
-      const userResult = await clientGetCurrentUser()
+      const userResult = await clientGetCurrentUser();
 
       if (!userResult.success || !userResult.user) {
-        router.push("/login")
-        return
+        router.push("/login");
+        return;
       }
 
-      const profileResult = await getUserProfile(userResult.user.$id)
+      const profileResult = await getUserProfile(userResult.user.$id);
 
       if (profileResult.success) {
-        setProfile(profileResult.profile)
+        setProfile(profileResult.profile);
       }
 
-      const groupsResult = await getUserGroups(userResult.user.$id)
+      const groupsResult = await getUserGroups(userResult.user.$id);
       if (groupsResult.success && groupsResult.groups) {
-        setGroupCount(groupsResult.groups.length)
+        setGroupCount(groupsResult.groups.length);
       }
 
-      setIsLoading(false)
+      setIsLoading(false);
     }
 
-    loadProfile()
-  }, [router])
+    loadProfile();
+  }, [router]);
 
   if (isLoading) {
     return (
@@ -52,20 +55,72 @@ export default function ProfilePage() {
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
-  const isProfileComplete = profile?.grade && profile?.subjects?.length > 0 && profile?.studyPreferences?.length > 0
+  const isProfileComplete =
+    profile?.grade &&
+    profile?.subjects?.length > 0 &&
+    profile?.studyPreferences?.length > 0;
 
   return (
-    <DashboardLayout>
-      <div className="mx-auto max-w-4xl space-y-6">
+     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
+         {/* Sidebar */}
+         <div className="hidden md:flex min-h-screen">
+           <Sidebar />
+         </div>
+   
+         {/* Mobile Sidebar Overlay */}
+         <AnimatePresence>
+           {isSidebarOpen && (
+             <>
+               {/* Dimmed background */}
+               <motion.div
+                 className="fixed inset-0 bg-black/40 z-40"
+                 onClick={() => setIsSidebarOpen(false)}
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+               />
+   
+               {/* Sidebar Slide-in */}
+               <motion.div
+                 className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+                 initial={{ x: -300 }}
+                 animate={{ x: 0 }}
+                 exit={{ x: -300 }}
+                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+               >
+                 <div className="flex min-h-screen">
+                   <Sidebar />
+                 </div>
+   
+               </motion.div>
+             </>
+           )}
+         </AnimatePresence>
+   
+         {/* Main Content */}
+         <main className="flex-1 overflow-y-auto bg-white">
+            <Button
+               variant="ghost"
+               size="icon"
+               className="sm:flex md:hidden cursor-pointer text-black m-3"
+               onClick={() => setIsSidebarOpen(true)}
+             >
+                <Menu className="!w-6 !h-6" />
+             </Button>
+
+      <div className="mx-auto max-w-4xl space-y-6 p-5">
         {!isProfileComplete && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Complete your profile to get better study group matches.{" "}
-              <Link href="/dashboard/profile/edit" className="font-medium underline">
+              <Link
+                href="/dashboard/profile/edit"
+                className="font-medium underline"
+              >
                 Edit profile
               </Link>
             </AlertDescription>
@@ -86,12 +141,18 @@ export default function ProfilePage() {
               </Avatar>
 
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{profile?.name || "User"}</h1>
-                <p className="text-muted-foreground">@{profile?.username || "username"}</p>
+                <h1 className="text-3xl font-bold">
+                  {profile?.name || "User"}
+                </h1>
+                <p className="text-muted-foreground">
+                  @{profile?.username || "username"}
+                </p>
                 {profile?.bio ? (
                   <p className="text-sm">{profile.bio}</p>
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">No bio yet</p>
+                  <p className="text-sm text-muted-foreground italic">
+                    No bio yet
+                  </p>
                 )}
               </div>
 
@@ -107,33 +168,52 @@ export default function ProfilePage() {
                   <span className="text-sm text-muted-foreground">Groups</span>
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="text-2xl font-bold">{profile?.subjects?.length || 0}</span>
-                  <span className="text-sm text-muted-foreground">Subjects</span>
+                  <span className="text-2xl font-bold">
+                    {profile?.subjects?.length || 0}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    Subjects
+                  </span>
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="text-2xl font-bold">{profile?.studyPreferences?.length || 0}</span>
-                  <span className="text-sm text-muted-foreground">Preferences</span>
+                  <span className="text-2xl font-bold">
+                    {profile?.studyPreferences?.length || 0}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    Preferences
+                  </span>
                 </div>
               </div>
 
               <div className="flex gap-4 w-full max-w-xs">
-                <Button asChild className="cursor-pointer bg-accent py-8 px-7 text-black hover:bg-green hover:text-black transition font-mono">
+                <Button
+                  asChild
+                  className="cursor-pointer bg-accent py-8 px-7 text-black hover:bg-green hover:text-black transition font-mono"
+                >
                   <Link href="/dashboard/profile/edit">Edit Profile</Link>
                 </Button>
-                <Button asChild  className="cursor-pointer py-8 bg-background text-white hover:bg-green hover:text-black transition font-mono">
-                  <Link href="/dashboard/profile/change-password">Change Password</Link>
+                <Button
+                  asChild
+                  className="cursor-pointer py-8 bg-background text-white hover:bg-green hover:text-black transition font-mono"
+                >
+                  <Link href="/dashboard/profile/change-password">
+                    Change Password
+                  </Link>
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {(profile?.subjects?.length > 0 || profile?.studyPreferences?.length > 0) && (
+        {(profile?.subjects?.length > 0 ||
+          profile?.studyPreferences?.length > 0) && (
           <Card>
             <CardContent className="p-6 space-y-4">
               {profile?.subjects?.length > 0 && (
                 <div>
-                  <h2 className="mb-3 text-lg font-bold">Interested Subjects</h2>
+                  <h2 className="mb-3 text-lg font-bold">
+                    Interested Subjects
+                  </h2>
                   <div className="flex flex-wrap gap-2">
                     {profile.subjects.map((subject: string) => (
                       <Badge key={subject} variant="secondary">
@@ -149,7 +229,11 @@ export default function ProfilePage() {
                   <h2 className="mb-3 text-lg font-bold">Study Preferences</h2>
                   <div className="flex flex-wrap gap-2">
                     {profile.studyPreferences.map((pref: string) => (
-                      <Badge key={pref} variant="outline" className="text-black">
+                      <Badge
+                        key={pref}
+                        variant="outline"
+                        className="text-black"
+                      >
                         {pref}
                       </Badge>
                     ))}
@@ -160,6 +244,7 @@ export default function ProfilePage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
-  )
+       </main>
+        </div>
+  );
 }

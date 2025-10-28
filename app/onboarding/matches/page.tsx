@@ -1,88 +1,86 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef, useMemo } from "react"
-import { OnboardingLayout } from "../page"
-import { Button } from "@/components/ui/button"
-import { Users, Sparkles, Loader2, PenLine } from "lucide-react"
-import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
-import { useNewInfiniteGroups } from "@/lib/hooks/use-groups"
-import { useRouter } from "next/navigation"
-import { getUserProfile } from "@/lib/appwrite/database"
-import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState, useRef, useMemo } from "react";
+import { OnboardingLayout } from "@/app/onboarding/page";
+import { Button } from "@/components/ui/button";
+import { Users, Sparkles, Loader2, PenLine } from "lucide-react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNewInfiniteGroups } from "@/lib/hooks/use-groups";
+import { useRouter } from "next/navigation";
+import { getUserProfile } from "@/lib/appwrite/database";
+import { clientGetCurrentUser } from "@/lib/appwrite/client-auth";
+import { Badge } from "@/components/ui/badge";
 
 export default function DashboardPage() {
-  const loaderRef = useRef<HTMLDivElement | null>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [displayedGroups, setDisplayedGroups] = useState<any[]>([])
-  const router = useRouter()
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [displayedGroups, setDisplayedGroups] = useState<any[]>([]);
+  const router = useRouter();
 
   // ✅ Extract subjects and studyPreferences from profile
-  const subjects = useMemo(() => profile?.subjects ?? [], [profile])
-  const studyPreferences = useMemo(() => profile?.studyPreferences ?? [], [profile])
+  const subjects = useMemo(() => profile?.subjects ?? [], [profile]);
+  const studyPreferences = useMemo(
+    () => profile?.studyPreferences ?? [],
+    [profile]
+  );
 
   // ✅ Updated hook call to include studyPreferences
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useNewInfiniteGroups(subjects, studyPreferences, 6)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useNewInfiniteGroups(subjects, studyPreferences, 6);
 
   // ✅ Flatten pages
   const groups = useMemo(
     () => data?.pages.flatMap((page) => page.groups) ?? [],
     [data]
-  )
+  );
 
   // ✅ Load profile
   useEffect(() => {
     async function loadProfile() {
-      const userResult = await clientGetCurrentUser()
-      if (!userResult.success || !userResult.user) return router.push("/login")
+      const userResult = await clientGetCurrentUser();
+      if (!userResult.success || !userResult.user) return router.push("/login");
 
-      const profileResult = await getUserProfile(userResult.user.$id)
-      if (profileResult.success) setProfile(profileResult.profile)
+      const profileResult = await getUserProfile(userResult.user.$id);
+      if (profileResult.success) setProfile(profileResult.profile);
     }
-    loadProfile()
-  }, [router])
+    loadProfile();
+  }, [router]);
 
   // ✅ Update displayed groups when data changes
   useEffect(() => {
     if (groups.length > 0 && displayedGroups.length === 0) {
-      setDisplayedGroups(groups)
+      setDisplayedGroups(groups);
     }
-  }, [groups])
+  }, [groups]);
 
   // ✅ Infinite scroll observer (looping logic)
   useEffect(() => {
-    if (!loaderRef.current) return
-    const node = loaderRef.current
+    if (!loaderRef.current) return;
+    const node = loaderRef.current;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const first = entries[0]
+        const first = entries[0];
         if (first.isIntersecting && !isFetchingNextPage) {
           if (hasNextPage) {
-            fetchNextPage()
+            fetchNextPage();
           } else if (displayedGroups.length > 0) {
             // ✅ Loop: duplicate list to continue scrolling infinitely
-            setDisplayedGroups((prev) => [...prev, ...groups])
+            setDisplayedGroups((prev) => [...prev, ...groups]);
           }
         }
       },
       { root: null, rootMargin: "200px", threshold: 0 }
-    )
+    );
 
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, groups, displayedGroups])
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, groups, displayedGroups]);
 
   const handleClick = () => {
-    router.push("/dashboard")
-  }
+    router.push("/dashboard");
+  };
 
   if (isLoading) {
     return (
@@ -91,19 +89,19 @@ export default function DashboardPage() {
           <Loader2 className="animate-spin text-white h-20 w-20" />
         </div>
       </OnboardingLayout>
-    )
+    );
   }
 
   return (
     <div className="flex h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
-      <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white">
+      <div className="flex-1 overflow-y-auto p-6 bg-white">
         <div className="float-end">
           <Button className="shad-button_showAll" onClick={handleClick}>
             Skip
           </Button>
         </div>
-        <div className="px-100 pt-10 text-black">
-          <div className="flex justify-center items-center text-center">
+        <div className="pt-10 text-black md:px-50">
+          <div className="flex justify-center items-center text-center mt-6 md:mt-0">
             <h1 className="text-2xl font-mono mb-6">
               Hey{" "}
               <span className="font-bold">
@@ -118,7 +116,7 @@ export default function DashboardPage() {
           </div>
 
           {displayedGroups.length === 0 ? (
-            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-12 text-center">
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-2 text-center">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                 <Users className="h-10 w-10" />
               </div>
@@ -149,7 +147,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4 px-4 md:px-20">
+            <div className="space-y-4">
               <div className="grid gap-6 md:grid-cols-1">
                 <AnimatePresence>
                   {displayedGroups.map((group, index) => (
@@ -184,15 +182,23 @@ export default function DashboardPage() {
                           <h3 className="font-semibold text-2xl">
                             {group.name}
                           </h3>
-                          <p className="text-sm px-30">{group.description}</p>
-                          <div className="flex items-cente justify-center gap-3">
-                          <Badge className="text-sm" variant={"secondary"}>{group.subject}</Badge>
+                          <p className="text-sm px-10 md:px-30">
+                            {group.description}
+                          </p>
+                          <div className="flex items-center justify-center gap-3 flex-col md:flex-row">
+                            <Badge className="text-sm" variant={"secondary"}>
+                              {group.subject}
+                            </Badge>
 
-                          <Badge className="text-black border-black text-sm" variant={"outline"}>
-                            {Array.isArray(group.studyPreferences) && group.studyPreferences.length === 2
-                              ? group.studyPreferences.join(' / ')
-                              : group.studyPreferences}
-                          </Badge>
+                            <Badge
+                              className="text-black border-black text-sm"
+                              variant={"outline"}
+                            >
+                              {Array.isArray(group.studyPreferences) &&
+                              group.studyPreferences.length === 2
+                                ? group.studyPreferences.join(" / ")
+                                : group.studyPreferences}
+                            </Badge>
                           </div>
                           <div className="flex items-center gap-2 justify-center">
                             <PenLine className="h-4 w-4" />
@@ -225,5 +231,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

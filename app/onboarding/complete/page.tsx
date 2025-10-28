@@ -107,7 +107,7 @@ export default function Onboarding() {
                                 </Avatar>
 
                                 <div>
-                                    <h1 className="text-xl font-bold">{profile?.name || "User"}</h1>
+                                    <h1 className="text-lg md:text-xl font-bold">{profile?.name || "User"}</h1>
                                     <p className="text-muted-foreground">@{profile?.username || "username"}</p>
                                 </div>
 

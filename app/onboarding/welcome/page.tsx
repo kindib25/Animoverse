@@ -67,7 +67,7 @@ export default function Onboarding() {
                     <CardHeader>
                         <Progress value={16} />
                         <div className="py-15" />
-                        <CardTitle className="flex items-center justify-center text-3xl">
+                        <CardTitle className="flex items-center justify-center text-2xl md:text-3xl">
                             Welcome to Animoverse
                         </CardTitle>
                         <p className="flex items-center justify-center">

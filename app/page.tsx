@@ -1,11 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowRightIcon, PlayIcon } from "lucide-react"
-import RotatingCard from "@/components/home-card/rotating-card"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRightIcon, PlayIcon } from "lucide-react";
+import RotatingCard from "@/components/home-card/rotating-card";
+import { useState } from "react";
+import { Menu, X } from "lucide-react"; 
 
 export default function HomePage() {
+const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div
       className={`min-h-screen bg-gradient-to-b from-[#0a0e27] via-[#16213e] to-[#0f1729] text-white relative overflow-hidden`}
@@ -33,34 +37,113 @@ export default function HomePage() {
 
       <style jsx>{`
         @keyframes twinkle {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
+          0%,
+          100% {
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 1;
+          }
         }
       `}</style>
 
       {/* Header */}
-      <header className="flex fixed top-0 left-0 right-0 z-[9999] items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-        <img src="/logoname.svg" alt="" />
-        <nav className="hidden md:flex space-x-8 text-lg font-normal gap-8">
-          <Link href="#" className="hover:text-green-400 transition-colors">
-            Docs
-          </Link>
-          <Link href="#" className="hover:text-green-400 transition-colors">
-            Blog
-          </Link>
-          <Link href="#" className="hover:text-green-400 transition-colors">
-            Developer
+      <header className="fixed top-0 left-0 right-0 z-[9999] bg-black/10 md:bg-transparent backdrop-blur-md">
+        <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+          {/* Logo */}
+          <Link href="/">
+            <img
+              src="/logoname.svg"
+              alt="logo"
+              className="w-40 md:w-50 h-auto"
+            />
           </Link>
 
-        </nav>
-        <div className="flex items-center space-x-4">
-          <Button asChild size="lg" className="cursor-pointer bg-tranparent text-white text-lg hover:text-black hover:bg-white transition font-mono">
-            <Link href="/login">Log In</Link>
-          </Button>
-          <Button asChild size="lg" className="cursor-pointer bg-green text-black text-lg hover:bg-green hover:text-black transition font-mono">
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex space-x-8 text-lg font-normal">
+            <Link href="#" className="hover:text-green-400 transition-colors">
+              Docs
+            </Link>
+            <Link href="#" className="hover:text-green-400 transition-colors">
+              Blog
+            </Link>
+            <Link href="#" className="hover:text-green-400 transition-colors">
+              Developer
+            </Link>
+          </nav>
+
+          {/* Desktop Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button
+              asChild
+              size="lg"
+              className="cursor-pointer bg-transparent text-white text-lg hover:text-black hover:bg-white transition font-mono"
+            >
+              <Link href="/login">Log In</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              className="cursor-pointer bg-green text-black text-lg hover:bg-green/90 transition font-mono"
+            >
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-white focus:outline-none cursor-pointer"
+          >
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isOpen && (
+          <div className="md:hidden bg-black/60 text-white px-6 py-4 space-y-4">
+            <nav className="flex flex-col space-y-4 text-lg">
+              <Link
+                href="#"
+                className="hover:text-green-400 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Docs
+              </Link>
+              <Link
+                href="#"
+                className="hover:text-green-400 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Blog
+              </Link>
+              <Link
+                href="#"
+                className="hover:text-green-400 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Developer
+              </Link>
+            </nav>
+
+            <div className="flex flex-col space-y-3 pt-4">
+              <Button
+                asChild
+                size="lg"
+                className="bg-transparent border border-white text-white hover:bg-white hover:text-black transition font-mono"
+              >
+                <Link href="/login">Log In</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className="bg-green text-black hover:bg-green/90 transition font-mono"
+              >
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Content */}
@@ -98,23 +181,31 @@ export default function HomePage() {
           {/* Statistics */}
           <div className="flex flex-wrap justify-center lg:justify-start gap-x-12 gap-y-6 text-center lg:text-left">
             <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">10K+</div>
+              <div className="text-4xl font-bold tracking-wide text-green-400">
+                10K+
+              </div>
               <div className="text-gray-400 text-sm font-normal">Members</div>
             </div>
             <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">100</div>
+              <div className="text-4xl font-bold tracking-wide text-green-400">
+                100
+              </div>
               <div className="text-gray-400 text-sm font-normal">Groups</div>
             </div>
             <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">∞</div>
-              <div className="text-gray-400 text-sm font-normal">Sessions to Explore</div>
+              <div className="text-4xl font-bold tracking-wide text-green-400">
+                ∞
+              </div>
+              <div className="text-gray-400 text-sm font-normal">
+                Sessions to Explore
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right Section - Rotating Card */}
-        <div className="relative flex-1 flex justify-center items-center min-h-[400px] lg:min-h-[auto] lg:w-1/2">
-          <div className="relative w-[350px] h-[220px] transform rotate-[-20deg] scale-105">
+        <div className="relative flex-1 flex justify-center items-center min-h-[400px] lg:min-h-[auto] lg:w-1/2 mt-10 md:mt-10 lg:mt-0">
+          <div className="relative w-[350px] h-[220px] transform rotate-[-20deg] scale-85 md:scale-105">
             <RotatingCard
               frontImageSrc="/stunning-view-of-earth-from-space-with-stars-and-m.jpg"
               backImageSrc="/colorful-nebula-with-purple-and-blue-cosmic-clouds.jpg"
@@ -124,5 +215,5 @@ export default function HomePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -108,7 +108,7 @@ export default function Onboarding() {
                         <CardHeader>
                             <Progress value={64} />
                             <div className="py-5" />
-                            <CardTitle className="flex items-center text-center justify-center text-3xl">
+                            <CardTitle className="flex items-center text-center justify-center text-2xl md:text-3xl">
                                 What subject do you want to focus on?
                             </CardTitle>
 
