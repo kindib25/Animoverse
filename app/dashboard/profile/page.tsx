@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, X, Menu } from "lucide-react";
+import { AlertCircle, X, Menu, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getUserProfile, getUserGroups } from "@/lib/appwrite/database";
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth";
@@ -51,7 +51,8 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </DashboardLayout>

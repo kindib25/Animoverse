@@ -43,7 +43,48 @@ export function usePendingGroups(teacherId: string) {
     queryFn: async () => {
       const result = await getPendingGroups(teacherId)
       if (!result.success) throw new Error(result.error)
-      return result.groups
+
+      const groups = result.groups || []
+
+      const groupsWithCreators = await Promise.all(
+        groups.map(async (group: any) => {
+          // normalize group id
+          const groupId = group.$id || group.id || group.groupId
+          let creator: any = null
+
+          try {
+            const membersRes = await getGroupMembers(groupId)
+            if (membersRes.success) {
+              const members = membersRes.members || []
+
+              // prefer explicit creatorId if present on group
+              const creatorId = group.creatorId || group.createdBy || group.ownerId
+              if (creatorId) {
+                creator = members.find((m: any) => m.$id === creatorId || m.id === creatorId) || null
+              }
+
+              // fallback: find a member with creator/owner role or isCreator flag
+              if (!creator) {
+                creator =
+                  members.find(
+                    (m: any) =>
+                      m.role === "creator" ||
+                      m.role === "owner" ||
+                      m.isCreator === true ||
+                      m.is_owner === true
+                  ) || null
+              }
+            }
+          } catch {
+            // ignore member fetch errors and leave creator as null
+            creator = null
+          }
+
+          return { ...group, creator }
+        })
+      )
+
+      return groupsWithCreators
     },
     enabled: !!teacherId,
   })

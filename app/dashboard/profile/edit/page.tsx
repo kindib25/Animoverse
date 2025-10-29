@@ -16,7 +16,7 @@ import { useUserProfile, useUpdateUserProfile } from "@/lib/hooks/use-user"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { uploadProfileImage } from "@/lib/appwrite/storage"
 import { useToast } from "@/components/ui/use-toast"
-import { Upload, X, Menu } from "lucide-react"
+import { Upload, X, Menu, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Sidebar } from "@/components/dashboard/sidebar"
 
@@ -151,7 +151,8 @@ export default function EditProfilePage() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </DashboardLayout>

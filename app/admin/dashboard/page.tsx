@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useAdminStats } from "@/lib/hooks/use-admin"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, UsersRound, CircleAlert, Menu } from "lucide-react"
+import { Users, UsersRound, CircleAlert, Menu, Loader2 } from "lucide-react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { useAuth } from "@/lib/context/auth-context"
 import { motion, AnimatePresence } from "framer-motion"
@@ -36,7 +36,8 @@ export default function AdminDashboardPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[400px] gap-2">
+        <Loader2 className="animate-spin h-5 w-5 text-white" />
         <p className="text-white text-lg">Checking authentication...</p>
       </div>
     )
@@ -90,64 +91,64 @@ export default function AdminDashboardPage() {
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
           <div className="max-w-7xl mx-auto space-y-6 mt-0 md:mt-2 p-10">
-          <div className="ml-7">
-            <h1 className="text-3xl md:text-4xl font-peace-sans">Dashboard</h1>
-            <p className="text-white">Welcome back, {profile?.name || "Admin"}</p>
-          </div>
-
-          {isLoading ? (
-            <div className="grid gap-6 md:grid-cols-3 p-5">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-transparent border-white border-2 text-white">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">Loading...</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-15 w-50 animate-pulse rounded bg-muted" />
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="ml-7">
+              <h1 className="text-3xl md:text-4xl font-peace-sans">Dashboard</h1>
+              <p className="text-white/90">Welcome back, <span className="font-bold text-green">{profile?.name || "Admin"}</span></p>
             </div>
-          ) : (
-            <div className="grid gap-6 grid-rows-1 lg:grid-cols-3 p-5">
-              <Card className="bg-transparent border-white border-2 text-white">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-lg font-medium">Total Users</CardTitle>
-                  <Users className="h-8 w-8 text-white" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-5xl font-bold text-green">{stats?.totalUsers || 0}</div>
-                  <p className="text-sm text-white">Registered students</p>
-                </CardContent>
-              </Card>
 
-              <Link href="/admin/groups">
+            {isLoading ? (
+              <div className="grid gap-6 md:grid-cols-3 p-5">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="bg-transparent border-white border-2 text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">Loading...</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-15 w-50 animate-pulse rounded bg-muted" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-6 grid-rows-1 lg:grid-cols-3 p-5">
                 <Card className="bg-transparent border-white border-2 text-white">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">Active Groups</CardTitle>
-                    <UsersRound className="h-8 w-8 text-white" />
+                    <CardTitle className="text-lg font-medium">Total Users</CardTitle>
+                    <Users className="h-8 w-8 text-white" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-5xl font-bold text-green">{stats?.activeGroups || 0}</div>
-                    <p className="text-sm text-white">Currently active</p>
+                    <div className="text-5xl font-bold text-green">{stats?.totalUsers || 0}</div>
+                    <p className="text-sm text-white">Registered students</p>
                   </CardContent>
                 </Card>
-              </Link>
 
-              <Link href="/admin/groups/pending">
-                <Card className="bg-green border-none">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">Pending Approvals</CardTitle>
-                    <CircleAlert className="h-8 w-8" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-5xl font-bold">{stats?.pendingApprovals || 0}</div>
-                    <p className="text-sm">Awaiting review</p>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          )}
+                <Link href="/admin/groups">
+                  <Card className="bg-transparent border-white border-2 text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">Active Groups</CardTitle>
+                      <UsersRound className="h-8 w-8 text-white" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-5xl font-bold text-green">{stats?.activeGroups || 0}</div>
+                      <p className="text-sm text-white">Currently active</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/admin/groups/pending">
+                  <Card className="bg-green border-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">Pending Approvals</CardTitle>
+                      <CircleAlert className="h-8 w-8" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-5xl font-bold">{stats?.pendingApprovals || 0}</div>
+                      <p className="text-sm">Awaiting review</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            )}
           </div>
         </main>
       </div>

@@ -150,9 +150,10 @@ const [isOpen, setIsOpen] = useState(false);
       <main className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 z-50 lg:py-24 gap-12">
         {/* Left Section */}
         <div className="flex-1 lg:pr-16 text-center lg:text-left mt-10">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 tracking-wide">
-            Welcome to Animoverse
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-wide">
+            Welcome to 
           </h1>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-peace-sans leading-tight mb-6 tracking-wide">Animoverse</h1>
           <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
             Connect with study partners and collaborate on your learning journey
           </p>

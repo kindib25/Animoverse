@@ -82,19 +82,19 @@ export default function AdminGroupDetailPage({ params }: { params: Promise<{ id:
             ) : (
               <div className="pl-10 mt-10 md:mt-0">
                 <h1 className="text-3xl font-bold">{group?.name}</h1>
-                <p className="text-muted-foreground">{group?.subject}</p>
+                <p className="text-white/90">{group?.subject}</p>
               </div>
             )}
           </div>
           <div className="mx-auto max-w-7xl p-10">
             <div className="mb-6 flex gap-3">
-              <Button asChild className="border-1 bg-background">
+              <Button asChild className="shad-button_ReqJoin">
                 <Link href={`/admin/groups/${id}/chat`} className="text-white hover:text-black">
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Message
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="shad-button_ReqJoin">
                 <Link href={`/admin/groups/${id}/reports`}>
                   <FileText className="mr-2 h-4 w-4" />
                   Reports

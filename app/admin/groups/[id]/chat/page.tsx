@@ -6,7 +6,7 @@ import Link from "next/link"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Phone, Menu } from "lucide-react"
+import { ArrowLeft, Phone, Menu, Loader2 } from "lucide-react"
 import { useStreamChat } from "@/lib/context/stream-context"
 import { Channel, MessageInput, MessageList, Window, Chat } from "stream-chat-react"
 import { useGroup } from "@/lib/hooks/use-groups"
@@ -50,8 +50,9 @@ export default function GroupChatPage() {
   if (!isReady || !channel || !chatClient) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading chat...</p>
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-white" />
+          <p className="text-white text-lg">Loading chat...</p>
         </div>
       </AdminLayout>
     )
@@ -114,7 +115,14 @@ export default function GroupChatPage() {
                         <ArrowLeft className="h-4 w-4" />
                       </Link>
                     </Button>
-                    <CardTitle>{group?.name || "Group Chat"}</CardTitle>
+                    <CardTitle className="flex items-center gap-3">
+                      <img
+                        src={group?.imageUrl || "/placeholder.svg"}
+                        alt={group?.name || "Group Chat"}
+                        className="h-10 w-10 object-contain rounded-full"
+                      />
+                      <span>{group?.name || "Group Chat"}</span>
+                    </CardTitle>
                   </div>
                   <Button variant="outline" size="sm" asChild className="bg-transparent">
                     <Link href={`/admin/groups/${params.id}/call`}>

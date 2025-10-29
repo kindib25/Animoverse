@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, CheckCircle, XCircle, Menu } from "lucide-react"
+import { Users, CheckCircle, XCircle, Menu, Loader2, Calendar } from "lucide-react"
 import { getPendingGroups, approveGroup, rejectGroup, getUserProfile } from "@/lib/appwrite/database"
 import { getCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
@@ -103,8 +103,9 @@ export default function PendingGroupsPage() {
   if (isLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading pending groups...</p>
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-white" />
+          <p className="text-white text-lg">Loading pending groups...</p>
         </div>
       </AdminLayout>
     )
@@ -180,31 +181,27 @@ export default function PendingGroupsPage() {
                 {groups.map((group) => (
                   <Card key={group.$id}>
                     <CardHeader>
-                      <CardTitle className="text-lg">{group.name}</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">{group.subject}</Badge>
-                        <Badge variant="outline">
-                          <Users className="mr-1 h-3 w-3 text-black" />
-                          <p className="text-black">{group.memberCount || 0}/{group.maxMembers || 15}</p>
-                        </Badge>
-                      </div>
+                      <CardTitle className="text-xl">{group.name}</CardTitle>
+                      <CardDescription>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>{group.schedule}</span>
+                        </div>
+                        <Badge className="text-sm bg-black/10">{group.subject}</Badge>
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2 text-sm">
-                        <p className="text-muted-foreground line-clamp-2">{group.description}</p>
-                        <p className="text-muted-foreground">
-                          <span className="font-medium">Schedule:</span> {group.schedule}
-                        </p>
-                        {group.teacher && (
-                          <p className="text-muted-foreground">
-                            <span className="font-medium">Teacher:</span> {group.teacher}
-                          </p>
-                        )}
-                        {group.creator && (
-                          <p className="text-muted-foreground">
-                            <span className="font-medium">Created by:</span> {group.creator.name}
-                          </p>
-                        )}
+                        <div className="space-y-2">
+                          <h2 className="font-semibold">About</h2>
+                          <p className="text-muted-foreground">{group.description}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <h2 className="font-semibold">Created by</h2>
+                          {group.creator && (
+                            <p className="text-muted-foreground">{group.creator.name}</p>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-center gap-2">

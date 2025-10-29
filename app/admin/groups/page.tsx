@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Check, X, MessageSquare, Users, Menu } from "lucide-react"
+import { Check, X, MessageSquare, Users, Menu, Calendar } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -75,7 +75,7 @@ export default function AdminGroupsPage() {
           </Button>
           <div className="max-w-7xl mx-auto mt-0 md:mt-2 p-10">
             <h1 className="text-3xl md:text-4xl font-peace-sans">Groups</h1>
-            <p className="text-white">Manage and monitor study groups</p>
+            <p className="text-white/90">Manage and monitor study groups</p>
           </div>
 
           <Tabs defaultValue="assigned" className="max-w-7xl mx-auto space-y-6 px-10">
@@ -110,19 +110,28 @@ export default function AdminGroupsPage() {
                   {assignedGroups.map((group: any) => (
                     <Card key={group.$id}>
                       <CardHeader>
-                        <CardTitle className="text-lg">{group.name}</CardTitle>
-                        <CardDescription>{group.subject}</CardDescription>
+                        <CardTitle className="text-xl">{group.name}</CardTitle>
+                        <CardDescription>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>{group.schedule}</span>
+                          </div>
+                          <Badge className="text-sm bg-black/10">{group.subject}</Badge>
+                        </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <p className="line-clamp-2 text-sm text-muted-foreground">{group.description}</p>
+                        <div className="space-y-2">
+                          <h2 className="font-semibold">About</h2>
+                          <p className="text-muted-foreground">{group.description}</p>
+                        </div>
                         <div className="flex gap-2">
-                          <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent py-7">
+                          <Button asChild variant="outline" size="sm" className="flex-1 shad-button_ReqJoin py-7">
                             <Link href={`/admin/groups/${group.$id}`}>
                               <Users className="mr-2 h-4 w-4" />
                               Members
                             </Link>
                           </Button>
-                          <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent py-7">
+                          <Button asChild variant="outline" size="sm" className="flex-1 shad-button_ReqJoin py-7">
                             <Link href={`/admin/groups/${group.$id}/chat`}>
                               <MessageSquare className="mr-2 h-4 w-4" />
                               Chat
@@ -161,11 +170,28 @@ export default function AdminGroupsPage() {
                   {pendingGroups.map((group: any) => (
                     <Card key={group.$id}>
                       <CardHeader>
-                        <CardTitle className="text-lg">{group.name}</CardTitle>
-                        <CardDescription>{group.subject}</CardDescription>
+                        <CardTitle className="text-xl">{group.name}</CardTitle>
+                        <CardDescription>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>{group.schedule}</span>
+                          </div>
+                          <Badge className="text-sm bg-black/10">{group.subject}</Badge>
+                        </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <p className="line-clamp-2 text-sm text-muted-foreground">{group.description}</p>
+                        <div className="space-y-2 text-sm">
+                          <div className="space-y-2">
+                            <h2 className="font-semibold">About</h2>
+                            <p className="text-muted-foreground">{group.description}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <h2 className="font-semibold">Created by</h2>
+                            {group.creator && (
+                              <p className="text-muted-foreground">{group.creator.name}</p>
+                            )}
+                          </div>
+                        </div>
                         <div className="flex justify-center items-center gap-2">
                           <Button
                             size="sm"
@@ -202,6 +228,6 @@ export default function AdminGroupsPage() {
           </Tabs>
         </main>
       </div>
-      </div>
-      )
+    </div>
+  )
 }

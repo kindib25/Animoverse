@@ -16,7 +16,7 @@ import { useUserProfile, TeacherAdminUpdateUserProfile } from "@/lib/hooks/use-u
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { motion, AnimatePresence } from "framer-motion"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
-import { Menu } from "lucide-react"
+import { Loader2, Menu } from "lucide-react"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
@@ -91,8 +91,9 @@ export default function EditProfilePage() {
   if (isLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading profile...</p>
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-white" />
+          <p className="text-white text-lg">Loading profile...</p>
         </div>
       </AdminLayout>
     )
@@ -253,8 +254,8 @@ export default function EditProfilePage() {
               </CardContent>
             </Card>
           </div>
-          </main>
-          </div>
-          </div>
-          )
+        </main>
+      </div>
+    </div>
+  )
 }

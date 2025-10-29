@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Bell, Trash2, CheckCircle, AlertCircle, Clock, FileText, Menu } from "lucide-react"
+import { Bell, Trash2, CheckCircle, AlertCircle, Clock, FileText, Menu, Loader2 } from "lucide-react"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useRouter } from "next/navigation"
 import {
@@ -84,8 +84,9 @@ export default function NotificationsPage() {
   if (isLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Loading notifications...</p>
+        <div className="flex items-center justify-center min-h-[400px] gap-2">
+          <Loader2 className="animate-spin h-5 w-5 text-white" />
+          <p className="text-white text-lg">Loading notifications...</p>
         </div>
       </AdminLayout>
     )
