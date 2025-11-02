@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import "@stream-io/video-react-sdk/dist/css/styles.css"
+import { useCallTracking } from "@/lib/hooks/use-call-tracking"
 
 export default function VideoCallPage() {
   const params = useParams()
@@ -16,6 +17,7 @@ export default function VideoCallPage() {
   const { videoClient, isReady } = useVideoClient()
   const [call, setCall] = useState<any>(null)
   const [isCallActive, setIsCallActive] = useState(false)
+  const { saveCallSession } = useCallTracking(call, groupId)
 
   useEffect(() => {
     if (!videoClient || !isReady || !groupId) return
@@ -42,8 +44,15 @@ export default function VideoCallPage() {
     }
   }, [videoClient, isReady, groupId])
 
+  useEffect(() => {
+    return () => {
+      saveCallSession()
+    }
+  }, [saveCallSession])
+
   const handleLeaveCall = async () => {
     if (call && call.active) {
+      await saveCallSession()
       await call.leave()
       setIsCallActive(false)
     }
@@ -54,11 +63,11 @@ export default function VideoCallPage() {
     return (
       <div className="relative flex h-screen flex-col bg-[url('/call-bgMobile.svg')] md:bg-[url('/call-bg.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
         <div className="flex min-h-screen items-center justify-center">
-        <div className="flex items-center space-x-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-background border-t-transparent" />
-          <p className="text-black text-2xl">Loading...</p>
+          <div className="flex items-center space-x-4">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-background border-t-transparent" />
+            <p className="text-black text-2xl">Loading...</p>
+          </div>
         </div>
-      </div>
       </div>
     )
   }

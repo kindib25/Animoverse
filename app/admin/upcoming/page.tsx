@@ -95,7 +95,7 @@ export default function AdminUpcomingPage() {
           <div className="max-w-7xl mx-auto space-y-6 mt-0 md:mt-2 p-10">
             <div className="space-y-2">
               <h1 className="text-3xl md:text-4xl font-peace-sans">Upcoming Sessions</h1>
-              <p className="text-white">Scheduled group sessions for today</p>
+              <p className="text-white/90">Scheduled group sessions for today</p>
             </div>
 
             <Card>

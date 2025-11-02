@@ -64,7 +64,7 @@ export async function createGroup(data: {
   try {
     const creatorProfile = await getUserProfile(data.creatorId)
     const isTeacher = creatorProfile.success && creatorProfile.profile?.userType === "teacher"
-    
+
     const group = await databases.createDocument(DATABASE_ID, COLLECTIONS.GROUPS, ID.unique(), {
       ...data,
       memberCount: 1,
@@ -746,6 +746,108 @@ export async function deleteNotification(notificationId: string) {
   try {
     await databases.deleteDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, notificationId)
     return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+
+// Group Reports and Statistics
+export async function getGroupCallSessions(groupId: string) {
+  try {
+    const sessions = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CALL_SESSIONS, [
+      Query.equal("groupId", groupId),
+      Query.orderDesc("startAt"),
+    ])
+    return { success: true, sessions: sessions.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getGroupAttendance(groupId: string) {
+  try {
+    const attendance = await databases.listDocuments(DATABASE_ID, COLLECTIONS.ATTENDANCE, [
+      Query.equal("groupId", groupId),
+    ])
+    return { success: true, attendance: attendance.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function getUserGroupAttendance(userId: string, groupId: string) {
+  try {
+    const attendance = await databases.listDocuments(DATABASE_ID, COLLECTIONS.ATTENDANCE, [
+      Query.equal("userId", userId),
+      Query.equal("groupId", groupId),
+    ])
+    return { success: true, attendance: attendance.documents }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function calculateGroupStats(groupId: string) {
+  try {
+    const sessionsResult = await getGroupCallSessions(groupId)
+    const attendanceResult = await getGroupAttendance(groupId)
+
+    if (!sessionsResult.success || !attendanceResult.success) {
+      return { success: false, error: "Failed to fetch data" }
+    }
+
+    const sessions = sessionsResult.sessions || []
+    const attendance = attendanceResult.attendance || []
+
+    const totalUptime = sessions.reduce((sum: number, session: any) => {
+      const duration = session.durationMinutes || 0
+      return sum + duration
+    }, 0)
+
+    const totalAttendance = attendance.length
+    const uniqueParticipants = new Set(attendance.map((a: any) => a.userId)).size
+
+    const averageAttendance =
+      sessions.length > 0 && uniqueParticipants > 0
+        ? (totalAttendance / (sessions.length * uniqueParticipants)) * 100
+        : 0
+
+    return {
+      success: true,
+      stats: {
+        sessionCount: sessions.length,
+        totalUptime,
+        averageAttendance: Math.round(averageAttendance),
+      },
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function calculateUserGroupStats(userId: string, groupId: string) {
+  try {
+    const attendanceResult = await getUserGroupAttendance(userId, groupId)
+    const sessionsResult = await getGroupCallSessions(groupId)
+
+    if (!attendanceResult.success || !sessionsResult.success) {
+      return { success: false, error: "Failed to fetch data" }
+    }
+
+    const userAttendance = attendanceResult.attendance || []
+    const sessions = sessionsResult.sessions || []
+
+    const attendance = sessions.length > 0 ? (userAttendance.length / sessions.length) * 100 : 0
+    const sessionCount = userAttendance.length
+
+    return {
+      success: true,
+      stats: {
+        attendance: Math.round(attendance),
+        sessionCount,
+      },
+    }
   } catch (error: any) {
     return { success: false, error: error.message }
   }

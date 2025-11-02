@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Search, TrendingUp, TrendingDown, Minus, Menu } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { calculateUserGroupStats, getGroupCallSessions } from "@/lib/appwrite/database"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function AdminGroupReportsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,8 +21,41 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
   const [searchTerm, setSearchTerm] = useState("")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const getMockAttendance = () => Math.floor(Math.random() * 30) + 70
-  const getMockSessions = () => Math.floor(Math.random() * 10) + 1
+  const [membersWithStats, setMembersWithStats] = useState<any[]>([])
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [totalSessions, setTotalSessions] = useState(0)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!members || !id) return
+
+      setStatsLoading(true)
+      try {
+        const sessionsResult = await getGroupCallSessions(id)
+        const sessions = sessionsResult.success ? sessionsResult.sessions ?? [] : []
+        setTotalSessions(sessions.length)
+
+        const statsPromises = members.map(async (member: any) => {
+          const statsResult = await calculateUserGroupStats(member.$id, id)
+          return {
+            ...member,
+            attendance: statsResult.success ? statsResult.stats?.attendance ?? 0 : 0,
+            sessions: statsResult.success ? statsResult.stats?.sessionCount ?? 0 : 0,
+          }
+        })
+
+        const stats = await Promise.all(statsPromises)
+        setMembersWithStats(stats)
+      } catch (error) {
+        console.error("Error fetching stats:", error)
+        setMembersWithStats(members)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [members, id])
 
   const getAccountStatus = (attendance: number) => {
     if (attendance >= 90) return { label: "Healthy", variant: "default" as const, icon: TrendingUp }
@@ -29,17 +63,11 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
     return { label: "At Risk", variant: "destructive" as const, icon: TrendingDown }
   }
 
-  const membersWithStats = members?.map((member: any) => ({
-    ...member,
-    attendance: getMockAttendance(),
-    sessions: getMockSessions(),
-  }))
 
   const filteredMembers = membersWithStats?.filter((member: any) =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const totalSessions = 10
 
   return (
     <div className="flex h-screen bg-[url('/bgDefault2.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
@@ -102,106 +130,106 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
             </div>
           </div>
           <div className="mx-auto space-y-6 max-w-7xl md:p-0 p-5">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Session Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold">{totalSessions}</span>
-                <span className="text-muted-foreground">Total call sessions</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Student Performance</CardTitle>
-                  <CardDescription>Attendance and engagement metrics</CardDescription>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Session Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">{totalSessions}</span>
+                  <span className="text-muted-foreground">Total call sessions</span>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search students..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              {isLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-16 w-full animate-pulse rounded-lg bg-muted" />
-                  ))}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Student Performance</CardTitle>
+                    <CardDescription>Attendance and engagement metrics</CardDescription>
+                  </div>
                 </div>
-              ) : filteredMembers && filteredMembers.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="pb-3 text-left text-sm font-medium text-muted-foreground">Name</th>
-                        <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Attendance</th>
-                        <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Account Status</th>
-                        <th className="pb-3 text-right pr-15 text-sm font-medium text-muted-foreground">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredMembers.map((member: any) => {
-                        const status = getAccountStatus(member.attendance)
-                        const StatusIcon = status.icon
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search students..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
 
-                        return (
-                          <tr key={member.$id} className="border-b last:border-0">
-                            <td className="py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                  {member.name[0]}
+                {isLoading || statsLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-16 w-full animate-pulse rounded-lg bg-muted" />
+                    ))}
+                  </div>
+                ) : filteredMembers && filteredMembers.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="pb-3 text-left text-sm font-medium text-muted-foreground">Name</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Attendance</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Account Status</th>
+                          <th className="pb-3 text-right pr-15 text-sm font-medium text-muted-foreground">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredMembers.map((member: any) => {
+                          const status = getAccountStatus(member.attendance)
+                          const StatusIcon = status.icon
+
+                          return (
+                            <tr key={member.$id} className="border-b last:border-0">
+                              <td className="py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                    {member.name[0]}
+                                  </div>
+                                  <div>
+                                    <p className="font-medium">{member.name}</p>
+                                    <p className="text-sm text-muted-foreground">@{member.username}</p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="font-medium">{member.name}</p>
-                                  <p className="text-sm text-muted-foreground">@{member.username}</p>
+                              </td>
+                              <td className="py-4 text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                  <span className="font-medium">{member.attendance}%</span>
+                                  <span className="text-sm text-muted-foreground">({member.sessions} sessions)</span>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="py-4 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <span className="font-medium">{member.attendance}%</span>
-                                <span className="text-sm text-muted-foreground">({member.sessions} sessions)</span>
-                              </div>
-                            </td>
-                            <td className="py-4 text-center">
-                              <Badge variant={status.variant} className="gap-1">
-                                <StatusIcon className="h-3 w-3" />
-                                {status.label}
-                              </Badge>
-                            </td>
-                            <td className="py-4 text-right">
-                              <Button variant="outline" size="sm" asChild className="shad-button_viewDetails float-end">
-                                <Link href={`/admin/users/${member.$id}`}>View Details</Link>
-                              </Button>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="py-8 text-center text-muted-foreground">No students found</p>
-              )}
-            </CardContent>
-          </Card>
+                              </td>
+                              <td className="py-4 text-center">
+                                <Badge variant={status.variant} className="gap-1">
+                                  <StatusIcon className="h-3 w-3" />
+                                  {status.label}
+                                </Badge>
+                              </td>
+                              <td className="py-4 text-right">
+                                <Button variant="outline" size="sm" asChild className="shad-button_viewDetails float-end">
+                                  <Link href={`/admin/users/${member.$id}`}>View Details</Link>
+                                </Button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="py-8 text-center text-muted-foreground">No students found</p>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
-      </div>
-      )
+    </div>
+  )
 }
