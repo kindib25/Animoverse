@@ -27,13 +27,22 @@ export function Sidebar() {
   const { profile, logout } = useAuth()
   const router = useRouter()
   const [userId, setUserId] = useState<string>("")
-  const { data: unreadCount = 0 } = useUnreadNotificationCount(userId)
+  const { data: unreadCount = 0, refetch } = useUnreadNotificationCount(userId)
 
   useEffect(() => {
     if (profile?.$id) {
       setUserId(profile.$id)
     }
   }, [profile])
+
+   // 🔁 Auto refresh unread notifications every 30 seconds
+  useEffect(() => {
+    if (!userId) return
+    const interval = setInterval(() => {
+      refetch()
+    }, 3000) // 30 seconds
+    return () => clearInterval(interval)
+  }, [userId, refetch])
 
   const handleLogout = async () => {
     try {
