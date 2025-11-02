@@ -67,17 +67,21 @@ export async function POST(request: NextRequest) {
     // ✅ 3. If member → only add attendance + increment participantCount
     else if (membership === "member") {
       // Find existing call session for this group & creator
-      const existingSession = await databases.listDocuments(
+      const existingSessions = await databases.listDocuments(
         DATABASE_ID,
         COLLECTIONS.CALL_SESSIONS,
-        [Query.equal("groupId", groupId)]
+        [
+          Query.equal("groupId", groupId),
+          Query.orderDesc("startedAt"), // sort latest first
+          Query.limit(1), // only get the latest one
+        ]
       )
 
-      if (existingSession.total === 0) {
+      if (existingSessions.total === 0) {
         return NextResponse.json({ error: "No active session found for group" }, { status: 404 })
       }
 
-      const callSession = existingSession.documents[0]
+      const callSession = existingSessions.documents[0]
 
       // Add attendance record
       await databases.createDocument(
