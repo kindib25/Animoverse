@@ -49,12 +49,14 @@ export default function AdminReportsPage() {
     fetchStats()
   }, [groups])
 
-  const formatUptime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    if (hours > 0) return `${hours}h ${minutes}m`
-    return `${minutes}m`
+  const formatUptime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60)
+    const mins = Math.floor(minutes % 60)
+    if (hours > 0) return `${hours}h ${mins}m`
+    return `${mins}m`
   }
+
+  const isDataLoading = isLoading || statsLoading
 
   return (
     <div className="flex h-screen bg-[url('/bgDefault2.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
@@ -68,7 +70,6 @@ export default function AdminReportsPage() {
         <AnimatePresence>
           {isSidebarOpen && (
             <>
-              {/* Dimmed background */}
               <motion.div
                 className="fixed inset-0 bg-black/40 z-40"
                 onClick={() => setIsSidebarOpen(false)}
@@ -77,7 +78,6 @@ export default function AdminReportsPage() {
                 exit={{ opacity: 0 }}
               />
 
-              {/* Sidebar Slide-in */}
               <motion.div
                 className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
                 initial={{ x: -300 }}
@@ -88,7 +88,6 @@ export default function AdminReportsPage() {
                 <div className="flex min-h-screen">
                   <AdminSidebar />
                 </div>
-
               </motion.div>
             </>
           )}
@@ -103,6 +102,7 @@ export default function AdminReportsPage() {
           >
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
+
           <div className="max-w-7xl mx-auto space-y-6 p-10">
             <div className="space-y-2">
               <h1 className="text-3xl md:text-4xl font-peace-sans">Overall Group Report</h1>
@@ -115,7 +115,7 @@ export default function AdminReportsPage() {
                 <CardDescription>Based on session count and total uptime</CardDescription>
               </CardHeader>
               <CardContent>
-                {isLoading ? (
+                {isDataLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="h-20 w-full animate-pulse rounded-lg bg-muted" />
@@ -187,7 +187,9 @@ export default function AdminReportsPage() {
                   <CardTitle className="text-sm font-medium">Top Performing Group</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {groupsWithStats && groupsWithStats.length > 0 ? (
+                  {isDataLoading ? (
+                    <div className="h-10 w-3/4 animate-pulse rounded bg-muted" />
+                  ) : groupsWithStats && groupsWithStats.length > 0 ? (
                     <div>
                       <p className="text-2xl font-bold">{groupsWithStats[0].name}</p>
                       <p className="text-sm text-muted-foreground">{groupsWithStats[0].sessions} sessions</p>
@@ -203,10 +205,16 @@ export default function AdminReportsPage() {
                   <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">
-                    {groupsWithStats?.reduce((acc: number, group: any) => acc + group.sessions, 0) || 0}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Across all groups</p>
+                  {isDataLoading ? (
+                    <div className="h-10 w-1/3 animate-pulse rounded bg-muted" />
+                  ) : (
+                    <>
+                      <p className="text-2xl font-bold">
+                        {groupsWithStats?.reduce((acc: number, group: any) => acc + group.sessions, 0) || 0}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Across all groups</p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -215,10 +223,16 @@ export default function AdminReportsPage() {
                   <CardTitle className="text-sm font-medium">Total Uptime</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">
-                    {formatUptime(groupsWithStats?.reduce((acc: number, group: any) => acc + group.uptime, 0) || 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Combined duration</p>
+                  {isDataLoading ? (
+                    <div className="h-10 w-1/2 animate-pulse rounded bg-muted" />
+                  ) : (
+                    <>
+                      <p className="text-2xl font-bold">
+                        {formatUptime(groupsWithStats?.reduce((acc: number, group: any) => acc + group.uptime, 0) || 0)}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Combined duration</p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>

@@ -59,7 +59,7 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
 
   const getAccountStatus = (attendance: number) => {
     if (attendance >= 90) return { label: "Healthy", variant: "default" as const, icon: TrendingUp }
-    if (attendance >= 75) return { label: "Needs Improvement", variant: "secondary" as const, icon: Minus }
+    if (attendance >= 50) return { label: "Needs Improvement", variant: "secondary" as const, icon: Minus }
     return { label: "At Risk", variant: "destructive" as const, icon: TrendingDown }
   }
 

@@ -757,7 +757,7 @@ export async function getGroupCallSessions(groupId: string) {
   try {
     const sessions = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CALL_SESSIONS, [
       Query.equal("groupId", groupId),
-      Query.orderDesc("startAt"),
+      Query.orderDesc("startedAt"), // fixed field name
     ])
     return { success: true, sessions: sessions.documents }
   } catch (error: any) {
@@ -790,8 +790,10 @@ export async function getUserGroupAttendance(userId: string, groupId: string) {
 
 export async function calculateGroupStats(groupId: string) {
   try {
-    const sessionsResult = await getGroupCallSessions(groupId)
-    const attendanceResult = await getGroupAttendance(groupId)
+    const [sessionsResult, attendanceResult] = await Promise.all([
+      getGroupCallSessions(groupId),
+      getGroupAttendance(groupId),
+    ])
 
     if (!sessionsResult.success || !attendanceResult.success) {
       return { success: false, error: "Failed to fetch data" }
@@ -800,28 +802,26 @@ export async function calculateGroupStats(groupId: string) {
     const sessions = sessionsResult.sessions || []
     const attendance = attendanceResult.attendance || []
 
-    const totalUptime = sessions.reduce((sum: number, session: any) => {
-      const duration = session.durationMinutes || 0
-      return sum + duration
-    }, 0)
-
+    // Calculate totals
+    const totalUptimeMinutes = sessions.reduce((sum: number, s: any) => sum + (s.durationMinutes || 0), 0)
     const totalAttendance = attendance.length
     const uniqueParticipants = new Set(attendance.map((a: any) => a.userId)).size
 
     const averageAttendance =
-      sessions.length > 0 && uniqueParticipants > 0
-        ? (totalAttendance / (sessions.length * uniqueParticipants)) * 100
+      sessions.length && uniqueParticipants
+        ? Math.min(100, Math.round((totalAttendance / (sessions.length * uniqueParticipants)) * 100))
         : 0
 
     return {
       success: true,
       stats: {
         sessionCount: sessions.length,
-        totalUptime,
-        averageAttendance: Math.round(averageAttendance),
+        totalUptime: totalUptimeMinutes, // in minutes
+        averageAttendance,
       },
     }
   } catch (error: any) {
+    console.error("calculateGroupStats error:", error)
     return { success: false, error: error.message }
   }
 }
