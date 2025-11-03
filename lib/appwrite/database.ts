@@ -852,3 +852,23 @@ export async function calculateUserGroupStats(userId: string, groupId: string) {
     return { success: false, error: error.message }
   }
 }
+
+export async function updateGroup(
+  groupId: string,
+  data: {
+    name?: string
+    description?: string
+    subject?: string
+    schedule?: string
+    imageUrl?: string
+    maxMembers?: number
+    studyPreferences?: string[]
+  },
+) {
+  try {
+    const group = await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, data)
+    return { success: true, group }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

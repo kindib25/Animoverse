@@ -7,7 +7,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu } from "lucide-react"
+import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu, Edit } from "lucide-react"
 import { getGroup, joinGroup, checkMembershipStatus } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
@@ -25,6 +25,7 @@ export default function GroupDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 
   useEffect(() => {
     async function loadGroup() {
@@ -125,7 +126,7 @@ export default function GroupDetailPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
       {/* Sidebar */}
-       <div className="hidden md:flex min-h-screen">
+      <div className="hidden md:flex min-h-screen">
         <Sidebar />
       </div>
 
@@ -151,18 +152,18 @@ export default function GroupDetailPage() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <div className="flex min-h-screen">
-               <Sidebar />
+                <Sidebar />
               </div>
-              
+
             </motion.div>
           </>
         )}
       </AnimatePresence>
-      
+
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-white py-5">
-        
+
         <div className="max-w-7xl mx-auto space-y-6"></div>
         <div className="mx-auto max-w-4xl space-y-6 px-4">
           <Button
@@ -171,7 +172,7 @@ export default function GroupDetailPage() {
             className="sm:flex md:hidden cursor-pointer text-black"
             onClick={() => setIsSidebarOpen(true)}
           >
-             <Menu className="!w-6 !h-6" />
+            <Menu className="!w-6 !h-6" />
           </Button>
 
           <Button variant="ghost" asChild className="hidden md:inline-flex text-black bg-accent hover:bg-background hover:text-white">
@@ -287,6 +288,15 @@ export default function GroupDetailPage() {
                       <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
                     </Button>
                   )}
+
+                  {isCreator && (
+                    <Link href={`/dashboard/groups/${group.$id}/edit`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  )}
+
                 </div>
               </div>
             </CardContent>

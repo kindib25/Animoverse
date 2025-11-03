@@ -13,7 +13,8 @@ import {
   checkSavedStatus,
   getUserSavedGroups,
   getInfiniteGroups,
-  getNewInfiniteGroups
+  getNewInfiniteGroups,
+  updateGroup,
 } from "@/lib/appwrite/database"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
@@ -297,5 +298,39 @@ export function useNewInfiniteGroups(
     initialPageParam: undefined,
     staleTime: 1000 * 60 * 5, // optional: keeps cache for 5 mins
     gcTime: 1000 * 60 * 30,   // optional: garbage collect after 30 mins
+  })
+}
+
+// Update group mutation
+export function useUpdateGroup() {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: ({ groupId, data }: { groupId: string; data: any }) => updateGroup(groupId, data),
+    onSuccess: (data, variables) => {
+      if (data.success) {
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: groupKeys.detail(variables.groupId) })
+        queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+
+        toast({
+          title: "Success",
+          description: "Group updated successfully!",
+        })
+
+        router.push(`/dashboard/groups/${variables.groupId}`)
+      } else {
+        throw new Error(data.error)
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update group",
+        variant: "destructive",
+      })
+    },
   })
 }
