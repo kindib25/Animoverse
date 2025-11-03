@@ -36,7 +36,7 @@ export default function AdminReportsPage() {
         })
 
         const stats = await Promise.all(statsPromises)
-        const sorted = stats.sort((a: any, b: any) => b.sessions - a.sessions)
+        const sorted = stats.sort((a: any, b: any) => b.uptime - a.uptime)
         setGroupsWithStats(sorted)
       } catch (error) {
         console.error("Error fetching stats:", error)
