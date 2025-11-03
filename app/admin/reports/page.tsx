@@ -138,7 +138,9 @@ export default function AdminReportsPage() {
                           <tr key={group.$id} className="border-b last:border-0">
                             <td className="py-4">
                               <div className="flex items-center gap-2">
-                                {index === 0 && <Trophy className="h-5 w-5 text-yellow-500" />}
+                                {index === 0 && <Trophy className="h-5 w-5 text-yellow-500" />}  {/* Gold */}
+                                {index === 1 && <Trophy className="h-5 w-5 text-gray-400" />}   {/* Silver */}
+                                {index === 2 && <Trophy className="h-5 w-5 text-amber-700" />}  {/* Bronze */}
                                 <span className="font-bold">{index + 1}</span>
                               </div>
                             </td>
