@@ -146,6 +146,7 @@ const [isOpen, setIsOpen] = useState(false);
         )}
       </header>
 
+
       {/* Hero Content */}
       <main className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 z-50 lg:py-24 gap-12">
         {/* Left Section */}
