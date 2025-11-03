@@ -15,6 +15,7 @@ import {
   getInfiniteGroups,
   getNewInfiniteGroups,
   updateGroup,
+  deleteGroup,
 } from "@/lib/appwrite/database"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
@@ -329,6 +330,38 @@ export function useUpdateGroup() {
       toast({
         title: "Error",
         description: error.message || "Failed to update group",
+        variant: "destructive",
+      })
+    },
+  })
+}
+
+// Delete group mutation
+export function useDeleteGroup() {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) => deleteGroup(groupId, userId),
+    onSuccess: (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: groupKeys.all })
+
+        toast({
+          title: "Success",
+          description: "Group deleted successfully!",
+        })
+
+        router.push("/dashboard/my-groups")
+      } else {
+        throw new Error(data.error)
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete group",
         variant: "destructive",
       })
     },

@@ -7,12 +7,22 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu, Edit } from "lucide-react"
-import { getGroup, joinGroup, checkMembershipStatus } from "@/lib/appwrite/database"
+import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu, Edit, Trash2 } from "lucide-react"
+import { getGroup, joinGroup, checkMembershipStatus, deleteGroup } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { motion, AnimatePresence } from "framer-motion"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function GroupDetailPage() {
   const params = useParams()
@@ -25,6 +35,7 @@ export default function GroupDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
 
   useEffect(() => {
@@ -93,6 +104,26 @@ export default function GroupDetailPage() {
       })
     }
     setIsJoining(false)
+  }
+
+  const handleDeleteGroup = async () => {
+    setIsDeleting(true)
+    const result = await deleteGroup(group.$id, userId)
+
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: "Group deleted successfully!",
+      })
+      router.push("/dashboard/my-groups")
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to delete group.",
+        variant: "destructive",
+      })
+    }
+    setIsDeleting(false)
   }
 
   if (isLoading) {
@@ -185,6 +216,9 @@ export default function GroupDetailPage() {
           <Card>
             <CardContent className="">
               <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#4ec66a] to-green">
+                <Link href={`/dashboard/groups/${group.$id}/edit`} className="absolute top-3 right-3 rounded-md bg-white/80 p-2 hover:bg-white transition">
+                  <Edit className="h-4 w-4 text-black" />
+                </Link>
                 {group.imageUrl ? (
                   <div className="flex justify-center pt-10 md:pt-20">
                     <img
@@ -284,19 +318,36 @@ export default function GroupDetailPage() {
                   )}
 
                   {isCreator && (
-                    <Button asChild variant="secondary">
-                      <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
-                    </Button>
-                  )}
-
-                  {isCreator && (
-                    <Link href={`/dashboard/groups/${group.$id}/edit`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
-                        <Edit className="h-4 w-4" />
+                    <>
+                      <Button asChild variant="secondary">
+                        <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
                       </Button>
-                    </Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" className="cursor-pointer">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Group</AlertDialogTitle>
+                            <AlertDialogDescription className="text-white/80">
+                              Are you sure you want to delete "{group.name}"? This action cannot be undone. All group
+                              members, messages, and sessions will be permanently deleted.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeleteGroup}
+                            disabled={isDeleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+                          >
+                            {isDeleting ? "Deleting..." : "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
                   )}
-
                 </div>
               </div>
             </CardContent>

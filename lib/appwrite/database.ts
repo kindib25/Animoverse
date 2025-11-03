@@ -872,3 +872,31 @@ export async function updateGroup(
     return { success: false, error: error.message }
   }
 }
+
+export async function deleteGroup(groupId: string, userId: string) {
+  try {
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+
+    if (group.creatorId !== userId) {
+      return { success: false, error: "Only the group creator can delete the group" }
+    }
+
+    // Delete all group members
+    const members = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
+      Query.equal("groupId", groupId),
+    ])
+
+    const deletePromises = members.documents.map((member: any) =>
+      databases.deleteDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, member.$id),
+    )
+
+    await Promise.all(deletePromises)
+
+    // Delete the group itself
+    await databases.deleteDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
