@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { OnboardingLayout } from "../page"
+import  OnboardingLayout  from "../page"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { Card, CardFooter, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

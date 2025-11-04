@@ -220,7 +220,6 @@ export default function EditGroupPage() {
         if (updateMutation.isError) {
             toast({ title: "Update failed", description: "Could not update group.", variant: "destructive" })
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [updateMutation.status])
 
     if (isLoadingGroup || isLoadingUser) {

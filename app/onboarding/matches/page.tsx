@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from "react";
-import { OnboardingLayout } from "@/app/onboarding/page";
+import  OnboardingLayout  from "@/app/onboarding/page";
 import { Button } from "@/components/ui/button";
 import { Users, Sparkles, Loader2, PenLine } from "lucide-react";
 import Link from "next/link";
