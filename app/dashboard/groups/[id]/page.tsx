@@ -351,9 +351,11 @@ export default function GroupDetailPage() {
                     </>
                   )}
                 </div>
-                <Button asChild variant="secondary" className="md:hidden w-full">
-                  <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
-                </Button>
+                {isCreator && (
+                  <Button asChild variant="secondary" className="md:hidden w-full">
+                    <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
