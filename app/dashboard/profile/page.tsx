@@ -142,7 +142,7 @@ export default function ProfilePage() {
               </Avatar>
 
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-2xl md:text-3xl font-bold">
                   {profile?.name || "User"}
                 </h1>
                 <p className="text-muted-foreground">
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="flex gap-4 w-full max-w-xs">
+              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs">
                 <Button
                   asChild
                   className="cursor-pointer bg-accent py-8 px-7 text-black hover:bg-green hover:text-black transition font-mono"

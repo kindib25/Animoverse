@@ -177,7 +177,7 @@ export default function MembershipRequestsPage() {
               ) : (
                 <div className="space-y-4">
                   {requests.map((request) => (
-                    <div key={request.membershipId} className="flex items-center justify-between p-4 rounded-lg border">
+                    <div key={request.membershipId} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg border">
                       <div className="flex items-center gap-4">
                         <Avatar>
                           <AvatarImage src={request.user.avatarUrl || "/placeholder.svg"} />

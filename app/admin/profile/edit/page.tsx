@@ -173,15 +173,7 @@ export default function EditProfilePage() {
                     <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="grade">Grade</Label>
-                    <Input
-                      id="grade"
-                      placeholder="e.g., Grade 10"
-                      value={grade}
-                      onChange={(e) => setGrade(e.target.value)}
-                    />
-                  </div>
+                  
 
                   <div className="space-y-2">
                     <Label htmlFor="bio">Bio</Label>
@@ -193,49 +185,7 @@ export default function EditProfilePage() {
                       rows={3}
                     />
                   </div>
-
-                  <div className="space-y-3">
-                    <Label>Interested subjects</Label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {subjects.map((subject) => (
-                        <div key={subject} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={subject}
-                            checked={selectedSubjects.includes(subject)}
-                            onCheckedChange={() => handleSubjectToggle(subject)}
-                          />
-                          <label
-                            htmlFor={subject}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {subject}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label>Study preferences</Label>
-                    <div className="space-y-2">
-                      {studyPreferences.map((preference) => (
-                        <div key={preference} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={preference}
-                            checked={selectedPreferences.includes(preference)}
-                            onCheckedChange={() => handlePreferenceToggle(preference)}
-                          />
-                          <label
-                            htmlFor={preference}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {preference}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
+                  
                   <div className="flex gap-4">
                     <Button
                       type="button"

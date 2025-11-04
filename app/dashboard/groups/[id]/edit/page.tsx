@@ -329,10 +329,11 @@ export default function EditGroupPage() {
 
                                     {/* Schedule */}
                                     <div className="space-y-2">
+
                                         <Label>Schedule</Label>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-2">
                                             <Select value={selectedDay} onValueChange={(value) => setValue("day", value, { shouldValidate: true })}>
-                                                <SelectTrigger id="day">
+                                                <SelectTrigger className="w-full" id="day">
                                                     <SelectValue placeholder="Select day" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -362,7 +363,7 @@ export default function EditGroupPage() {
                                             <Select value={isCustomSubject ? "Others" : subject} onValueChange={(value) => {
                                                 if (value === "Others") { setIsCustomSubject(true); setValue("subject", "", { shouldValidate: true }) } else { setIsCustomSubject(false); setValue("subject", value, { shouldValidate: true }) }
                                             }}>
-                                                <SelectTrigger id="subject"><SelectValue placeholder="Select subject" /></SelectTrigger>
+                                                <SelectTrigger className="w-full" id="subject"><SelectValue placeholder="Select subject" /></SelectTrigger>
                                                 <SelectContent>{subjects.map((subj) => <SelectItem key={subj} value={subj}>{subj}</SelectItem>)}</SelectContent>
                                             </Select>
 
@@ -382,7 +383,7 @@ export default function EditGroupPage() {
                                                 setValue("teacher", value, { shouldValidate: true })
                                                 if (selected) setValue("teacherId", selected.$id, { shouldValidate: true })
                                             }} disabled={isLoadingTeachers}>
-                                                <SelectTrigger id="teacher"><SelectValue placeholder={isLoadingTeachers ? "Loading..." : "Select a teacher"} /></SelectTrigger>
+                                                <SelectTrigger className="w-full" id="teacher"><SelectValue placeholder={isLoadingTeachers ? "Loading..." : "Select a teacher"} /></SelectTrigger>
                                                 <SelectContent>
                                                     {teachers.map((teacher) => <SelectItem key={teacher.$id} value={teacher.name}>{teacher.name}</SelectItem>)}
                                                     {teachers.length === 0 && !isLoadingTeachers && <div className="px-2 py-1.5 text-sm text-muted-foreground">No teachers available</div>}
@@ -412,7 +413,7 @@ export default function EditGroupPage() {
                                         {errors.description && <p className="text-sm text-destructive">{errors.description.message}</p>}
                                     </div>
 
-                                    <div className="flex justify-center gap-4">
+                                    <div className="flex flex-col md:flex-row justify-center gap-4">
                                         <Button type="button" variant="outline" className="py-6 px-10 bg-transparent cursor-pointer" onClick={() => router.back()}>Cancel</Button>
                                         <Button type="submit" className="bg-background py-6 px-10 text-white hover:bg-green hover:text-black transition font-mono cursor-pointer" disabled={updateMutation.isPending || isUploadingImage}>
                                             {isUploadingImage ? "Uploading image..." : updateMutation.isPending ? "Updating..." : "Update Group"}

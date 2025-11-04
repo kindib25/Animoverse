@@ -84,8 +84,8 @@ export default function GroupChatPage() {
                 </div>
                 <Button variant="outline" size="sm" asChild className="bg-transparent">
                   <Link href={`/dashboard/groups/${params.id}/call`}>
-                    <Phone className="mr-2 h-4 w-4" />
-                    Join Call
+                    <Phone className="mx-2 md:mr-2 h-4 w-4" />
+                    <span className="hidden md:inline-flex">Join Call</span>
                   </Link>
                 </Button>
               </div>

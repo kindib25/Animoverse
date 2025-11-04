@@ -149,18 +149,30 @@ export default function MyGroupsPage() {
               <h1 className="text-4xl font-peace-sans">
                 My Groups
               </h1>
-              <div className="flex items-center gap-2 md:gap-10 text-sm">
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-10 text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-orange-500" />
-                  <span>Awaiting Teacher Approval</span>
+                  <Badge
+                    variant="outline"
+                    className="mt-2 mr-2 w-[180px] border-orange-500 text-orange-500"
+                  >
+                    Awaiting Teacher Approval
+                  </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                  <span>Join Request Pending</span>
+                  <Badge
+                    variant="outline"
+                    className="mt-2 mr-2 w-[180px] border-yellow-500 text-yellow-500"
+                  >
+                    Join Request Pending
+                  </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-green-500" />
-                  <span>Approved</span>
+                  <Badge
+                    variant="outline"
+                    className="mt-2 mr-2 w-[180px] border-green-500 text-green-500"
+                  >
+                    Approved
+                  </Badge>
                 </div>
               </div>
             </div>

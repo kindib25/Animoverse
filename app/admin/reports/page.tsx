@@ -103,7 +103,7 @@ export default function AdminReportsPage() {
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
 
-          <div className="max-w-7xl mx-auto space-y-6 p-10">
+          <div className="max-w-7xl mx-auto space-y-6 md:p-10 p-5">
             <div className="space-y-2">
               <h1 className="text-3xl md:text-4xl font-peace-sans">Overall Group Report</h1>
               <p className="text-white/90">Performance analytics and rankings</p>
@@ -128,8 +128,8 @@ export default function AdminReportsPage() {
                         <tr className="border-b">
                           <th className="pb-3 text-left text-sm font-medium text-muted-foreground">Rank</th>
                           <th className="pb-3 text-left pl-15 text-sm font-medium text-muted-foreground">Name</th>
-                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Number of Sessions</th>
-                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Total Uptime</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground px-10 md:px-0">Number of Sessions</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground px-10 md:px-0">Total Uptime</th>
                           <th className="pb-3 text-right pr-15 text-sm font-medium text-muted-foreground">Actions</th>
                         </tr>
                       </thead>

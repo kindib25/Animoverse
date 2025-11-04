@@ -75,14 +75,14 @@ export default function AdminGroupsPage() {
           </Button>
           <div className="max-w-7xl mx-auto mt-0 md:mt-2 p-10">
             <h1 className="text-3xl md:text-4xl font-peace-sans">Groups</h1>
-            <p className="text-white/90">Manage and monitor study groups</p>
+            <p className="text-white/90 md:text-base text-sm">Manage and monitor study groups</p>
           </div>
 
-          <Tabs defaultValue="assigned" className="max-w-7xl mx-auto space-y-6 px-10">
+          <Tabs defaultValue="assigned" className="max-w-7xl mx-auto space-y-6 px-2 md:px-10">
             <TabsList>
-              <TabsTrigger value="assigned"><span className="text-base md:text-lg">Assigned Groups</span></TabsTrigger>
+              <TabsTrigger value="assigned"><span className="text-sm md:text-lg">Assigned Groups</span></TabsTrigger>
               <TabsTrigger value="pending">
-                <span className="text-base md:text-lg">Pending Approval</span>
+                <span className="text-sm md:text-lg">Pending Approval</span>
                 {pendingGroups && pendingGroups.length > 0 && (
                   <Badge variant="destructive" className="md:ml-2">
                     {pendingGroups.length}
@@ -192,7 +192,7 @@ export default function AdminGroupsPage() {
                             )}
                           </div>
                         </div>
-                        <div className="flex justify-center items-center gap-2">
+                        <div className="flex flex-col md:flex-row justify-center items-center gap-2">
                           <Button
                             size="sm"
                             className="shad-button_ReqJoin cursor-pointer md:w-40 w-40"

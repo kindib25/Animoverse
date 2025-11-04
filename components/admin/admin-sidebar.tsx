@@ -44,15 +44,15 @@ export function AdminSidebar() {
               setProfile(userResult.profile)
               setUserId(userResult.profile.$id)
             } else {
-              router.push("/login")
+              router.push("/admin/login")
             }
           } else {
-            router.push("/login")
+            router.push("/admin/login")
           }
         }
       } catch (err) {
         console.error("Failed to load profile:", err)
-        router.push("/login")
+        router.push("/admin/login")
       } finally {
         setIsLoading(false)
       }

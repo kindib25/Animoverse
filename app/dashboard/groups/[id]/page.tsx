@@ -216,15 +216,17 @@ export default function GroupDetailPage() {
           <Card>
             <CardContent className="">
               <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-[#4ec66a] to-green">
-                <Link href={`/dashboard/groups/${group.$id}/edit`} className="absolute top-3 right-3 rounded-md bg-white/80 p-2 hover:bg-white transition">
-                  <Edit className="h-4 w-4 text-black" />
-                </Link>
+                {isCreator && (
+                  <Link href={`/dashboard/groups/${group.$id}/edit`} className="absolute top-3 right-3 rounded-md bg-white/80 p-2 hover:bg-white transition">
+                    <Edit className="h-4 w-4 text-black" />
+                  </Link>
+                )}
                 {group.imageUrl ? (
                   <div className="flex justify-center pt-10 md:pt-20">
                     <img
                       src={group.imageUrl || "/placeholder.svg"}
                       alt={group.name}
-                      className="h-30 w-30 md:h-60 md:w-60 object-contain rounded-full"
+                      className="h-20 w-20 md:h-60 md:w-60 object-contain rounded-full"
                     />
                   </div>
                 ) : (
@@ -319,7 +321,7 @@ export default function GroupDetailPage() {
 
                   {isCreator && (
                     <>
-                      <Button asChild variant="secondary">
+                      <Button asChild variant="secondary" className="hidden md:inline-flex">
                         <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
                       </Button>
                       <AlertDialog>
@@ -349,6 +351,9 @@ export default function GroupDetailPage() {
                     </>
                   )}
                 </div>
+                <Button asChild variant="secondary" className="md:hidden w-full">
+                  <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>

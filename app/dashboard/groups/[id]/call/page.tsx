@@ -132,7 +132,7 @@ export default function VideoCallPage() {
   if (!schedule || !isWithinSchedule) {
     return (
       <div className="relative flex h-screen flex-col items-center justify-center bg-[url('/call-bgMobile.svg')] md:bg-[url('/call-bg.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
-        <div className="p-6 text-center bg-white/80 rounded-xl shadow-lg">
+        <div className="m-4 p-6 text-center bg-white/80 rounded-xl shadow-lg">
           <div className="absolute left-4 top-4 z-50">
             <Button
               variant="ghost"
@@ -145,12 +145,12 @@ export default function VideoCallPage() {
               </Link>
             </Button>
           </div>
-          <p className="flex items-center justify-center text-2xl font-semibold text-gray-800 mb-2 gap-2">
+          <p className="flex items-center justify-center text-lg md:text-2xl font-semibold text-gray-800 mb-2 gap-2">
             <Clock className="h-6 w-6 mr-2 text-gray-700" />
             Scheduled time awaits
           </p>
           {schedule ? (
-            <p className="text-gray-600">
+            <p className="md:text-base text-sm text-gray-600">
               This group’s call will be available on <strong>{schedule.day}</strong> from{" "}
               <strong>{schedule.startTime}</strong> to <strong>{schedule.endTime}</strong>.
             </p>

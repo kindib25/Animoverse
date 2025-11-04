@@ -176,9 +176,9 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
                       <thead>
                         <tr className="border-b">
                           <th className="pb-3 text-left text-sm font-medium text-muted-foreground">Name</th>
-                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Attendance</th>
-                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground">Account Status</th>
-                          <th className="pb-3 text-right pr-15 text-sm font-medium text-muted-foreground">Actions</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground px-10 md:px-0">Attendance</th>
+                          <th className="pb-3 text-center text-sm font-medium text-muted-foreground px-10 md:px-0">Account Status</th>
+                          <th className="pb-3 text-right pr-15 text-sm font-medium text-muted-foreground ">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -194,14 +194,14 @@ export default function AdminGroupReportsPage({ params }: { params: Promise<{ id
                                     {member.name[0]}
                                   </div>
                                   <div>
-                                    <p className="font-medium">{member.name}</p>
+                                    <p className="font-medium text-sm md:text-base">{member.name}</p>
                                     <p className="text-sm text-muted-foreground">@{member.username}</p>
                                   </div>
                                 </div>
                               </td>
                               <td className="py-4 text-center">
-                                <div className="flex items-center justify-center gap-2">
-                                  <span className="font-medium">{member.attendance}%</span>
+                                <div className="flex flex-col md:flex-row items-center justify-center gap-2">
+                                  <span className="font-medium md:text-base text-sm">{member.attendance}%</span>
                                   <span className="text-sm text-muted-foreground">({member.sessions} sessions)</span>
                                 </div>
                               </td>

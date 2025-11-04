@@ -150,7 +150,6 @@ export default function NotificationsPage() {
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Bell className="h-8 w-8" />
               <h1 className="text-3xl md:text-4xl font-bold text-black font-peace-sans">Notifications</h1>
               {unreadCount > 0 && (
                 <Badge variant="destructive" className="ml-2">
@@ -159,10 +158,17 @@ export default function NotificationsPage() {
               )}
             </div>
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={() => markAllAsRead(userId)}>
+              <Button className="hidden md:inline-flex" variant="outline" size="sm" onClick={() => markAllAsRead(userId)}>
                 Mark all as read
               </Button>
             )}
+          </div>
+            <div className="md:hidden mb-2" >
+          {unreadCount > 0 && (
+            <Button variant="outline" size="sm" onClick={() => markAllAsRead(userId)}>
+              Mark all as read
+            </Button>
+          )}
           </div>
 
           {notifications.length === 0 ? (

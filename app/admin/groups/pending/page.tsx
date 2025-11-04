@@ -102,12 +102,10 @@ export default function PendingGroupsPage() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px] gap-2">
           <Loader2 className="animate-spin h-5 w-5 text-white" />
           <p className="text-white text-lg">Loading pending groups...</p>
         </div>
-      </AdminLayout>
     )
   }
 
@@ -161,7 +159,7 @@ export default function PendingGroupsPage() {
           <div className="max-w-7xl mx-auto space-y-6 mt-0 md:mt-2 p-10">
             <div>
               <h1 className="text-3xl md:text-4xl font-peace-sans">Pending Group Approvals</h1>
-              <p className="text-white mt-2">Review and approve student-created groups assigned to you</p>
+              <p className="text-white mt-2 md:text-base text-sm">Review and approve student-created groups assigned to you</p>
             </div>
 
             {groups.length === 0 ? (
@@ -204,7 +202,7 @@ export default function PendingGroupsPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex flex-col md:flex-row items-center justify-center gap-2">
                         <Button
                           size="sm"
                           className="shad-button_ReqJoin md:w-40 w-40 cursor-pointer"

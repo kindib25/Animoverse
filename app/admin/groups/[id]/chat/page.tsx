@@ -49,12 +49,10 @@ export default function GroupChatPage() {
 
   if (!isReady || !channel || !chatClient) {
     return (
-      <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px] gap-2">
           <Loader2 className="animate-spin h-5 w-5 text-white" />
           <p className="text-white text-lg">Loading chat...</p>
         </div>
-      </AdminLayout>
     )
   }
 
@@ -105,8 +103,8 @@ export default function GroupChatPage() {
           >
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
-          <div className="mx-auto max-w-4xl p-10">
-            <Card className="flex h-[calc(100vh-8rem)] flex-col">
+          <div className="mx-auto max-w-4xl">
+            <Card className="flex h-[calc(100vh-8rem)] flex-col min-h-screen md:min-h-5">
               <CardHeader className="border-b">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -126,8 +124,8 @@ export default function GroupChatPage() {
                   </div>
                   <Button variant="outline" size="sm" asChild className="bg-transparent">
                     <Link href={`/admin/groups/${params.id}/call`}>
-                      <Phone className="mr-2 h-4 w-4" />
-                      Join Call
+                      <Phone className="m-4 md:mr-2 h-4 w-4" />
+                      <span className="hidden md:inline-flex">Join Call</span>
                     </Link>
                   </Button>
                 </div>

@@ -207,7 +207,7 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="flex min-h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
       {/* Sidebar */}
       <div className="hidden md:flex min-h-screen">
         <Sidebar />
@@ -328,12 +328,12 @@ export default function CreateGroupPage() {
                   {/* Schedule */}
                   <div className="space-y-2">
                     <Label>Schedule</Label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col md:flex-row md:items-center gap-2">
                       <Select
                         value={selectedDay}
                         onValueChange={(value) => setValue("day", value, { shouldValidate: true })}
                       >
-                        <SelectTrigger id="day">
+                        <SelectTrigger className="w-full" id="day">
                           <SelectValue placeholder="Select day" />
                         </SelectTrigger>
                         <SelectContent>
@@ -385,7 +385,7 @@ export default function CreateGroupPage() {
                           }
                         }}
                       >
-                        <SelectTrigger id="subject">
+                        <SelectTrigger className="w-full" id="subject">
                           <SelectValue placeholder="Select subject" />
                         </SelectTrigger>
                         <SelectContent>
@@ -429,7 +429,7 @@ export default function CreateGroupPage() {
                         }}
                         disabled={isLoadingTeachers}
                       >
-                        <SelectTrigger id="teacher">
+                        <SelectTrigger className="w-full" id="teacher">
                           <SelectValue placeholder={isLoadingTeachers ? "Loading..." : "Select a teacher"} />
                         </SelectTrigger>
                         <SelectContent>

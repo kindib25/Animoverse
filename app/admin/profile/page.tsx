@@ -108,12 +108,12 @@ export default function ProfilePage() {
           >
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
-          <div className="mx-auto max-w-4xl space-y-6 p-10">
+          <div className="mx-auto max-w-4xl space-y-6 p-4 mt-5 md:p-10 lg:p-16 w-full">
             {!isProfileComplete && (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Complete your profile to get better study group matches.{" "}
+                  Finish setting up your profile.{" "}
                   <Link href="/admin/profile/edit" className="font-medium underline">
                     Edit profile
                   </Link>
@@ -136,8 +136,8 @@ export default function ProfilePage() {
 
 
                   <div className="space-y-2">
-                    <h1 className="text-3xl font-bold">{profile?.name || "User"}</h1>
-                    <p className="text-muted-foreground">@{profile?.username || "username"}</p>
+                    <h1 className="text-xl md:text-3xl font-bold">{profile?.name || "User"}</h1>
+                    <p className="text-muted-foreground md:text-base text-sm">@{profile?.username || "username"}</p>
                     {profile?.bio ? (
                       <p className="text-sm">{profile.bio}</p>
                     ) : (

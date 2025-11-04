@@ -146,7 +146,7 @@ export default function AdminGroupDetailPage({ params }: { params: Promise<{ id:
                             {member.name[0]}
                           </div>
                           <div>
-                            <p className="font-medium">{member.name}</p>
+                            <p className="font-medium md:text-base text-sm">{member.name}</p>
                             <p className="text-sm text-muted-foreground">@{member.username}</p>
                           </div>
                         </div>
