@@ -7,7 +7,6 @@ import RotatingCard from "@/components/home-card/rotating-card";
 import { useState } from "react";
 import { Menu, X } from "lucide-react"; 
 
-
 export default function HomePage() {
 const [isOpen, setIsOpen] = useState(false);
 
