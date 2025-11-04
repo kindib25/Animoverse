@@ -111,7 +111,7 @@ export default function Onboarding() {
                         <CardHeader>
                             <Progress value={48} />
                             <div className="py-10" />
-                            <CardTitle className="flex items-center justify-center text-2xl md:text-3xl">
+                            <CardTitle className="flex items-center justify-center text-xl md:text-3xl">
                                 What grade are you in?
                             </CardTitle>
                             <div className="space-y-2 pt-20 flex justify-center items-center flex-col ">
