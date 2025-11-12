@@ -109,23 +109,11 @@ export default function ProfilePage() {
             <Menu className="!w-6 !h-6 text-white" />
           </Button>
           <div className="mx-auto max-w-4xl space-y-6 p-4 mt-5 md:p-10 lg:p-16 w-full">
-            {!isProfileComplete && (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Finish setting up your profile.{" "}
-                  <Link href="/admin/profile/edit" className="font-medium underline">
-                    Edit profile
-                  </Link>
-                </AlertDescription>
-              </Alert>
-            )}
-
             <Card>
               <CardContent className="p-8">
                 <div className="flex flex-col items-center gap-6 text-center">
                   <Avatar className="h-32 w-32">
-                    <AvatarImage src="/placeholder.svg?height=128&width=128" />
+                    <AvatarImage src={profile?.avatarUrl || "/placeholder.svg?height=40&width=40"} />
                     <AvatarFallback className="text-3xl">
                       {profile?.name
                         ?.split(" ")
