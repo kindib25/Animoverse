@@ -1,7 +1,10 @@
 import { z } from "zod"
 
 export const teacherLoginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+   email: z
+    .string()
+    .email("Invalid email address")
+    .regex(/^[A-Za-z0-9._%+-]+@lsu\.edu\.ph$/, "Email must end with @lsu.edu.ph"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
