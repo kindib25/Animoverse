@@ -27,7 +27,7 @@ export const queryKeys = {
     all: ["admin"] as const,
     stats: () => [...queryKeys.admin.all, "stats"] as const,
     allUsers: (filters?: Record<string, any>) => [...queryKeys.admin.all, "users", filters] as const,
-    pendingGroups: () => [...queryKeys.admin.all, "pending-groups"] as const,
+    pendingGroups: (teacherId: string | undefined) => [...queryKeys.admin.all, "pending-groups"] as const,
     teacherGroups: (teacherId: string) => [...queryKeys.admin.all, "teacher-groups", teacherId] as const,
     groupMembers: (groupId: string) => [...queryKeys.admin.all, "group-members", groupId] as const,
   },

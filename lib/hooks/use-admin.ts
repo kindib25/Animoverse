@@ -39,7 +39,7 @@ export function useAllUsers(filters?: Record<string, any>) {
 // Get pending groups
 export function usePendingGroups(teacherId: string) {
   return useQuery({
-    queryKey: queryKeys.admin.pendingGroups(),
+    queryKey: queryKeys.admin.pendingGroups(teacherId),
     queryFn: async () => {
       const result = await getPendingGroups(teacherId)
       if (!result.success) throw new Error(result.error)
@@ -117,7 +117,7 @@ export function useGroupMembers(groupId: string) {
 }
 
 // Approve or reject group
-export function useUpdateGroupStatus() {
+export function useUpdateGroupStatus(teacherId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -127,7 +127,7 @@ export function useUpdateGroupStatus() {
       return (result as { success: true; group: any }).group
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.pendingGroups() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.pendingGroups(teacherId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.groups.all })
     },
   })

@@ -15,7 +15,7 @@ export default function AdminGroupsPage() {
   const { profile } = useAuth()
   const { data: assignedGroups, isLoading: loadingAssigned } = useTeacherGroups(profile?.$id || "")
   const { data: pendingGroups, isLoading: loadingPending } = usePendingGroups(profile?.$id || "")
-  const updateStatus = useUpdateGroupStatus()
+  const updateStatus = useUpdateGroupStatus(profile?.$id || "")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const handleApprove = async (groupId: string) => {
