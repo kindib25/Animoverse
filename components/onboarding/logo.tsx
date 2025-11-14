@@ -41,8 +41,20 @@ export function Logo() {
   return (
     <aside>
       {/* Logo */}
-      <div className="flex h-30 items-center gap-2 px-10 py-4">
-        <img src="/logonamelsu.svg" alt="logo" className="w-40 md:w-50 h-auto" />
+      <div className="flex h-30 items-center gap-2 px-10 py-4 md:justify-start justify-center">
+        {/* Small-screen logo */}
+        <img
+          src="/logoname.svg"
+          alt="logo"
+          className="w-45 h-auto md:hidden"
+        />
+
+        {/* Medium+ logo */}
+        <img
+          src="/logonamelsu.svg"
+          alt="logo"
+          className="hidden md:inline-flex w-60 h-auto"
+        />
       </div>
 
     </aside>
