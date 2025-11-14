@@ -128,6 +128,7 @@ export function useUpdateGroupStatus(teacherId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.pendingGroups(teacherId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.teacherGroups(teacherId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.groups.all })
     },
   })

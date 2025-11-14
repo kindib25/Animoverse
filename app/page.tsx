@@ -54,7 +54,7 @@ const [isOpen, setIsOpen] = useState(false);
           {/* Logo */}
           <Link href="/">
             <img
-              src="/logoname.svg"
+              src="/logonamelsu.svg"
               alt="logo"
               className="w-40 md:w-50 h-auto"
             />

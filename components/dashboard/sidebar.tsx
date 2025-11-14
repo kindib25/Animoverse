@@ -95,7 +95,7 @@ export function Sidebar() {
       <aside className="flex w-80 flex-col bg-sidebar text-sidebar-foreground">
         {/* Logo */}
         <div className="flex h-30 items-center gap-2 px-7 py-4">
-          <img src="/logoname.svg" alt="logo" className="w-50 h-auto" />
+          <img src="/logonamelsu.svg" alt="logo" className="w-50 h-auto" />
         </div>
 
         {/* Navigation links (still visible while loading) */}
@@ -153,7 +153,7 @@ export function Sidebar() {
     <aside className="flex w-80 flex-col bg-sidebar text-sidebar-foreground">
       {/* Logo */}
       <div className="flex h-30 items-center gap-2 px-7 py-4">
-        <img src="/logoname.svg" alt="logo" className="w-50 h-auto" />
+        <img src="/logonamelsu.svg" alt="logo" className="w-50 h-auto" />
       </div>
 
       {/* Navigation links */}

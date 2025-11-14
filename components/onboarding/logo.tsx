@@ -42,7 +42,7 @@ export function Logo() {
     <aside>
       {/* Logo */}
       <div className="flex h-30 items-center gap-2 px-10 py-4">
-        <img src="/logoname.svg" alt="logo" className="w-40 md:w-50 h-auto" />
+        <img src="/logonamelsu.svg" alt="logo" className="w-40 md:w-50 h-auto" />
       </div>
 
     </aside>

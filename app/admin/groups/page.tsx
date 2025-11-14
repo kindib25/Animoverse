@@ -8,15 +8,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Check, X, MessageSquare, Users, Menu, Calendar } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function AdminGroupsPage() {
   const { profile } = useAuth()
-  const { data: assignedGroups, isLoading: loadingAssigned } = useTeacherGroups(profile?.$id || "")
+  const { data: assignedGroups, isLoading: loadingAssigned, refetch: refetchAssigned } =
+    useTeacherGroups(profile?.$id || "")
   const { data: pendingGroups, isLoading: loadingPending } = usePendingGroups(profile?.$id || "")
   const updateStatus = useUpdateGroupStatus(profile?.$id || "")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    if (profile?.$id) {
+      refetchAssigned()
+    }
+  }, [profile?.$id])
 
   const handleApprove = async (groupId: string) => {
     await updateStatus.mutateAsync({ groupId, status: "approved" })
