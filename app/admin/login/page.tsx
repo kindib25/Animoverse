@@ -18,34 +18,35 @@ export default function AdminLoginPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
-   useEffect(() => {
-  async function checkAuth() {
-    const result = await clientGetCurrentUser()
+  useEffect(() => {
+    async function checkAuth() {
+      const result = await clientGetCurrentUser()
 
-    if (result.success && result.user) {
-      const userResult = await clientGetUserProfile(result.user.$id)
+      if (result.success && result.user) {
+        const userResult = await clientGetUserProfile(result.user.$id)
 
-      if (userResult.success && userResult.profile) {
-        const userType = (userResult.profile as any).userType
+        if (userResult.success && userResult.profile) {
+          const userType = (userResult.profile as any).userType
 
-        if (userType === "teacher" || userType === "admin") {
-          router.push("/admin/dashboard")
+          if (userType === "teacher" || userType === "admin") {
+            router.push("/admin/dashboard")
+          } else {
+            router.push("/dashboard")
+          }
         } else {
-          router.push("/dashboard")
+          // Fallback if user profile not found
+          router.push("/admin/login")
         }
       } else {
-        // Fallback if user profile not found
-        router.push("/admin/login")
+        setIsLoading(false)
       }
-    } else {
-      setIsLoading(false)
     }
-  }
 
-  checkAuth()
-}, [router])
-  
+    checkAuth()
+  }, [router])
+
 
   const {
     register,
@@ -88,14 +89,14 @@ export default function AdminLoginPage() {
             description: "Unable to verify user permissions",
           })
           const { clientLogout } = await import("@/lib/appwrite/client-auth")
-            await clientLogout()
+          await clientLogout()
         }
       } else {
         toast({
-            variant: "destructive",
-            title: "Login failed",
-            description: result.error || "Please check your credentials and try again.",
-          })
+          variant: "destructive",
+          title: "Login failed",
+          description: result.error || "Please check your credentials and try again.",
+        })
       }
     } catch (err) {
       toast({
@@ -149,7 +150,7 @@ export default function AdminLoginPage() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 {...register("password")}
                 className="shad-input"
@@ -167,6 +168,23 @@ export default function AdminLoginPage() {
             >
               {isLoading ? "Logging in..." : "Log-in"}
             </Button>
+
+            <div className="flex justify-between items-center text-sm">
+              <div className="text-center">
+                <Link href="/admin/forgot-password" className="text-sm text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-sm text-primary hover:underline cursor-pointer"
+              >
+                {showPassword ? "Hide" : "Show"} password
+              </button>
+            </div>
+
           </form>
         </div>
       </div>
