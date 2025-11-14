@@ -19,6 +19,7 @@ export function LoginForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -33,7 +34,7 @@ export function LoginForm() {
 
     const result = await clientLogin(data.email, data.password)
 
-   if (result.success && result.session) {
+    if (result.success && result.session) {
       const userResult = await clientGetUserProfile(result.session.userId)
 
       if (userResult.success && userResult.profile) {
@@ -89,7 +90,7 @@ export function LoginForm() {
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="Enter your password" {...register("password")} className="shad-input" />
+          <Input id="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" {...register("password")} className="shad-input" />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
       </div>
@@ -97,6 +98,22 @@ export function LoginForm() {
       <Button type="submit" className="w-full shad-button_Login" size="lg" disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log in"}
       </Button>
+      
+      <div className="flex justify-between items-center text-sm">
+        <div className="text-center">
+          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="text-sm text-primary hover:underline cursor-pointer"
+        >
+          {showPassword ? "Hide" : "Show"} password
+        </button>
+      </div>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

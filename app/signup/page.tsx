@@ -53,8 +53,8 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2 text-center">
-            <h2 className="text-balance text-3xl md:text-4xl font-peace-sans tracking-tight">Create a new account</h2>
-            <p className="text-pretty font-normal">To use Animoverse, please enter your details</p>
+            <h2 className="text-balance text-2xl md:text-4xl font-peace-sans tracking-tight">Create a new account</h2>
+            <p className="text-sm md:text-base font-normal">To use Animoverse, please enter your details</p>
           </div>
 
           <SignupForm />

@@ -69,3 +69,36 @@ export async function clientUpdatePassword(oldPassword: string, newPassword: str
 
 
 export const getCurrentUser = clientGetCurrentUser
+
+
+
+export async function clientForgotPassword(email: string) {
+  try {
+    const response = await account.createRecovery(
+      email,
+      `${typeof window !== "undefined" ? window.location.origin : ""}/reset-password`
+    )
+    return { success: true, response }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clientResetPassword(
+  userId: string,
+  secret: string,
+  password: string,
+  passwordAgain: string
+) {
+  try {
+    if (password !== passwordAgain) {
+      return { success: false, error: "Passwords do not match" }
+    }
+
+    const response = await account.updateRecovery(userId, secret, password)
+
+    return { success: true, response }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
