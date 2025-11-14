@@ -81,7 +81,7 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
                     </Button>
 
                     <Button variant="ghost" asChild className="hidden md:inline-flex mb-4 mt-6 ml-6">
-                        <Link href="/admin/users">
+                        <Link href="/admin/groups">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
                         </Link>
