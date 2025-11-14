@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button"
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const { data: stats, isLoading } = useAdminStats()
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [user, setUser] = useState<any>(null)
   const { profile } = useAuth()
+  const { data: stats, isLoading } = useAdminStats(user?.$id)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
 
@@ -130,7 +130,7 @@ export default function AdminDashboardPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-5xl font-bold text-green">{stats?.activeGroups || 0}</div>
-                      <p className="text-sm text-white">Currently active</p>
+                      <p className="text-sm text-white">Assigned groups</p>
                     </CardContent>
                   </Card>
                 </Link>

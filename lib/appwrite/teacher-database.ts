@@ -121,12 +121,12 @@ export async function getGroupMembers(groupId: string) {
 }
 
 // Get dashboard statistics
-export async function getDashboardStats() {
+export async function getDashboardStats(teacherId: string) {
   try {
     const [usersResult, groupsResult, pendingResult] = await Promise.all([
       databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [Query.limit(1)]),
-      databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [Query.equal("status", "approved"), Query.limit(1)]),
-      databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [Query.equal("status", "pending"), Query.limit(1)]),
+      databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [Query.equal("teacherId", teacherId), Query.equal("status", "approved"), Query.limit(1)]),
+      databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUPS, [Query.equal("teacherId", teacherId), Query.equal("status", "pending"), Query.limit(1)]),
     ])
 
     return {

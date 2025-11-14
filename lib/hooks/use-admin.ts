@@ -13,14 +13,15 @@ import {
 } from "@/lib/appwrite/teacher-database"
 
 // Get dashboard statistics
-export function useAdminStats() {
+export function useAdminStats(teacherId: string) {
   return useQuery({
-    queryKey: queryKeys.admin.stats(),
+    queryKey: queryKeys.admin.stats(teacherId), // cache per teacher
     queryFn: async () => {
-      const result = await getDashboardStats()
+      const result = await getDashboardStats(teacherId)
       if (!result.success) throw new Error(result.error)
       return result.stats
     },
+    enabled: !!teacherId, // only fetch when teacherId exists
   })
 }
 
