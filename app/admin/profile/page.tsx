@@ -154,9 +154,22 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <Button asChild className="w-full max-w-xs cursor-pointer bg-background py-6 px-10 text-[#ffffff] hover:bg-green hover:text-black transition font-mono">
-                    <Link href="/admin/profile/edit">Edit Profile</Link>
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs">
+                    <Button
+                      asChild
+                      className="cursor-pointer bg-accent py-8 px-7 text-black hover:bg-green hover:text-black transition font-mono"
+                    >
+                      <Link href="/admin/profile/edit">Edit Profile</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      className="cursor-pointer py-8 bg-background text-white hover:bg-green hover:text-black transition font-mono"
+                    >
+                      <Link href="/admin/profile/change-password">
+                        Change Password
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -193,8 +206,8 @@ export default function ProfilePage() {
               </Card>
             )}
           </div>
-          </main>
-          </div>
-          </div>
-          )
+        </main>
+      </div>
+    </div>
+  )
 }
