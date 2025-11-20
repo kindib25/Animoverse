@@ -5,7 +5,7 @@ export const teacherLoginSchema = z.object({
     .string()
     .email("Invalid email address")
     .regex(/^[A-Za-z0-9._%+-]+@lsu\.edu\.ph$/, "Email must end with @lsu.edu.ph"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 })
 
 export type TeacherLoginInput = z.infer<typeof teacherLoginSchema>
