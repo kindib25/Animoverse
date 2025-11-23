@@ -153,24 +153,27 @@ export default function MyGroupsPage() {
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="mt-2 mr-2 w-[180px] border-orange-500 text-orange-500"
+                    className="mt-2 mr-2 w-[200px] border-orange-500 text-orange-500 flex items-center gap-2"
                   >
+                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                     Awaiting Teacher Approval
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="mt-2 mr-2 w-[180px] border-yellow-500 text-yellow-500"
+                    className="mt-2 mr-2 w-[200px] border-yellow-500 text-yellow-500 flex items-center gap-2"
                   >
+                    <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
                     Join Request Pending
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="mt-2 mr-2 w-[180px] border-green-500 text-green-500"
+                    className="mt-2 mr-2 w-[200px] border-green-500 text-green-500 flex items-center gap-2"
                   >
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     Approved
                   </Badge>
                 </div>
