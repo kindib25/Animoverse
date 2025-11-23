@@ -206,6 +206,15 @@ export default function CreateGroupPage() {
   }
 
   const onSubmit = (data: CreateGroupInput) => {
+    if (!isTimeAllowed(data.startTime) || !isTimeAllowed(data.endTime)) {
+      toast({
+        title: "Invalid time range",
+        description: "Schedule must be between 7:00 AM and 8:00 PM only.",
+        variant: "destructive",
+      })
+      return
+    }
+
     createGroupMutation.mutate(data)
   }
 
@@ -217,6 +226,19 @@ export default function CreateGroupPage() {
     hour = hour % 12 || 12
     return `${hour}:${minute} ${ampm}`
   }
+
+  function isTimeAllowed(time: string) {
+    if (!time) return false
+
+    const [h, m] = time.split(":").map(Number)
+    const totalMinutes = h * 60 + m
+
+    const startAllowed = 7 * 60      // 7:00 AM  → 420 min
+    const endAllowed = 20 * 60       // 8:00 PM  → 1200 min
+
+    return totalMinutes >= startAllowed && totalMinutes <= endAllowed
+  }
+
 
   return (
     <div className="flex min-h-screen overflow-hidden bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat">
@@ -274,7 +296,7 @@ export default function CreateGroupPage() {
                 <CardTitle className="text-2xl ml-1">Create Group</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                   <div className="space-y-2">
                     <Label htmlFor="groupName">Group name</Label>
                     <Input id="groupName" placeholder="Enter group name" {...register("name")} className="selection:bg-background selection:text-white" />
@@ -356,9 +378,23 @@ export default function CreateGroupPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Input type="time" id="startTime" {...register("startTime")} />
+                      <Input
+                        type="time"
+                        id="startTime"
+                        {...register("startTime")}
+                        min="07:00"
+                        max="20:00"
+                      />
+
                       <span>to</span>
-                      <Input type="time" id="endTime" {...register("endTime")} />
+
+                      <Input
+                        type="time"
+                        id="endTime"
+                        {...register("endTime")}
+                        min="07:00"
+                        max="20:00"
+                      />
                     </div>
                     {(errors.startTime || errors.endTime) && (
                       <p className="text-sm text-destructive">Please select both start and end times.</p>
