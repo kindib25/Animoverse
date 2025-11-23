@@ -115,6 +115,21 @@ export default function EditProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (
+      !username.trim() ||
+      !grade.trim() ||
+      !bio.trim() ||
+      selectedSubjects.length === 0 ||
+      selectedPreferences.length === 0
+    ) {
+      toast({
+        title: "Incomplete Fields",
+        description: "Please fill out all required fields before updating your profile.",
+        variant: "destructive",
+      })
+      return
+    }
+
     let avatarUrl = profile?.avatarUrl || ""
 
     if (selectedImage) {
@@ -132,6 +147,15 @@ export default function EditProfilePage() {
       }
 
       avatarUrl = uploadResult.fileUrl || ""
+    }
+
+    if (!avatarUrl) {
+      toast({
+        title: "Profile photo required",
+        description: "Please upload a profile picture.",
+        variant: "destructive",
+      })
+      return
     }
 
     updateProfileMutation.mutate({
@@ -160,65 +184,87 @@ export default function EditProfilePage() {
   }
 
   return (
-     <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
-         {/* Sidebar */}
-         <div className="hidden md:flex min-h-screen">
-           <Sidebar />
-         </div>
-   
-         {/* Mobile Sidebar Overlay */}
-         <AnimatePresence>
-           {isSidebarOpen && (
-             <>
-               {/* Dimmed background */}
-               <motion.div
-                 className="fixed inset-0 bg-black/40 z-40"
-                 onClick={() => setIsSidebarOpen(false)}
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 exit={{ opacity: 0 }}
-               />
-   
-               {/* Sidebar Slide-in */}
-               <motion.div
-                 className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
-                 initial={{ x: -300 }}
-                 animate={{ x: 0 }}
-                 exit={{ x: -300 }}
-                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-               >
-                 <div className="flex min-h-screen">
-                   <Sidebar />
-                 </div>
-   
-               </motion.div>
-             </>
-           )}
-         </AnimatePresence>
-   
-         {/* Main Content */}
-         <main className="flex-1 overflow-y-auto bg-white">
-            <Button
-               variant="ghost"
-               size="icon"
-               className="sm:flex md:hidden cursor-pointer text-black m-3"
-               onClick={() => setIsSidebarOpen(true)}
-             >
-                <Menu className="!w-6 !h-6" />
-             </Button>
-    
-      <div className="mx-auto max-w-4xl space-y-6 p-5">
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Profile</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex flex-col items-center gap-4">
-                {imagePreview ? (
-                  <div className="relative">
+    <div className="flex min-h-screen bg-[url('/bgDefault.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
+      {/* Sidebar */}
+      <div className="hidden md:flex min-h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Dimmed background */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Sidebar Slide-in */}
+            <motion.div
+              className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex min-h-screen">
+                <Sidebar />
+              </div>
+
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-white">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:flex md:hidden cursor-pointer text-black m-3"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="!w-6 !h-6" />
+        </Button>
+
+        <div className="mx-auto max-w-4xl space-y-6 p-5">
+          <Card>
+            <CardHeader>
+              <CardTitle>Edit Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex flex-col items-center gap-4">
+                  {imagePreview ? (
+                    <div className="relative">
+                      <Avatar className="h-24 w-24">
+                        <AvatarImage src={imagePreview || "/placeholder.svg"} className="object-cover" />
+                        <AvatarFallback>
+                          {username
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("") || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      {selectedImage && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full cursor-pointer"
+                          onClick={handleRemoveImage}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src={imagePreview || "/placeholder.svg"} className="object-cover" />
+                      <AvatarImage src="/placeholder.svg?height=96&width=96" />
                       <AvatarFallback>
                         {username
                           .split(" ")
@@ -226,181 +272,159 @@ export default function EditProfilePage() {
                           .join("") || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    {selectedImage && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full cursor-pointer"
-                        onClick={handleRemoveImage}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder.svg?height=96&width=96" />
-                    <AvatarFallback>
-                      {username
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("") || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingImage}
-                  className="cursor-pointer bg-accent  text-black hover:bg-background hover:text-white transition font-mono"
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  {isUploadingImage ? "Uploading..." : "Change profile photo"}
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageSelect}
-                />
-              </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImage}
+                    className="cursor-pointer bg-accent  text-black hover:bg-background hover:text-white transition font-mono"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {isUploadingImage ? "Uploading..." : "Change profile photo"}
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageSelect}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" className="selection:bg-background selection:text-white" value={username} onChange={(e) => setUsername(e.target.value)} required />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input id="username" className="selection:bg-background selection:text-white" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="grade">Grade</Label>
-                <Input
-                  id="grade"
-                  placeholder="e.g., Grade 10"
-                  value={grade}
-                  onChange={(e) => setGrade(e.target.value)}
-                  className="selection:bg-background selection:text-white"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="grade">Grade</Label>
+                  <Input
+                    id="grade"
+                    placeholder="e.g., Grade 10"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    className="selection:bg-background selection:text-white"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  placeholder="Tell others about yourself..."
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  rows={3}
-                  className="selection:bg-background selection:text-white"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    placeholder="Tell others about yourself..."
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    rows={3}
+                    className="selection:bg-background selection:text-white"
+                  />
+                </div>
 
-              {/* Select Interested subjects) */}
-              <div className="space-y-3">
-                <Label>Interested subjects</Label>
+                {/* Select Interested subjects) */}
+                <div className="space-y-3">
+                  <Label>Interested subjects</Label>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {subjects.map((subject) => (
-                    <div key={subject} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={subject}
-                        checked={
-                          subject === "Others"
-                            ? isCustomSubject
-                            : selectedSubjects.includes(subject)
-                        }
-                        onCheckedChange={() => {
-                          if (subject === "Others") {
-                            setIsCustomSubject((prev) => !prev)
-                            if (isCustomSubject) {
-                              // If unchecking "Others", clear custom subject
+                  <div className="grid grid-cols-2 gap-3">
+                    {subjects.map((subject) => (
+                      <div key={subject} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={subject}
+                          checked={
+                            subject === "Others"
+                              ? isCustomSubject
+                              : selectedSubjects.includes(subject)
+                          }
+                          onCheckedChange={() => {
+                            if (subject === "Others") {
+                              setIsCustomSubject((prev) => !prev)
+                              if (isCustomSubject) {
+                                // If unchecking "Others", clear custom subject
+                                setSelectedSubjects((prev) =>
+                                  prev.filter((s) => subjects.includes(s))
+                                )
+                              }
+                            } else {
                               setSelectedSubjects((prev) =>
-                                prev.filter((s) => subjects.includes(s))
+                                prev.includes(subject)
+                                  ? prev.filter((s) => s !== subject)
+                                  : [...prev, subject]
                               )
                             }
-                          } else {
-                            setSelectedSubjects((prev) =>
-                              prev.includes(subject)
-                                ? prev.filter((s) => s !== subject)
-                                : [...prev, subject]
-                            )
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor={subject}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {subject}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Custom subject input */}
-                {isCustomSubject && (
-                  <div className="mt-2">
-                    <Input
-                      id="custom-subject"
-                      placeholder="Enter custom subject"
-                      value={
-                        selectedSubjects.find((s) => !subjects.includes(s)) || ""
-                      }
-                      onChange={(e) => {
-                        const value = e.target.value.trim()
-                        setSelectedSubjects((prev) => {
-                          const filtered = prev.filter((s) => subjects.includes(s))
-                          return value ? [...filtered, value] : filtered
-                        })
-                      }}
-                      className="selection:bg-background selection:text-white"
-                      autoFocus
-                    />
+                          }}
+                        />
+                        <label
+                          htmlFor={subject}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {subject}
+                        </label>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-3">
-                <Label>Study preferences</Label>
-                <div className="space-y-2">
-                  {studyPreferences.map((preference) => (
-                    <div key={preference} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={preference}
-                        checked={selectedPreferences.includes(preference)}
-                        onCheckedChange={() => handlePreferenceToggle(preference)}
+                  {/* Custom subject input */}
+                  {isCustomSubject && (
+                    <div className="mt-2">
+                      <Input
+                        id="custom-subject"
+                        placeholder="Enter custom subject"
+                        value={
+                          selectedSubjects.find((s) => !subjects.includes(s)) || ""
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value.trim()
+                          setSelectedSubjects((prev) => {
+                            const filtered = prev.filter((s) => subjects.includes(s))
+                            return value ? [...filtered, value] : filtered
+                          })
+                        }}
+                        className="selection:bg-background selection:text-white"
+                        autoFocus
                       />
-                      <label
-                        htmlFor={preference}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {preference}
-                      </label>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
 
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  onClick={handleCancel}
-                  className="flex-1 cursor-pointer bg-accent py-6 text-black hover:bg-green hover:text-black transition font-mono"
-                  disabled={updateProfileMutation.isPending || isUploadingImage}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-green hover:text-black transition font-mono" disabled={updateProfileMutation.isPending || isUploadingImage}>
-                  {isUploadingImage ? "Uploading..." : updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+                <div className="space-y-3">
+                  <Label>Study preferences</Label>
+                  <div className="space-y-2">
+                    {studyPreferences.map((preference) => (
+                      <div key={preference} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={preference}
+                          checked={selectedPreferences.includes(preference)}
+                          onCheckedChange={() => handlePreferenceToggle(preference)}
+                        />
+                        <label
+                          htmlFor={preference}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {preference}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    onClick={handleCancel}
+                    className="flex-1 cursor-pointer bg-accent py-6 text-black hover:bg-green hover:text-black transition font-mono"
+                    disabled={updateProfileMutation.isPending || isUploadingImage}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="flex-1 cursor-pointer bg-background py-6 text-white hover:bg-green hover:text-black transition font-mono" disabled={updateProfileMutation.isPending || isUploadingImage}>
+                    {isUploadingImage ? "Uploading..." : updateProfileMutation.isPending ? "Saving..." : "Update Profile"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </main>
-      </div>
+    </div>
   )
 }
