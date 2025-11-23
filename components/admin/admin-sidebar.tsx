@@ -18,6 +18,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Groups", href: "/admin/groups", icon: UsersRound },
   { name: "Upcoming", href: "/admin/upcoming", icon: Calendar },
+  { name: "Users", href: "/admin/animo_users", icon: Users },
   { name: "Reports", href: "/admin/reports", icon: FileText },
 ]
 

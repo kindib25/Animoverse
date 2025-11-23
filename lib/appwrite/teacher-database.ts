@@ -9,7 +9,7 @@ export async function getAllUsers(limit = 50) {
   try {
     const users = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
       Query.limit(limit),
-      Query.orderDesc("createdAt"),
+      Query.orderDesc("$createdAt"),
     ])
     return { success: true, users: users.documents }
   } catch (error: any) {
