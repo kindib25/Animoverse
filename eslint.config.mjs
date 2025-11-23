@@ -35,6 +35,7 @@ const eslintConfig = [
       // --- Other noise reducers ---
       "no-unused-vars": "off",
       "no-console": "off",
+      "prefer-const": "off"
     },
   },
 ];
