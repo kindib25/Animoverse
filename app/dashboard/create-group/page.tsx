@@ -151,12 +151,15 @@ export default function CreateGroupPage() {
         imageUrl = uploadResult.fileUrl || ""
       }
 
+      const start12 = convertTo12Hour(data.startTime)
+      const end12 = convertTo12Hour(data.endTime)
+
       const shortDay = data.day ? data.day.slice(0, 3) : ""
       const result = await createGroup({
         name: data.name,
         description: data.description || "",
         subject: data.subject,
-        schedule: `${shortDay} ${data.startTime} - ${data.endTime}`,
+        schedule: `${shortDay} ${start12} - ${end12}`,
         teacher: data.teacher,
         status: "pending",
         teacherId: data.teacherId,
@@ -204,6 +207,15 @@ export default function CreateGroupPage() {
 
   const onSubmit = (data: CreateGroupInput) => {
     createGroupMutation.mutate(data)
+  }
+
+  function convertTo12Hour(time: string) {
+    if (!time) return ""
+    const [hourStr, minute] = time.split(":")
+    let hour = parseInt(hourStr, 10)
+    const ampm = hour >= 12 ? "PM" : "AM"
+    hour = hour % 12 || 12
+    return `${hour}:${minute} ${ampm}`
   }
 
   return (
