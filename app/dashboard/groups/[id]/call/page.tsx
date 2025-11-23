@@ -11,6 +11,21 @@ import "@stream-io/video-react-sdk/dist/css/styles.css"
 import { useCallTracking } from "@/lib/hooks/use-call-tracking"
 import { databases, DATABASE_ID, COLLECTIONS } from "@/lib/appwrite/config"
 
+/* ✅ Convert "1:30 PM" → { hour: 13, minute: 30 } */
+function convert12HourTo24(timeString: string) {
+  const [time, modifier] = timeString.split(" ")
+  let [hours, minutes] = time.split(":").map(Number)
+
+  if (modifier === "PM" && hours !== 12) {
+    hours += 12
+  }
+  if (modifier === "AM" && hours === 12) {
+    hours = 0
+  }
+
+  return { hours, minutes }
+}
+
 export default function VideoCallPage() {
   const params = useParams()
   const router = useRouter()
@@ -18,7 +33,13 @@ export default function VideoCallPage() {
   const { videoClient, isReady } = useVideoClient()
   const [call, setCall] = useState<any>(null)
   const [isCallActive, setIsCallActive] = useState(false)
-  const [schedule, setSchedule] = useState<{ day: string; startTime: string; endTime: string } | null>(null)
+
+  const [schedule, setSchedule] = useState<{
+    day: string
+    startTime: string
+    endTime: string
+  } | null>(null)
+
   const [isWithinSchedule, setIsWithinSchedule] = useState(false)
   const { saveCallSession } = useCallTracking(call, groupId)
 
@@ -27,16 +48,16 @@ export default function VideoCallPage() {
     const fetchGroupSchedule = async () => {
       try {
         const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
-        const scheduleStr = group.schedule // e.g. "Tue 17:08 - 18:08"
+        const scheduleStr = group.schedule // e.g. "Tue 1:00 PM - 2:30 PM"
 
         if (!scheduleStr) return
 
-        // Parse string -> day + start/end time
         const parts = scheduleStr.split(" ")
         const day = parts[0]
-        const times = parts.slice(1).join(" ").split("-").map((t: string) => t.trim())
-        const startTime = times[0]
-        const endTime = times[1]
+
+        const times = scheduleStr.replace(day, "").trim().split("-")
+        const startTime = times[0].trim()     // "1:00 PM"
+        const endTime = times[1].trim()       // "2:30 PM"
 
         setSchedule({ day, startTime, endTime })
       } catch (error) {
@@ -47,7 +68,7 @@ export default function VideoCallPage() {
     if (groupId) fetchGroupSchedule()
   }, [groupId])
 
-  // ⏱ Helper to check if current time is within schedule
+  // ⏱ Check if current time is within schedule
   const checkIfWithinSchedule = (sch: { day: string; startTime: string; endTime: string }) => {
     const now = new Date()
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -55,18 +76,20 @@ export default function VideoCallPage() {
 
     if (currentDay !== sch.day) return false
 
-    const [startH, startM] = sch.startTime.split(":").map(Number)
-    const [endH, endM] = sch.endTime.split(":").map(Number)
+    // Convert AM/PM to 24-hour format
+    const start = convert12HourTo24(sch.startTime)
+    const end = convert12HourTo24(sch.endTime)
 
-    const start = new Date()
-    start.setHours(startH, startM, 0, 0)
-    const end = new Date()
-    end.setHours(endH, endM, 0, 0)
+    const startDate = new Date()
+    startDate.setHours(start.hours, start.minutes, 0, 0)
 
-    return now >= start && now <= end
+    const endDate = new Date()
+    endDate.setHours(end.hours, end.minutes, 0, 0)
+
+    return now >= startDate && now <= endDate
   }
 
-  // Check schedule periodically
+  // Check schedule continuously
   useEffect(() => {
     if (!schedule) return
 
@@ -75,11 +98,11 @@ export default function VideoCallPage() {
     }
 
     updateScheduleStatus()
-    const interval = setInterval(updateScheduleStatus, 5 * 1000) // every 5s
+    const interval = setInterval(updateScheduleStatus, 5000)
     return () => clearInterval(interval)
   }, [schedule])
 
-  // Initialize video call only when schedule allows
+  // Initialize the call only during schedule
   useEffect(() => {
     if (!videoClient || !isReady || !groupId || !isWithinSchedule) return
 
@@ -105,14 +128,14 @@ export default function VideoCallPage() {
     }
   }, [videoClient, isReady, groupId, isWithinSchedule])
 
-  // Automatically end call when schedule time ends
+  // Auto-end call when time expires
   useEffect(() => {
     if (!isWithinSchedule && call && isCallActive) {
       handleLeaveCall()
     }
   }, [isWithinSchedule])
 
-  // Save call session on unmount
+  // Save session on cleanup
   useEffect(() => {
     return () => {
       saveCallSession()
@@ -128,7 +151,7 @@ export default function VideoCallPage() {
     router.push(`/dashboard/groups/${groupId}/chat`)
   }
 
-  // If not scheduled yet
+  // Before schedule starts
   if (!schedule || !isWithinSchedule) {
     return (
       <div className="relative flex h-screen flex-col items-center justify-center bg-[url('/call-bgMobile.svg')] md:bg-[url('/call-bg.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
@@ -176,7 +199,7 @@ export default function VideoCallPage() {
     )
   }
 
-  // Main call UI
+  // Call UI
   return (
     <div className="relative flex h-screen flex-col bg-[url('/call-bgMobile.svg')] md:bg-[url('/call-bg.svg')] bg-cover bg-center bg-no-repeat overflow-hidden">
       <StreamVideo client={videoClient}>
