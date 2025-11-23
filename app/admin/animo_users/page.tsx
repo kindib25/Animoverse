@@ -92,7 +92,7 @@ export default function AdminUsersPage() {
           </Button>
           <div className="mx-auto max-w-7xl mt-5 md:mt-10 p-5">
             <h1 className="text-3xl font-peace-sans">User Management</h1>
-            <p className="text-white">View and manage all registered users</p>
+            <p className="text-white">View all registered users</p>
           </div>
 
           <div className="mx-auto space-y-6 max-w-7xl md:p-0 p-5">
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>All Users</CardTitle>
-                  <CardDescription>Manage user accounts and permissions</CardDescription>
+                  <CardDescription>View user accounts and their statuses</CardDescription>
                 </div>
                 <Badge variant="secondary">{users?.length || 0} users</Badge>
               </div>
