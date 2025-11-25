@@ -20,6 +20,7 @@ export default function MyGroupsPage() {
   const [removedGroupIds, setRemovedGroupIds] = useState<string[]>([])
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [showRejectedModal, setShowRejectedModal] = useState(false)
+  const [activeFilter, setActiveFilter] = useState<"all" | "awaiting" | "joinpending" | "approved" | "rejected">("all")
 
   // Load removed group IDs from localStorage
   useEffect(() => {
@@ -74,7 +75,29 @@ export default function MyGroupsPage() {
   }
 
   // Filter out removed rejected groups
-  const visibleGroups = groups.filter((group) => !removedGroupIds.includes(group.$id))
+  const visibleGroups = groups
+    .filter((g) => !removedGroupIds.includes(g.$id))
+    .filter((g) => {
+      if (activeFilter === "all") return true
+
+      const isPendingApproval = g.status === "pending"
+      const isJoinPending = g.membershipStatus === "pending_join"
+      const isApproved = g.status === "approved" && g.membershipStatus === "approved"
+      const isRejected = g.status === "rejected" || g.membershipStatus === "rejected"
+
+      switch (activeFilter) {
+        case "awaiting":
+          return isPendingApproval
+        case "joinpending":
+          return isJoinPending
+        case "approved":
+          return isApproved
+        case "rejected":
+          return isRejected
+        default:
+          return true
+      }
+    })
   const rejectedGroups = groups.filter(
     (g) => g.status === "rejected" || g.membershipStatus === "rejected"
   )
@@ -130,17 +153,6 @@ export default function MyGroupsPage() {
           <Menu className="!w-6 !h-6" />
         </Button>
 
-        <div className="flex float-end mr-4 mt-4 font-poppins-regular">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowRejectedModal(true)}
-            className="text-sm p-3 md:text-base font-medium md:p-5 bg-background text-white hover:text-black hover:bg-green cursor-pointer"
-          >
-            Rejected
-          </Button>
-        </div>
-
 
         {/* Header Section */}
         <div className="max-w-7xl mx-auto pt-10 space-y-6 p-5">
@@ -149,34 +161,61 @@ export default function MyGroupsPage() {
               <h1 className="text-4xl font-peace-sans">
                 My Groups
               </h1>
-              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-10 text-sm">
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="mt-2 mr-2 w-[200px] border-orange-500 text-orange-500 flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                    Awaiting Teacher Approval
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="mt-2 mr-2 w-[200px] border-yellow-500 text-yellow-500 flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                    Join Request Pending
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="mt-2 mr-2 w-[200px] border-green-500 text-green-500 flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                    Approved
-                  </Badge>
-                </div>
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-5 text-sm">
+                {/* SHOW ALL */}
+                <Badge
+                  variant="outline"
+                  className={`mt-2 mr-2 w-[200px] border-gray-500 text-gray-600 flex items-center gap-2 cursor-pointer py-1
+      ${activeFilter === "all" ? "bg-gray-200" : ""}`}
+                  onClick={() => setActiveFilter("all")}
+                >
+                  <span className="w-2 h-2 rounded-full bg-gray-500"></span>
+                  Show All
+                </Badge>
+                
+                {/* AWAITING TEACHER APPROVAL */}
+                <Badge
+                  variant="outline"
+                  className={`mt-2 mr-2 w-[200px] border-orange-500 text-orange-500 flex items-center gap-2 cursor-pointer py-1
+      ${activeFilter === "awaiting" ? "bg-orange-100" : ""}`}
+                  onClick={() => setActiveFilter("awaiting")}
+                >
+                  <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                  Awaiting Teacher Approval
+                </Badge>
+
+                {/* JOIN REQUEST PENDING */}
+                <Badge
+                  variant="outline"
+                  className={`mt-2 mr-2 w-[200px] border-yellow-500 text-yellow-500 flex items-center gap-2 cursor-pointer py-1
+      ${activeFilter === "joinpending" ? "bg-yellow-100" : ""}`}
+                  onClick={() => setActiveFilter("joinpending")}
+                >
+                  <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                  Join Request Pending
+                </Badge>
+
+                {/* APPROVED */}
+                <Badge
+                  variant="outline"
+                  className={`mt-2 mr-2 w-[200px] border-green-500 text-green-500 flex items-center gap-2 cursor-pointer py-1
+      ${activeFilter === "approved" ? "bg-green-100" : ""}`}
+                  onClick={() => setActiveFilter("approved")}
+                >
+                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                  Approved
+                </Badge>
+
+                {/* REJECTED */}
+                <Badge
+                  variant="outline"
+                  className={`mt-2 mr-2 w-[200px] border-red-500 text-red-500 flex items-center gap-2 cursor-pointer py-1
+      ${activeFilter === "rejected" ? "bg-red-100" : ""}`}
+                  onClick={() => setActiveFilter("rejected")}
+                >
+                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                  Rejected
+                </Badge>
               </div>
             </div>
           </div>
@@ -189,7 +228,7 @@ export default function MyGroupsPage() {
                 <Users className="h-10 w-10 text-black" />
               </div>
               <h3 className="mt-6 text-xl font-semibold text-black">
-                You haven't joined any groups yet
+                No groups found.
               </h3>
               <p className="mt-2 max-w-sm text-balance text-muted-foreground">
                 Create your own study group or explore existing ones to start collaborating with other students.

@@ -180,29 +180,6 @@ const [isOpen, setIsOpen] = useState(false);
             </Link>
           </div>
 
-          {/* Statistics */}
-          <div className="flex flex-wrap justify-center lg:justify-start gap-x-12 gap-y-6 text-center lg:text-left">
-            <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">
-                10K+
-              </div>
-              <div className="text-gray-400 text-sm font-normal">Members</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">
-                100
-              </div>
-              <div className="text-gray-400 text-sm font-normal">Groups</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold tracking-wide text-green-400">
-                ∞
-              </div>
-              <div className="text-gray-400 text-sm font-normal">
-                Sessions to Explore
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Right Section - Rotating Card */}
