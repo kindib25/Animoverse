@@ -16,9 +16,10 @@ import { useUserProfile, useUpdateUserProfile } from "@/lib/hooks/use-user"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { uploadProfileImage } from "@/lib/appwrite/storage"
 import { useToast } from "@/components/ui/use-toast"
-import { Upload, X, Menu, Loader2 } from "lucide-react"
+import { Upload, X, Menu, Loader2, ChevronDownIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const subjects = ["Math", "Science", "English", "Filipino", "ICT", "Others"]
 const studyPreferences = ["Group Discussion", "Sharing notes"]
@@ -300,13 +301,23 @@ export default function EditProfilePage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="grade">Grade</Label>
-                  <Input
-                    id="grade"
-                    placeholder="e.g., Grade 10"
-                    value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                    className="selection:bg-background selection:text-white"
-                  />
+                  {/* SELECT FIELD */}
+                    <Select value={grade} onValueChange={setGrade}>
+                      <SelectTrigger
+                        className="w-full relative"
+                      >
+                        <SelectValue className="text-center" placeholder="Select Grade Level" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="Grade 7">Grade 7</SelectItem>
+                        <SelectItem value="Greade 8">Grade 8</SelectItem>
+                        <SelectItem value="Grade 9">Grade 9</SelectItem>
+                        <SelectItem value="Grade 10">Grade 10</SelectItem>
+                        <SelectItem value="Grade 11">Grade 11</SelectItem>
+                        <SelectItem value="Grade 12">Grade 12</SelectItem>
+                      </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-2">

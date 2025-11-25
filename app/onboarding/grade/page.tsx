@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import  OnboardingLayout  from "../page"
+import OnboardingLayout from "../page"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 import { Card, CardFooter, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -11,7 +11,8 @@ import { Progress } from "@/components/ui/progress"
 import { useUserProfile, useSetUserGrade } from "@/lib/hooks/use-user"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2 } from "lucide-react"
+import { ChevronDownIcon, Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function Onboarding() {
     const router = useRouter()
@@ -67,7 +68,7 @@ export default function Onboarding() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!userId) return 
+        if (!userId) return
         updateProfileMutation.mutate({
             grade,
         })
@@ -114,22 +115,36 @@ export default function Onboarding() {
                             <CardTitle className="flex items-center justify-center text-xl md:text-3xl">
                                 What grade are you in?
                             </CardTitle>
-                            <div className="space-y-2 pt-20 flex justify-center items-center flex-col ">
-                                <Input
-                                    id="grade"
-                                    className="
-                                    border-3 border-black
-                                    selection:bg-background selection:text-white
-                                    text-center py-7
-                                    text-2xl md:text-[2rem]
-                                    w-[90%] md:w-[450px]
-                                    md:py-10 md:pr-6
-                                    "
-                                    placeholder="e.g., Grade 10"
-                                    value={grade}
-                                    onChange={(e) => setGrade(e.target.value)}
-                                    
-                                />
+                            {/* SELECT FIELD */}
+                            <div className="pt-20 flex justify-center items-center flex-col">
+                                <Select value={grade} onValueChange={setGrade}>
+                                    <SelectTrigger
+                                        className="
+                                        border-3 border-black
+                                        w-[90%] md:w-[450px]
+                                        py-7 md:py-10
+                                        text-2xl md:text-[2rem]
+                                        relative
+                                        justify-center
+                                        [&>svg]:hidden  
+                                        "
+                                    >
+                                        <SelectValue className="text-center" placeholder="Select Grade Level" />
+
+                                        <span className="absolute right-4">
+                                            <ChevronDownIcon />
+                                        </span>
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                        <SelectItem value="Grade 7">Grade 7</SelectItem>
+                                        <SelectItem value="Greade 8">Grade 8</SelectItem>
+                                        <SelectItem value="Grade 9">Grade 9</SelectItem>
+                                        <SelectItem value="Grade 10">Grade 10</SelectItem>
+                                        <SelectItem value="Grade 11">Grade 11</SelectItem>
+                                        <SelectItem value="Grade 12">Grade 12</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </CardHeader>
                         <div className="py-5" />
