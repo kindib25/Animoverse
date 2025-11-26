@@ -900,3 +900,37 @@ export async function deleteGroup(groupId: string, userId: string) {
     return { success: false, error: error.message }
   }
 }
+
+export async function leaveGroup(groupId: string, userId: string) {
+  try {
+    // Find the membership record
+    const memberships = await databases.listDocuments(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, [
+      Query.equal("groupId", groupId),
+      Query.equal("userId", userId),
+    ])
+
+    if (memberships.documents.length === 0) {
+      return { success: false, error: "You are not a member of this group" }
+    }
+
+    const membership = memberships.documents[0]
+
+    // Only allow leaving if approved
+    if (membership.status !== "approved") {
+      return { success: false, error: "You can only leave approved groups" }
+    }
+
+    // Delete the membership
+    await databases.deleteDocument(DATABASE_ID, COLLECTIONS.GROUP_MEMBERS, membership.$id)
+
+    // Decrement group member count
+    const group = await databases.getDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId)
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.GROUPS, groupId, {
+      memberCount: Math.max(0, (group.memberCount || 1) - 1),
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

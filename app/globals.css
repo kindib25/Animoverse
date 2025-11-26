@@ -173,16 +173,14 @@
   }
 
   .shad-button_showAll {
-    @apply flex cursor-pointer text-center bg-white text-black md:text-base md:py-5 md:px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
-    py-3 px-3
+    @apply flex cursor-pointer text-center bg-white text-black md:text-base md:py-5 md:px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] py-3 px-3
   }
 
   .shad-button_showMatch {
-    @apply flex cursor-pointer text-center bg-white text-black md:text-base md:py-5 md:px-5 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
-    py-5 px-3
+    @apply flex cursor-pointer text-center bg-white text-black md:text-base md:py-5 md:px-5 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a] py-5 px-3
   }
-  
-   .shad-button_ReqJoin {
+
+  .shad-button_ReqJoin {
     @apply flex cursor-pointer text-center bg-white text-black text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
@@ -190,7 +188,7 @@
     @apply flex cursor-pointer text-center bg-white text-black text-sm md:text-base md:py-5 md:px-10 py-2 px-3 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
-   .shad-button_ReqPending {
+  .shad-button_ReqPending {
     @apply flex cursor-pointer text-center bg-background text-white text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
@@ -198,7 +196,7 @@
     @apply flex cursor-pointer text-center bg-destructive text-white text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-destructive shadow-[0_8px_0_#ff7171] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#ff7171] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
-   .shad-button_Login {
+  .shad-button_Login {
     @apply flex cursor-pointer text-center bg-white text-black text-xl py-7 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
@@ -208,6 +206,18 @@
 
   .shad-button_JoinSessionAdmin {
     @apply flex cursor-pointer text-center bg-green text-black text-xl py-7 px-10 rounded-lg border-2 border-black hover:bg-white shadow-[0_8px_0_#2f855a] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#b3b3b3] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+  .shad-button_Chat {
+    @apply flex cursor-pointer text-center bg-white text-black md:text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+  .shad-button_ManageReq {
+    @apply hidden md:inline-flex md:cursor-pointer md:text-center bg-white text-black md:text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
+  }
+
+  .shad-button_ManageReq2 {
+    @apply md:hidden flex cursor-pointer text-center bg-white text-black md:text-base py-5 px-10 rounded-lg border-2 border-black hover:bg-green shadow-[0_8px_0_#b3b3b3] transition-all duration-150 hover:translate-y-[3px] hover:shadow-[0_5px_0_#2f855a] active:translate-y-[6px] active:shadow-[0_2px_0_#2f855a]
   }
 
 }
@@ -244,12 +254,15 @@ Semi-bold: 600
   .text-stroke-1 {
     -webkit-text-stroke-width: 1px;
   }
+
   .text-stroke-2 {
     -webkit-text-stroke-width: 2px;
   }
+
   .text-stroke-black {
     -webkit-text-stroke-color: #000;
   }
+
   .text-stroke-white {
     -webkit-text-stroke-color: #fff;
   }

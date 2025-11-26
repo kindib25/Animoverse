@@ -7,8 +7,8 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu, Edit, Trash2 } from "lucide-react"
-import { getGroup, joinGroup, checkMembershipStatus, deleteGroup } from "@/lib/appwrite/database"
+import { Calendar, Users, ArrowLeft, MessageSquare, Phone, Menu, Edit, Trash2, LogOut } from "lucide-react"
+import { getGroup, joinGroup, checkMembershipStatus, deleteGroup, leaveGroup } from "@/lib/appwrite/database"
 import { clientGetCurrentUser } from "@/lib/appwrite/client-auth"
 import { useToast } from "@/components/ui/use-toast"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -36,6 +36,7 @@ export default function GroupDetailPage() {
   const [isJoining, setIsJoining] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
 
 
   useEffect(() => {
@@ -124,6 +125,26 @@ export default function GroupDetailPage() {
       })
     }
     setIsDeleting(false)
+  }
+
+  const handleLeaveGroup = async () => {
+    setIsLeaving(true)
+    const result = await leaveGroup(group.$id, userId)
+
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: "You have left the group.",
+      })
+      router.push("/dashboard")
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to leave group.",
+        variant: "destructive",
+      })
+    }
+    setIsLeaving(false)
   }
 
   if (isLoading) {
@@ -304,13 +325,13 @@ export default function GroupDetailPage() {
 
                   {(isMember || isCreator) && (
                     <>
-                      <Button asChild className="flex-1">
+                      <Button asChild className="flex-1 shad-button_Chat">
                         <Link href={`/dashboard/groups/${group.$id}/chat`}>
                           <MessageSquare className="mr-2 h-4 w-4" />
                           Chat
                         </Link>
                       </Button>
-                      <Button asChild variant="outline" className="text-white">
+                      <Button asChild variant="outline" className="text-white shad-button_ReqPending">
                         <Link href={`/dashboard/groups/${group.$id}/call`}>
                           <Phone className="mr-2 h-4 w-4" />
                           Call
@@ -321,12 +342,12 @@ export default function GroupDetailPage() {
 
                   {isCreator && (
                     <>
-                      <Button asChild variant="secondary" className="hidden md:inline-flex">
+                      <Button asChild variant="secondary" className="shad-button_ManageReq">
                         <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="destructive" className="cursor-pointer">
+                          <Button variant="destructive" className="cursor-pointer shad-button_ReqRejected">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
@@ -350,13 +371,43 @@ export default function GroupDetailPage() {
                       </AlertDialog>
                     </>
                   )}
+
+                  {isMember && !isCreator && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="shad-button_ReqRejected">
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Leave Group
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Leave Group</AlertDialogTitle>
+                          <AlertDialogDescription className="text-white/90">
+                            Are you sure you want to leave "{group.name}"? You can request to join again later.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleLeaveGroup}
+                          disabled={isLeaving}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+                        >
+                          {isLeaving ? "Leaving..." : "Leave"}
+                        </AlertDialogAction>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
                 {isCreator && (
-                  <Button asChild variant="secondary" className="md:hidden w-full">
+                  <Button asChild variant="secondary" className="shad-button_ManageReq2">
                     <Link href={`/dashboard/groups/${group.$id}/requests`}>Manage Requests</Link>
                   </Button>
                 )}
               </div>
+
+
+
             </CardContent>
           </Card>
         </div>
