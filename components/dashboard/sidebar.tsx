@@ -25,7 +25,6 @@ import { getUserProfile } from "@/lib/appwrite/database"
 const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
   { name: "Explore", href: "/dashboard/explore", icon: Compass },
-  { name: "Saved", href: "/dashboard/saved", icon: Bookmark },
   { name: "Upcoming", href: "/dashboard/upcoming", icon: Calendar },
   { name: "My Groups", href: "/dashboard/my-groups", icon: Users },
   { name: "Create Group", href: "/dashboard/create-group", icon: PlusCircle },

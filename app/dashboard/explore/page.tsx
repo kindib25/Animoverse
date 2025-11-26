@@ -155,14 +155,14 @@ export default function ExplorePage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-white">
-         <Button
-            variant="ghost"
-            size="icon"
-            className="sm:flex md:hidden cursor-pointer text-black m-3"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-             <Menu className="!w-6 !h-6" />
-          </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:flex md:hidden cursor-pointer text-black m-3"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="!w-6 !h-6" />
+        </Button>
         <div className="max-w-7xl mx-auto pt-5 md:pt-10 space-y-6 p-7 md:mt-5">
           <h1 className="text-3xl md:text-4xl font-peace-sans text-black">Search Groups</h1>
 
@@ -211,20 +211,7 @@ export default function ExplorePage() {
                   >
                     <Card className="bg-gradient-to-br from-[#4ec66a] to-green hover:shadow-md hover:border-1 hover:border-black transition-all rounded-xl border-gray-200">
                       <CardHeader>
-                        <div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => handleToggleSave(group.$id, e)}
-                            className="h-8 w-8 hover:bg-[#59e279]"
-                          >
-                            <Bookmark
-                              className={`h-5 w-5 ${isSaved
-                                  ? "fill-black text-black"
-                                  : "text-gray-600"
-                                }`}
-                            />
-                          </Button>
+                        <div className="py-5">
                         </div>
                         <div className="flex items-center justify-center">
                           <div>
@@ -232,10 +219,12 @@ export default function ExplorePage() {
                               <img
                                 src={group.imageUrl || "/placeholder.svg"}
                                 alt={group.name}
-                                className="h-32 w-32 object-contain rounded-full"
+                                className="h-32 w-32 object-cover rounded-full"
                               />
                             </div>
-                            <h3 className="font-semibold text-2xl">{group.name}</h3>
+                            <h3 className="font-semibold text-2xl mt-4 text-center">
+                              {group.name}
+                            </h3>
                             <div className="flex items-center justify-center">
                               <Badge variant="secondary" className="mt-2">
                                 {group.subject}
