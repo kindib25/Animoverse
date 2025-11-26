@@ -375,7 +375,7 @@ export default function GroupDetailPage() {
                   {isMember && !isCreator && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="shad-button_ReqRejected">
+                        <Button variant="destructive" className="shad-button_LeaveGroup">
                           <LogOut className="mr-2 h-4 w-4" />
                           Leave Group
                         </Button>
@@ -405,6 +405,32 @@ export default function GroupDetailPage() {
                   </Button>
                 )}
               </div>
+              {isMember && !isCreator && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="shad-button_LeaveGroup2">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Leave Group
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Leave Group</AlertDialogTitle>
+                      <AlertDialogDescription className="text-white/90">
+                        Are you sure you want to leave "{group.name}"? You can request to join again later.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleLeaveGroup}
+                      disabled={isLeaving}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+                    >
+                      {isLeaving ? "Leaving..." : "Leave"}
+                    </AlertDialogAction>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
 
 
 
