@@ -86,11 +86,25 @@ export function AdminSidebar() {
       <aside className="flex w-80 flex-col bg-sidebar text-sidebar-foreground">
         {/* Logo */}
         <div className="flex h-30 items-center gap-2 px-7 py-4">
-          <img src="/logonamelsu.svg" alt="logo"/>
+          <img src="/logonamelsu.svg" alt="logo" />
         </div>
 
         {/* Navigation stays visible */}
         <nav className="flex-1 space-y-1 p-6">
+          <Link
+            href="/admin/notifications"
+            className={cn(
+              "flex items-center gap-10 rounded-lg px-3 py-5 text-md font-medium transition-colors",
+              pathname === "/admin/notifications"
+                ? "bg-green text-black"
+                : "text-foreground hover:bg-accent hover:text-accent-foreground"
+            )}
+          >
+            <Bell className="h-5 w-5" />
+            Notifications
+
+          </Link>
+
           {navigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
@@ -111,19 +125,6 @@ export function AdminSidebar() {
               </Link>
             )
           })}
-
-          <Link
-            href="/admin/notifications"
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors relative",
-              pathname === "/admin/notifications"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            )}
-          >
-            <Bell className="h-5 w-5" />
-            Notifications
-          </Link>
         </nav>
 
         {/* Skeleton for avatar + name only */}
@@ -149,6 +150,27 @@ export function AdminSidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 p-6">
+        {/* Notifications */}
+        <Link
+          href="/admin/notifications"
+          className={cn(
+            "flex items-center gap-10 rounded-lg px-3 py-5 text-md font-medium transition-colors",
+            pathname === "/admin/notifications"
+              ? "bg-green text-black"
+              : "text-foreground hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          <Bell className="h-5 w-5" />
+          Notifications
+          {unreadCount > 0 && (
+            <Badge
+              variant="destructive"
+              className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs"
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </Badge>
+          )}
+        </Link>
         {navigation.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
@@ -169,24 +191,6 @@ export function AdminSidebar() {
             </Link>
           )
         })}
-
-        <Link
-          href="/admin/notifications"
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors relative",
-            pathname === "/dashboard/notifications"
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-          )}
-        >
-          <Bell className="h-5 w-5" />
-          Notifications
-          {unreadCount > 0 && (
-            <Badge variant="destructive" className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </Badge>
-          )}
-        </Link>
       </nav>
 
       {/* User profile + logout */}
