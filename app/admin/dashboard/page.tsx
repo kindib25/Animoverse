@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
                 <Link href="/admin/animo_users">
                 <Card className="bg-transparent border-white border-2 text-white">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">Total Users</CardTitle>
+                    <CardTitle className="text-lg font-medium">Total Students</CardTitle>
                     <Users className="h-8 w-8 text-white" />
                   </CardHeader>
                   <CardContent>

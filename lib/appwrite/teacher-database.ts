@@ -10,6 +10,7 @@ export async function getAllUsers(limit = 50) {
     const users = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
       Query.limit(limit),
       Query.orderDesc("$createdAt"),
+      Query.equal("userType", "student")
     ])
     return { success: true, users: users.documents }
   } catch (error: any) {
