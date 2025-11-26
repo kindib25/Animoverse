@@ -175,7 +175,7 @@ export default function DashboardPage() {
                               <img
                                 src={group.imageUrl || "/placeholder.svg"}
                                 alt={group.name}
-                                className="h-32 w-32 object-contain rounded-full"
+                                className="h-32 w-32 object-cover rounded-full"
                               />
                             </div>
                             <h3 className="font-semibold text-2xl">{group.name}</h3>
