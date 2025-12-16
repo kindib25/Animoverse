@@ -4,11 +4,26 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon, PlayIcon } from "lucide-react";
 import RotatingCard from "@/components/home-card/rotating-card";
-import { useState } from "react";
-import { Menu, X } from "lucide-react"; 
+import { useState, useEffect, useRef } from "react";
+import { Menu, X } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+
+import { HeroSection } from "@/app/developer/components/hero-section";
+import { ServicesSection } from "@/app/developer/components/services-section";
+import { TechnologiesSection } from "@/app/developer/components/technologies-section";
+import { ProjectsSection } from "@/app/developer/components/projects-section";
+import { ContactSection } from "@/app/developer/components/contact-section";
 
 export default function HomePage() {
-const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDeveloper, setShowDeveloper] = useState(false);
+  const devRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (showDeveloper && devRef.current) {
+      devRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [showDeveloper]);
 
   return (
     <div
@@ -67,9 +82,12 @@ const [isOpen, setIsOpen] = useState(false);
             <Link href="#" className="hover:text-green-400 transition-colors">
               Blog
             </Link>
-            <Link href="#" className="hover:text-green-400 transition-colors">
+            <button
+              onClick={() => setShowDeveloper((v) => !v)}
+              className="hover:text-green-400 cursor-pointer"
+            >
               Developer
-            </Link>
+            </button>
           </nav>
 
           {/* Desktop Buttons */}
@@ -148,51 +166,65 @@ const [isOpen, setIsOpen] = useState(false);
 
 
       {/* Hero Content */}
-      <main className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 z-50 lg:py-24 gap-12">
-        {/* Left Section */}
-        <div className="flex-1 lg:pr-16 text-center lg:text-left mt-10">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-wide">
-            Welcome to 
-          </h1>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-peace-sans leading-tight mb-6 tracking-wide">Animoverse</h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Connect with study partners and collaborate on your learning journey
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mb-16">
-            <Link href="/admin/login">
-              <Button className="shad-button_press">
-                <span className="text-xs tracking-widest opacity-70 font-semibold">
-                  TEACHERS
-                </span>
-                <span className="flex items-center gap-1 text-lg font-bold">
-                  Sign in <ArrowRightIcon className="w-5 h-5" />
-                </span>
-              </Button>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-lg text-gray-300 hover:text-green-400 transition-colors font-normal"
-            >
-              <div className="w-12 h-12 rounded-full border border-green-600 flex items-center justify-center hover:bg-green-600/20 transition-colors">
-                <PlayIcon className="w-6 h-6" />
-              </div>
-              Watch Launch
-            </Link>
+      {!showDeveloper && (
+        <main className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 z-50 lg:py-24 gap-12">
+          {/* Left Section */}
+          <div className="flex-1 lg:pr-16 text-center lg:text-left mt-10">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-wide">
+              Welcome to
+            </h1>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-peace-sans leading-tight mb-6 tracking-wide">Animoverse</h1>
+            <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+              Connect with study partners and collaborate on your learning journey
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mb-16">
+              <Link href="/admin/login">
+                <Button className="shad-button_press">
+                  <span className="text-xs tracking-widest opacity-70 font-semibold">
+                    TEACHERS
+                  </span>
+                  <span className="flex items-center gap-1 text-lg font-bold">
+                    Sign in <ArrowRightIcon className="w-5 h-5" />
+                  </span>
+                </Button>
+              </Link>
+              <Link
+                href="#"
+                className="flex items-center gap-3 text-lg text-gray-300 hover:text-green-400 transition-colors font-normal"
+              >
+                <div className="w-12 h-12 rounded-full border border-green-600 flex items-center justify-center hover:bg-green-600/20 transition-colors">
+                  <PlayIcon className="w-6 h-6" />
+                </div>
+                Watch Launch
+              </Link>
+            </div>
+
           </div>
 
-        </div>
-
-        {/* Right Section - Rotating Card */}
-        <div className="relative flex-1 flex justify-center items-center min-h-[400px] lg:min-h-[auto] lg:w-1/2 mt-10 md:mt-10 lg:mt-0">
-          <div className="relative w-[350px] h-[220px] transform rotate-[-20deg] scale-85 md:scale-105">
-            <RotatingCard
-              frontImageSrc="/stunning-view-of-earth-from-space-with-stars-and-m.jpg"
-              backImageSrc="/colorful-nebula-with-purple-and-blue-cosmic-clouds.jpg"
-              className="w-full h-full"
-            />
+          {/* Right Section - Rotating Card */}
+          <div className="relative flex-1 flex justify-center items-center min-h-[400px] lg:min-h-[auto] lg:w-1/2 mt-10 md:mt-10 lg:mt-0">
+            <div className="relative w-[350px] h-[220px] transform rotate-[-20deg] scale-85 md:scale-105">
+              <RotatingCard
+                frontImageSrc="/stunning-view-of-earth-from-space-with-stars-and-m.jpg"
+                backImageSrc="/colorful-nebula-with-purple-and-blue-cosmic-clouds.jpg"
+                className="w-full h-full"
+              />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
+
+      {/* DEVELOPER CONTENT */}
+      {showDeveloper && (
+        <section ref={devRef} className="relative z-50 max-w-7xl mx-auto px-8 space-y-32">
+          <ScrollReveal><HeroSection /></ScrollReveal>
+          <ScrollReveal delay={0.05}><ServicesSection /></ScrollReveal>
+          <ScrollReveal delay={0.05}><TechnologiesSection /></ScrollReveal>
+          <ScrollReveal delay={0.05}><ProjectsSection /></ScrollReveal>
+          <ScrollReveal delay={0.05}><ContactSection /></ScrollReveal>
+        </section>
+      )}
     </div>
+
   );
 }
