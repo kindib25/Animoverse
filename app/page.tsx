@@ -7,7 +7,6 @@ import RotatingCard from "@/components/home-card/rotating-card";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-
 import { HeroSection } from "@/app/developer/components/hero-section";
 import { ServicesSection } from "@/app/developer/components/services-section";
 import { TechnologiesSection } from "@/app/developer/components/technologies-section";
