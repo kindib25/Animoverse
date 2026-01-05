@@ -24,7 +24,7 @@ export function HeroSection() {
             <div className="flex gap-6 mb-8 flex-wrap">
               <div>
                 <p className="text-green text-sm">Location</p>
-                <p className="font-semibold">Cagayan De Oro City, <br /> Philippines</p>
+                <p className="font-semibold">Misamis Occidental, <br /> Philippines</p>
               </div>
               <div>
                 <p className="text-green text-sm">Repositories</p>
