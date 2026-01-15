@@ -137,7 +137,10 @@ export default function HomePage() {
               <Link
                 href="#"
                 className="hover:text-green-400 transition-colors"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowDeveloper(v => !v);
+                }}
               >
                 Developer
               </Link>
